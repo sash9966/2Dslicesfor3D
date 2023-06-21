@@ -42,8 +42,9 @@ parser.add_argument('--batchSize', type=int, default=1, help='input batch size')
 parser.add_argument('--crop_size', type=int, default=128, help='Crop to the width of crop_size (after initially scaling the images to load_size.)')
 parser.add_argument('--target_res', type=int, default=1.25, help='Crop to the width of crop_size (after initially scaling the images to load_size.)')
 
-parser.add_argument('--label_nc', type=int, default=4, help='# of input label classes.')
-parser.add_argument('--output_nc', type=int, default=4, help='# of output image channels')
+
+parser.add_argument('--label_nc', type=int, default=7, help='# of input label classes.')
+parser.add_argument('--output_nc', type=int, default=7, help='# of output image channels')
 parser.add_argument('--input_nc', type=int, default=1, help='# of input image channels')
 parser.add_argument('--which_epoch', type=int, default=100, help='# of output image channels')
 parser.add_argument('--dataset_mode', type=str, default='mms2BB')
@@ -84,8 +85,10 @@ del sys
 opt = parser.parse_args()
 opt.batchSize = 20
 opt.output_nc = 1
-opt.input_nc = 4
-opt.label_nc = 4
+
+#Changed from 4 to 7, they used 4 lables, Background, LV, and two bloodpools
+opt.input_nc = 7
+opt.label_nc = 7
 opt.rec_loss = 'CE'
 opt.add_dist = False
 # opt.rec_loss = 'CEDice'

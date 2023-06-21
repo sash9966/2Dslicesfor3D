@@ -120,18 +120,49 @@ class Pix2PixModel(torch.nn.Module):
 
     def preprocess_input(self, data):
         # move to GPU and change data types
+        #print the head of the data)
+        print(f'data is a dictionary with contents: {data.values()}')
+
         data['label'] = data['label'].long()
         if self.use_gpu():
-            data['label'] = data['label'].cuda()
-            data['instance'] = data['instance'].cuda()
-            data['image'] = data['image'].cuda()
-            data['dist'] = data['dist'].cuda()
+            if(torch.cuda.is_available()):
+                data['label'] = data['label'].cuda()
+                data['instance'] = data['instance'].cuda()
+                data['image'] = data['image'].cuda()
+                data['dist'] = data['dist'].cuda()
+            else:
+                data['label'] = data['label'].cpu()
+                data['instance'] = data['instance'].cpu()
+                data['image'] = data['image'].cpu()
+                data['dist'] = data['dist'].cpu()
 
+        
         # create one-hot label map
         label_map = data['label']
+
+        #understand what label_map does:
+        print(f'type of label_map: {type(label_map)}')
+        print(f' get the tensor object inside the label map: {label_map}')
+        print(f'label_map shape: {label_map.shape}')
+        print(f'label map contains: {label_map.unique()}')
+
+
+        #check out what the dist contains:
+        print(f'dist contains: {data["dist"].unique()}')
+
+        #check out what is in our data
+        print(f'data contains, via keys parameter: {data.keys()}')
+
+
+
+
         bs, _, h, w = label_map.size()
+        print(f'bs: {bs}, h: {h}, w: {w}')
+
         nc = self.opt.label_nc + 1 if self.opt.contain_dontcare_label \
             else self.opt.label_nc
+        
+        print(f'nc has size: {nc}')
         input_label = self.FloatTensor(bs, nc, h, w).zero_()
         input_semantics = input_label.scatter_(1, label_map, 1.0)
         

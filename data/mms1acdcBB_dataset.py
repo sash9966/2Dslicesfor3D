@@ -15,8 +15,8 @@ from torch.utils.data import DataLoader
 from torchvision.transforms import Compose
 
 
-TR_CLASS_MAP_MMS_SRS= {'BG': 0,'LV_Bloodpool': 1, 'LV_Myocardium': 2,'RV_Bloodpool': 3}
-TR_CLASS_MAP_MMS_DES= {'BG': 0,'LV_Bloodpool': 1, 'LV_Myocardium': 2,'RV_Bloodpool': 3}
+TR_CLASS_MAP_MMS_SRS= {'BG': 0,'LV_Bloodpool': 1, 'LV_Myocardium': 2,'RV_Bloodpool': 3, 'Test' : 4}
+TR_CLASS_MAP_MMS_DES= {'BG': 0,'LV_Bloodpool': 1, 'LV_Myocardium': 2,'RV_Bloodpool': 3, 'Test' : 4}
 
 class Mms1acdcBBDataset(BaseDataset):
     """ Dataset that loads images from directories
