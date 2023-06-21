@@ -35,17 +35,18 @@ class Mms1acdcBBDataset(BaseDataset):
         parser.set_defaults(add_dist=False)
         
 
-        parser.add_argument('--label_dir', type=str, required=False, default = "/data/sina/dataset/cmrVAE/mms1/training_crop_noBA_NR/vendors/Vendor_A/Mask/",
+        parser.add_argument('--label_dir', type=str, required=False, default = "/Users/saschastocker/Documents/Stanford/data/StyleTransfer/segmentationTest/",
                             help='path to the directory that contains label images')
-        parser.add_argument('--label_dir_B', type=str, required=False, default = "/data/sina/dataset/cmrVAE/mms1/training_crop_noBA_NR/vendors/Vendor_B/Mask/",
+        parser.add_argument('--label_dir_B', type=str, required=False, default = "/Users/saschastocker/Documents/Stanford/data/StyleTransfer/segmentationTest/",
                             help='path to the directory that contains label images')
-        parser.add_argument('--image_dir', type=str, required=False, default ="/data/sina/dataset/cmrVAE/mms1/training_crop_noBA_NR/vendors/Vendor_A/Image/" ,
+        
+        parser.add_argument('--image_dir', type=str, required=False, default ="/Users/saschastocker/Documents/Stanford/data/StyleTransfer/imagesTest/" ,
                             help='path to the directory that contains photo images')
-        parser.add_argument('--image_dir_B', type=str, required=False, default ="/data/sina/dataset/cmrVAE/mms1/training_crop_noBA_NR/vendors/Vendor_B/Image/" ,
+        parser.add_argument('--image_dir_B', type=str, required=False, default ="/Users/saschastocker/Documents/Stanford/data/StyleTransfer/imagesTest/" ,
                             help='path to the directory that contains photo images')
         parser.add_argument('--instance_dir', type=str, default='',
                             help='path to the directory that contains instance maps. Leave black if not exists')
-        parser.add_argument('--acdc_dir', type=str, required=False, default = "/data/sina/dataset/ACDC/pathology_crop_noBA_NR_C128/",
+        parser.add_argument('--acdc_dir', type=str, required=False, default = "/Users/saschastocker/Documents/Stanford/data/StyleTransfer/SlicedMRI/patient101_frame01.nii/",
                             help='path to the directory that contains label images')
                         
         return parser
@@ -63,7 +64,11 @@ class Mms1acdcBBDataset(BaseDataset):
 
         pathologies = sorted(os.listdir(os.path.join(opt.acdc_dir)))
         
-        
+        # print(f'length of SA_image_list: {len(SA_image_list)}')
+        # print(f'length of SA_mask_list: {len(SA_mask_list)}')
+        # print(f'length of SA_image_list_B: {len(SA_image_list_B)}')
+        # print(f'length of SA_mask_list_B: {len(SA_mask_list_B)}')
+
 
         assert len(SA_mask_list_B) == len(SA_image_list_B) 
         assert len(SA_image_list) == len(SA_mask_list)
@@ -76,7 +81,8 @@ class Mms1acdcBBDataset(BaseDataset):
         SA_image_list_acdc_all = []
         SA_mask_list_acdc_all = []
 
-        what_pathology = 'all'
+        ##Test: turn off pathologies -> none, switch to all for all pathologies
+        what_pathology = 'none'
         if what_pathology == 'all':
             for pathology in pathologies:
                 SA_image_list_acdc = sorted(os.listdir(os.path.join(opt.acdc_dir, pathology, 'Image')))
@@ -136,7 +142,7 @@ class Mms1acdcBBDataset(BaseDataset):
 
     def initialize(self, opt):
         self.opt = opt
-
+        print(f'filename pairs trying to be read from options: {self.opt}')
         self.filename_pairs, _, _  = self.get_paths(self.opt)
 
 

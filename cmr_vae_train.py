@@ -24,7 +24,7 @@ from torch.utils.tensorboard import SummaryWriter
 plt.rcParams["figure.figsize"] = (16, 10)
 parser = argparse.ArgumentParser(description='Add some arguments for the model')
 ### ================================================================================  options starts
-parser.add_argument('--gpu_ids', type=str, default='1', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
+# parser.add_argument('--gpu_ids', type=str, default='1', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
 
 parser.add_argument('--label_dir', type=str, required=False, default = "/data/sina/dataset/cmrVAE/mms1/training_crop_BB/vendors/Vendor_A/Mask/",
                     help='path to the directory that contains label images')
@@ -93,13 +93,13 @@ opt.crop_size = 128
 # opt.target_res = 1.5
 
 ### experiments using mms-1 data
-opt.label_dir = "/data/sina/dataset/cmrVAE/mms1/training_crop_noBA_NR/vendors/Vendor_A/Mask/"
-opt.image_dir = "/data/sina/dataset/cmrVAE/mms1/training_crop_noBA_NR/vendors/Vendor_A/Image/"
-opt.label_dir_B = "/data/sina/dataset/cmrVAE/mms1/training_crop_noBA_NR/vendors/Vendor_B/Mask/"
-opt.image_dir_B = "/data/sina/dataset/cmrVAE/mms1/training_crop_noBA_NR/vendors/Vendor_B/Image/"
+opt.label_dir = "/Users/saschastocker/Documents/Stanford/data/StyleTransfer/imagesTest/ct_1001_image.nii"
+opt.image_dir = "/Users/saschastocker/Documents/Stanford/data/StyleTransfer/segmentationTest/ct_1001_image.nii"
+# opt.label_dir_B = "/data/sina/dataset/cmrVAE/mms1/training_crop_noBA_NR/vendors/Vendor_B/Mask/"
+# opt.image_dir_B = "/data/sina/dataset/cmrVAE/mms1/training_crop_noBA_NR/vendors/Vendor_B/Image/"
 
-opt.image_dir_mms2 = "/data/sina/dataset/cmrVAE/mms2_sorted/PerDisease_crop_noBA_R_128/"
-opt.acdc_dir = "/data/sina/dataset/cmrVAE/acdc/"
+# opt.image_dir_mms2 = "/data/sina/dataset/cmrVAE/mms2_sorted/PerDisease_crop_noBA_R_128/"
+# opt.acdc_dir = "/data/sina/dataset/cmrVAE/acdc/"
 
 
 
@@ -155,8 +155,10 @@ opt.which_epoch = 50
 if opt.continue_train:
     vae = load_network_vae(vae, opt.which_epoch, opt)
 
-
-vae.cuda()
+if (torch.cuda.is_available()):
+    vae.cuda()
+else:
+    vae.cpu()
 
 optimizer = optim.Adam(vae.parameters(), lr=init_lr)
 # adjusting learning rate source: https://pytorch.org/docs/stable/optim.html
