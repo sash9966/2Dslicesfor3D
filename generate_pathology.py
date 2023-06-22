@@ -42,7 +42,7 @@ opt.image_dir_B = "/data/sina/dataset/cmrVAE/mms1/training_crop_noBA_NR/vendors/
 opt.acdc_dir = "/data/sina/dataset/cmrVAE/acdc/"
 # opt.name = '220127_mms1_acdc_z32_128_beta10'
 opt.name = '220119_mms1_acdc_z16_128_beta15'
-opt.zdim = 16
+opt.zdim = 64
 opt.serial_batches = True
 
 ### setting the GPU ID

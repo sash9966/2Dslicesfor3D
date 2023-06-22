@@ -140,30 +140,35 @@ class Pix2PixModel(torch.nn.Module):
         # create one-hot label map
         label_map = data['label']
 
-        #understand what label_map does:
-        print(f'type of label_map: {type(label_map)}')
-        print(f' get the tensor object inside the label map: {label_map}')
-        print(f'label_map shape: {label_map.shape}')
-        print(f'label map contains: {label_map.unique()}')
+        # #understand what label_map does:
+        # print(f'type of label_map: {type(label_map)}')
+        # print(f' get the tensor object inside the label map: {label_map}')
+        # print(f'label_map shape: {label_map.shape}')
+        # print(f'label map contains: {label_map.unique()}')
 
 
-        #check out what the dist contains:
-        print(f'dist contains: {data["dist"].unique()}')
+        # #check out what the dist contains:
+        # print(f'dist contains: {data["dist"].unique()}')
 
-        #check out what is in our data
-        print(f'data contains, via keys parameter: {data.keys()}')
+        # #check out what is in our data
+        # print(f'data contains, via keys parameter: {data.keys()}')
 
 
 
 
         bs, _, h, w = label_map.size()
-        print(f'bs: {bs}, h: {h}, w: {w}')
+        # print(f'bs: {bs}, h: {h}, w: {w}')
 
         nc = self.opt.label_nc + 1 if self.opt.contain_dontcare_label \
             else self.opt.label_nc
         
-        print(f'nc has size: {nc}')
+        # print(f'nc has size: {nc}')
         input_label = self.FloatTensor(bs, nc, h, w).zero_()
+        print(f'########################')
+        print(f'before input_semantics')
+        print(f'input_label has size: {input_label.shape}')
+        print(f'label_map has size: {label_map.shape}')
+        print(f'b: {bs}, nc: {nc}, h: {h}, w: {w}')
         input_semantics = input_label.scatter_(1, label_map, 1.0)
         
         if self.opt.no_BG:
@@ -180,8 +185,17 @@ class Pix2PixModel(torch.nn.Module):
     def compute_generator_loss(self, input_semantics, real_image, input_dist):
         G_losses = {}
 
+        #Get info on input semantics and real_image shapes and sizes
+        print(f'######################################')
+        print(f'compute generator in pix2pixmodel at the beginning of compute_generator_loss:')
+        print(f'input_semantics shape: {input_semantics.shape}')
+        print(f'real_image shape: {real_image.shape}')
+        print(f'input_dist shape: {input_dist.shape}')
+        print(f'######################################')
+
         fake_image, KLD_loss, L1_loss = self.generate_fake(
             input_semantics, real_image, input_dist, compute_kld_loss=self.opt.use_vae)
+        
 
         if self.opt.use_vae:
             G_losses['KLD'] = KLD_loss
@@ -255,6 +269,12 @@ class Pix2PixModel(torch.nn.Module):
             with autocast():
                 fake_image = self.netG(input_semantics, z=z, input_dist=input_dist)
         if self.opt.netG=='stylespade':
+            print(f'######################################')
+            print(f'in pix to pix beofre fake_image:')
+            print(f'input_semantics shape: {input_semantics.shape}')
+            print(f'real_image shape: {real_image.shape}')
+            print(f'input_dist shape: {input_dist.shape}')
+            print(f'######################################')
             fake_image = self.netG(input_semantics, real_image, input_dist=input_dist)
         else:
             fake_image = self.netG(input_semantics, z=z, input_dist=input_dist)

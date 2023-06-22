@@ -432,8 +432,13 @@ class StyleSPADEGenerator(BaseNetwork):
         if self.opt.crop_size == 128:
             in_fea = 1 * 16
         
-        self.fc_img = nn.Linear(in_fea * nf * 8 * 8, in_fea * nf)
-        self.fc_img2 = nn.Linear(in_fea * nf, in_fea * nf * 8 * 8)
+        #print the variables used to create the dimensions here:
+        print('variables used for the dimensions of the fully connected layers')
+        print('in_fea', in_fea)
+        print('nf', nf)
+        
+        self.fc_img = nn.Linear(in_fea * nf * 16 * 16, in_fea * nf)
+        self.fc_img2 = nn.Linear(in_fea * nf, in_fea * nf * 16 * 16)
         self.fc = nn.Conv2d(self.opt.semantic_nc, in_fea * nf, 3, padding=1)
 
         self.head_0 = SPADEResnetBlock(in_fea * nf, in_fea * nf, opt)
@@ -480,6 +485,9 @@ class StyleSPADEGenerator(BaseNetwork):
     def forward(self, input, image, input_dist=None):
         seg = input
         image = image
+        print(f'beggingin of forward in generator')
+        print('seg shape', seg.shape)
+        print('image shape', image.shape)
 
         # if self.opt.use_vae:
         #     # we sample z from unit normal and reshape the tensor
@@ -502,10 +510,18 @@ class StyleSPADEGenerator(BaseNetwork):
         #     x = self.fc(x)
         x = self.model(image)
         # seg = F.interpolate(seg, size=(x.shape[-1], x.shape[-2]))
+        print(f'######################################')
+        print(f'inspetion in generator.py, after x=self.model(image):')
+        print(f'inspect the image shape that is coming from the encoder {x.shape}, image shape: {image.shape} and the seg shape {seg.shape}, ')
+        print(f'######################################')
+
         # seg = self.fc(seg)
         
         x = x.view(x.size(0), -1)
-        
+        print(f'######################################')
+        print(f'inspetion in generator.py after x.view():')
+        print(f'inspect the image shape that is coming from the encoder {x.shape},image shape: {image.shape}  and the seg shape {seg.shape}')
+        print(f'######################################')
 
         x = self.fc_img(x)
         x = self.fc_img2(x)

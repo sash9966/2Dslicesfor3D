@@ -65,7 +65,9 @@ parser.add_argument('--continue_train', action='store_true', help='continue trai
 parser.add_argument('--rec_loss', type=str, default='Dice', help='recontrcution loss for VAE: choose between BCE  MSE L1 L1F Dice')
 parser.add_argument('--seed', type=int, default=1220,
                         help='Random seed. Can be `None` for stochastic behavior.')
-parser.add_argument('--zdim', default=32, type=int, help='# size of latent vector')
+
+#z-dim test increase from 32->64
+parser.add_argument('--zdim', default=64, type=int, help='# size of latent vector')
 parser.add_argument('--corrected_labels', action='store_true', help='continue training: load the latest model')
 parser.add_argument('--VAE_altered_anatomy', action='store_true', help='continue training: load the latest model')
 parser.add_argument('--selected_labels', action='store_true', help='continue training: load the latest model')
@@ -92,7 +94,9 @@ opt.label_nc = 7
 opt.rec_loss = 'CE'
 opt.add_dist = False
 # opt.rec_loss = 'CEDice'
-opt.crop_size = 128
+
+#Crop size to 512 from 128 changed
+opt.crop_size = 512
 # opt.target_res = 1.5
 
 ### experiments using mms-1 data
@@ -110,7 +114,9 @@ opt.image_dir = "/Users/saschastocker/Documents/Stanford/data/StyleTransfer/segm
 ### for paper dont use the mms2 data, the heart for mms2 case positined differently
 opt.name = '220909_mms1_acdc_z16_128_beta15'
 writer = SummaryWriter("runs/" + opt.name , comment=opt.name)
-opt.zdim = 16
+
+#dim increase from 32->64
+opt.zdim = 64
 lamda_kld = 15
 
 opt.isTrain = True

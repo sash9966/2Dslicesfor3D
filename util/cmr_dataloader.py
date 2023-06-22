@@ -10,7 +10,7 @@ import nibabel as nib
 
 from torch.utils.data import Dataset
 import torch
-#from torch._six import string_classes, int_classes
+#from torch._six import string_classes, inclasses
 string_classes = str
 int_classes = int
 
