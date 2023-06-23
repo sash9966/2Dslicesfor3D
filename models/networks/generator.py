@@ -429,16 +429,15 @@ class StyleSPADEGenerator(BaseNetwork):
         if self.opt.crop_size == 256:
             in_fea = 2 * 16
             self.opt.num_upsampling_layers = 'most'
+        if self.opt.crop_size == 512:
+            in_fea = 1 * 16
         if self.opt.crop_size == 128:
             in_fea = 1 * 16
+            
+        print(f'variables for linear FC layer: in_fea: {in_fea}, nf: {nf}')
         
-        #print the variables used to create the dimensions here:
-        print('variables used for the dimensions of the fully connected layers')
-        print('in_fea', in_fea)
-        print('nf', nf)
-        
-        self.fc_img = nn.Linear(in_fea * nf * 16 * 16, in_fea * nf)
-        self.fc_img2 = nn.Linear(in_fea * nf, in_fea * nf * 16 * 16)
+        self.fc_img = nn.Linear(in_fea * nf * 32 * 32, in_fea * nf)
+        self.fc_img2 = nn.Linear(in_fea * nf, in_fea * nf * 32 * 32)
         self.fc = nn.Conv2d(self.opt.semantic_nc, in_fea * nf, 3, padding=1)
 
         self.head_0 = SPADEResnetBlock(in_fea * nf, in_fea * nf, opt)
@@ -526,8 +525,11 @@ class StyleSPADEGenerator(BaseNetwork):
         x = self.fc_img(x)
         x = self.fc_img2(x)
 
+        print(f'self.opt.crop_size {self.opt.crop_size}')
         if self.opt.crop_size == 256:
             in_fea = 2 * 16
+        if self.opt.crop_size == 512:
+            in_fea = 1 * 16
         if self.opt.crop_size == 128:
             in_fea = 1 * 16
    

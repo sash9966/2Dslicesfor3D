@@ -95,8 +95,8 @@ opt.rec_loss = 'CE'
 opt.add_dist = False
 # opt.rec_loss = 'CEDice'
 
-#Crop size to 512 from 128 changed
-opt.crop_size = 512
+#changed crop size to 512 from 128 
+opt.crop_size = 128
 # opt.target_res = 1.5
 
 ### experiments using mms-1 data
@@ -115,8 +115,7 @@ opt.image_dir = "/Users/saschastocker/Documents/Stanford/data/StyleTransfer/segm
 opt.name = '220909_mms1_acdc_z16_128_beta15'
 writer = SummaryWriter("runs/" + opt.name , comment=opt.name)
 
-#dim increase from 32->64
-opt.zdim = 64
+opt.zdim = 32
 lamda_kld = 15
 
 opt.isTrain = True

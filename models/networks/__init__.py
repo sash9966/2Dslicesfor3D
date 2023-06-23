@@ -15,6 +15,8 @@ import util.util as util
 def find_network_using_name(target_network_name, filename):
     target_class_name = target_network_name + filename
     module_name = 'models.networks.' + filename
+
+    print(f'module name that is being loaded is: {module_name}')
     network = util.find_class_in_module(target_class_name, module_name)
 
     assert issubclass(network, BaseNetwork), \
@@ -40,6 +42,8 @@ def modify_commandline_options(parser, is_train):
 def create_network(cls, opt):
     net = cls(opt)
     net.print_network()
+    print(f'this is the network')
+    print(f'what  is cls and opt? {cls} {opt}')
     if len(opt.gpu_ids) > 0:
         assert(torch.cuda.is_available())
         net.cuda()
@@ -49,6 +53,7 @@ def create_network(cls, opt):
 
 def define_G(opt):
     netG_cls = find_network_using_name(opt.netG, 'generator')
+
     return create_network(netG_cls, opt)
 
 

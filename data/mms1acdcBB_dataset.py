@@ -35,18 +35,18 @@ class Mms1acdcBBDataset(BaseDataset):
         parser.set_defaults(add_dist=False)
         
 
-        parser.add_argument('--label_dir', type=str, required=False, default = "/Users/saschastocker/Documents/Stanford/data/StyleTransfer/segmentationTest/",
+        parser.add_argument('--label_dir', type=str, required=False, default = "/Users/saschastocker/Desktop/Data/StyleTransfer/segmentationTestFullResolution",
                             help='path to the directory that contains label images')
-        parser.add_argument('--label_dir_B', type=str, required=False, default = "/Users/saschastocker/Documents/Stanford/data/StyleTransfer/segmentationTest/",
+        parser.add_argument('--label_dir_B', type=str, required=False, default = "/Users/saschastocker/Desktop/Data/StyleTransfer/segmentationTestFullResolution",
                             help='path to the directory that contains label images')
         
-        parser.add_argument('--image_dir', type=str, required=False, default ="/Users/saschastocker/Documents/Stanford/data/StyleTransfer/imagesTest/" ,
+        parser.add_argument('--image_dir', type=str, required=False, default ="/Users/saschastocker/Desktop/Data/StyleTransfer/imageTestFullResolution" ,
                             help='path to the directory that contains photo images')
-        parser.add_argument('--image_dir_B', type=str, required=False, default ="/Users/saschastocker/Documents/Stanford/data/StyleTransfer/imagesTest/" ,
+        parser.add_argument('--image_dir_B', type=str, required=False, default ="/Users/saschastocker/Desktop/Data/StyleTransfer/imageTestFullResolution" ,
                             help='path to the directory that contains photo images')
         parser.add_argument('--instance_dir', type=str, default='',
                             help='path to the directory that contains instance maps. Leave black if not exists')
-        parser.add_argument('--acdc_dir', type=str, required=False, default = "/Users/saschastocker/Documents/Stanford/data/StyleTransfer/SlicedMRI/patient101_frame01.nii/",
+        parser.add_argument('--acdc_dir', type=str, required=False, default = "/Users/saschastocker/Desktop/Data/StyleTransfer/SlicedMRI/patient101_frame01.nii/",
                             help='path to the directory that contains label images')
                         
         return parser
@@ -64,10 +64,10 @@ class Mms1acdcBBDataset(BaseDataset):
 
         pathologies = sorted(os.listdir(os.path.join(opt.acdc_dir)))
         
-        # print(f'length of SA_image_list: {len(SA_image_list)}')
-        # print(f'length of SA_mask_list: {len(SA_mask_list)}')
-        # print(f'length of SA_image_list_B: {len(SA_image_list_B)}')
-        # print(f'length of SA_mask_list_B: {len(SA_mask_list_B)}')
+        print(f'length of SA_image_list: {len(SA_image_list)}')
+        print(f'length of SA_mask_list: {len(SA_mask_list)}')
+        print(f'length of SA_image_list_B: {len(SA_image_list_B)}')
+        print(f'length of SA_mask_list_B: {len(SA_mask_list_B)}')
 
 
         assert len(SA_mask_list_B) == len(SA_image_list_B) 
@@ -173,7 +173,7 @@ class Mms1acdcBBDataset(BaseDataset):
                 
                 # cmr_tran.RandomHorizontalFlip2D(p=0.7),
                 # cmr_tran.RandomVerticalFlip2D(p=0.7),
-                # cmr_tran.UpdateLabels(source=TR_CLASS_MAP_MMS_SRS, destination=TR_CLASS_MAP_MMS_DES)
+                cmr_tran.UpdateLabels(source=TR_CLASS_MAP_MMS_SRS, destination=TR_CLASS_MAP_MMS_DES)
 
             ])
         else:
@@ -198,7 +198,7 @@ class Mms1acdcBBDataset(BaseDataset):
                 # cmr_tran.ClipScaleRange(),
                 # cmr_tran.RandomHorizontalFlip2D(p=0.5),
                 # cmr_tran.RandomVerticalFlip2D(p=0.5),
-                # cmr_tran.UpdateLabels(source=TR_CLASS_MAP_MMS_SRS, destination=TR_CLASS_MAP_MMS_DES)
+                cmr_tran.UpdateLabels(source=TR_CLASS_MAP_MMS_SRS, destination=TR_CLASS_MAP_MMS_DES)
 
             ])
         

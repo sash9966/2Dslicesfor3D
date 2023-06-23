@@ -52,7 +52,7 @@ device = torch.device('cuda:' + str(opt.gpu_ids[0]))
 ### creating the dataloader
 # opt.dataset_mode = 'mms1BB'
 opt.serial_batches = True
-opt.isTrain = False
+opt.isTrain = True
 opt.what_data = 'acdc'
 opt.dataset_mode = 'mms1acdcBB'
 dataloader = data.create_dataloader(opt)
@@ -71,7 +71,7 @@ print(device)
 
 # %%
 vae = VAE(opt).to(device)
-opt.isTrain = False
+opt.isTrain = True
 opt.continue_train = True
 opt.which_epoch = 200
 if opt.continue_train or not opt.isTrain :
