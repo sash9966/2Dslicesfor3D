@@ -107,6 +107,7 @@ class Pix2PixModel(torch.nn.Module):
         netE = networks.define_E(opt) if opt.use_vae else None
 
         if not opt.isTrain or opt.continue_train:
+            print(f'Train is False or continue train is True')
             netG = util.load_network(netG, 'G', opt.which_epoch, opt)
             if opt.isTrain:
                 netD = util.load_network(netD, 'D', opt.which_epoch, opt)
@@ -167,11 +168,11 @@ class Pix2PixModel(torch.nn.Module):
         # print(f'nc has size: {nc}')
         input_label = self.FloatTensor(bs, nc, h, w).zero_()
 
-        print(f'########################')
-        print(f'before input_semantics')
-        print(f'input_label has size: {input_label.shape}')
-        print(f'label_map has size: {label_map.shape}')
-        print(f'b: {bs}, nc: {nc}, h: {h}, w: {w}')
+        # print(f'########################')
+        # print(f'before input_semantics')
+        # print(f'input_label has size: {input_label.shape}')
+        # print(f'label_map has size: {label_map.shape}')
+        # print(f'b: {bs}, nc: {nc}, h: {h}, w: {w}')
         #Plot what the label map and the input label looks like:
 
         # fig, ax = plt.subplots(1,9)
@@ -209,8 +210,8 @@ class Pix2PixModel(torch.nn.Module):
 
         # plt.show()
 
-        print(f'input_label has size: {input_label.shape}')
-        print(f'label_map has size: {label_map.shape}')
+        # print(f'input_label has size: {input_label.shape}')
+        # print(f'label_map has size: {label_map.shape}')
         for i in label_map.unique():
             print(f'unique value in label_map: {i}')
 
@@ -319,8 +320,10 @@ class Pix2PixModel(torch.nn.Module):
             with autocast():
                 fake_image = self.netG(input_semantics, z=z, input_dist=input_dist)
         if self.opt.netG=='stylespade':
+            
 
             fake_image = self.netG(input_semantics, real_image, input_dist=input_dist)
+            print(f'Fake image made in stylespade netG')
             print(f'fake image shape is {fake_image.shape}')
             print(f'real image shape is {real_image.shape}')
             print(f'input semantics shape is {input_semantics.shape}')
