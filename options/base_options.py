@@ -39,8 +39,8 @@ class BaseOptions():
         parser.add_argument('--input_nc', type=int, default=4, help='# of input label classes without unknown class. If you have unknown class as class label, specify --contain_dopntcare_label.')
         parser.add_argument('--rec_loss', type=str, default='CE', help='recontrcution loss for VAE: choose between BCE  MSE L1 L1F Dice')
 
-        parser.add_argument('--label_nc', type=int, default=7, help='# of input label classes without unknown class. If you have unknown class as class label, specify --contain_dopntcare_label.')
-        parser.add_argument('--semantic_nc', type=int, default=7, help='# of input label classes without unknown class. If you have unknown class as class label, specify --contain_dopntcare_label.')
+        parser.add_argument('--label_nc', type=int, default=8, help='# of input label classes without unknown class. If you have unknown class as class label, specify --contain_dopntcare_label.')
+        parser.add_argument('--semantic_nc', type=int, default=8, help='# of input label classes without unknown class. If you have unknown class as class label, specify --contain_dopntcare_label.')
 
         parser.add_argument('--contain_dontcare_label', action='store_true', default= False, help='if the label map contains dontcare label (dontcare=255)')
         parser.add_argument('--output_nc', type=int, default=1, help='# of output image channels')
