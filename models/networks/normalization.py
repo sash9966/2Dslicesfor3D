@@ -96,6 +96,7 @@ class SPADE(nn.Module):
     def forward(self, x, segmap, input_dist=None):
 
         # Part 1. generate parameter-free normalized activations
+        #print(f' x shape: {x.shape}')
         normalized = self.param_free_norm(x)
 
         # Part 2. produce scaling and bias conditioned on semantic map

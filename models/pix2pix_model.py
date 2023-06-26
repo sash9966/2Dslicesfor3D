@@ -54,7 +54,7 @@ class Pix2PixModel(torch.nn.Module):
     # routines based on |mode|.
     def forward(self, data, mode):
         input_semantics, real_image, input_dist = self.preprocess_input(data)
-        print(f'mode is: {mode}')
+        print(f'mode is {mode}')
         if mode == 'generator':
             g_loss, generated = self.compute_generator_loss(
                 input_semantics, real_image, input_dist)
@@ -122,8 +122,6 @@ class Pix2PixModel(torch.nn.Module):
 
     def preprocess_input(self, data):
         # move to GPU and change data types
-        #print the head of the data)
-        print(f'data is a dictionary with contents: {data.values()}')
 
         data['label'] = data['label'].long()
         if self.use_gpu():
@@ -159,8 +157,6 @@ class Pix2PixModel(torch.nn.Module):
 
 
         bs, _, h, w = label_map.size()
-        print(f'bs: {bs}, h: {h}, w: {w}')
-        print(f'info from label_map: {label_map.shape}')
 
         nc = self.opt.label_nc + 1 if self.opt.contain_dontcare_label \
             else self.opt.label_nc
@@ -212,10 +208,6 @@ class Pix2PixModel(torch.nn.Module):
 
         # print(f'input_label has size: {input_label.shape}')
         # print(f'label_map has size: {label_map.shape}')
-        for i in label_map.unique():
-            print(f'unique value in label_map: {i}')
-
-        print(f'b: {bs}, nc: {nc}, h: {h}, w: {w}')
 
         input_semantics = input_label.scatter_(1, label_map.clamp(max=7), 1.0)
 
@@ -235,14 +227,6 @@ class Pix2PixModel(torch.nn.Module):
 
     def compute_generator_loss(self, input_semantics, real_image, input_dist):
         G_losses = {}
-
-        #Get info on input semantics and real_image shapes and sizes
-        print(f'######################################')
-        print(f'compute generator in pix2pixmodel at the beginning of compute_generator_loss:')
-        print(f'input_semantics shape: {input_semantics.shape}')
-        print(f'real_image shape: {real_image.shape}')
-        print(f'input_dist shape: {input_dist.shape}')
-        print(f'######################################')
 
         fake_image, KLD_loss, L1_loss = self.generate_fake(
             input_semantics, real_image, input_dist, compute_kld_loss=self.opt.use_vae)
@@ -323,11 +307,7 @@ class Pix2PixModel(torch.nn.Module):
             
 
             fake_image = self.netG(input_semantics, real_image, input_dist=input_dist)
-            print(f'Fake image made in stylespade netG')
-            print(f'fake image shape is {fake_image.shape}')
-            print(f'real image shape is {real_image.shape}')
-            print(f'input semantics shape is {input_semantics.shape}')
-            print(f'input dist shape is {input_dist.shape}')
+
 
         else:
             fake_image = self.netG(input_semantics, z=z, input_dist=input_dist)

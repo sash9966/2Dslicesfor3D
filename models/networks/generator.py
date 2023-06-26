@@ -459,7 +459,7 @@ class StyleSPADEGenerator(BaseNetwork):
         print(f'variables for linear FC layer: in_fea: {in_fea}, nf: {nf}')
         
         self.fc_img = nn.Linear(in_fea * nf * 16 * 16, in_fea * nf //4)
-        self.fc_img2 = nn.Linear(in_fea * nf // 4, in_fea * nf * 16 * 16)
+        self.fc_img2 = nn.Linear(in_fea * nf // 4, in_fea * nf * 8 * 8)
         self.fc = nn.Conv2d(self.opt.semantic_nc, in_fea * nf, 3, padding=1)
 
         self.head_0 = SPADEResnetBlock(in_fea * nf, in_fea * nf, opt)
@@ -545,13 +545,8 @@ class StyleSPADEGenerator(BaseNetwork):
         # print(f'######################################')
         # print(f'inspetion in generator.py after x.view():')
         # print(f'inspect the image shape that is coming from the encoder {x.shape},image shape: {image.shape}  and the seg shape {seg.shape}')
-        print(f'######################################')
-
-        print(f'After model: {x.shape}')
         x = self.fc_img(x)
-        print(f'After fc_img: {x.shape}')
         x = self.fc_img2(x)
-        print(f'After fc_img2: {x.shape}')
 
         #print(f'self.opt.crop_size {self.opt.crop_size}')
         if self.opt.crop_size == 256:
@@ -561,11 +556,11 @@ class StyleSPADEGenerator(BaseNetwork):
         if self.opt.crop_size == 128:
             in_fea = 1 * 16
     
-        # Old try!!
-        #x = x.view(-1, in_fea * self.opt.ngf, 8, 8)
+        #Old try!!
+        x = x.view(-1, in_fea * self.opt.ngf , 8, 8)
         #hard coded:
-        x= x.view(1,-1,8,8)
-        print(f'After view: {x.shape}')
+        #x= x.view(1,-1,8,8)
+        #print(f'After view: {x.shape}')
         
 
 
@@ -574,13 +569,13 @@ class StyleSPADEGenerator(BaseNetwork):
         # print(f'input_dist.shape: {input_dist.shape}')
 
         x = self.head_0(x, seg, input_dist)
-        print(f'After head_0: {x.shape}')
+        #print(f'After head_0: {x.shape}')
 
-        # if self.opt.num_upsampling_layers != 'few':
+        # if self.opt.num_upsampling_layers != 'fgit adew':
             
         #     x = self.up(x)
         x = self.G_middle_0(x, seg, input_dist)
-        print(f'After G_middle_0: {x.shape}')
+        #print(f'After G_middle_0: {x.shape}')
 
 
         # if self.opt.num_upsampling_layers == 'more' or \
@@ -590,21 +585,13 @@ class StyleSPADEGenerator(BaseNetwork):
         # x = self.G_middle_1(x, seg, input_dist)
 
         x = self.up(x)
-        print(f'After up: {x.shape}')
         x = self.up_0(x, seg, input_dist)
-        print(f'After up_0: {x.shape}')
         x = self.up(x)
-        print(f'After up: {x.shape}')
         x = self.up_1(x, seg, input_dist)
-        print(f'After up_1: {x.shape}')
         x = self.up(x)
-        print(f'After up: {x.shape}')
         x = self.up_2(x, seg, input_dist)
-        print(f'After up_2: {x.shape}')
         x = self.up(x)
-        print(f'After up: {x.shape}')
         x = self.up_3(x, seg, input_dist)
-        print(f'After up_3: {x.shape}')
 
         if self.opt.num_upsampling_layers == 'most':
             x = self.up(x)
@@ -612,10 +599,14 @@ class StyleSPADEGenerator(BaseNetwork):
         if self.opt.num_upsampling_layers == 'most512':
             x = self.up(x)
             x = self.up_4(x, seg, input_dist)
+            x = self.up(x)
+            x = self.up_5(x, seg, input_dist)
+
  
 
 
         x = self.conv_img(F.leaky_relu(x, 2e-1))
         # x = nn.Tanh(x)
+
 
         return x
