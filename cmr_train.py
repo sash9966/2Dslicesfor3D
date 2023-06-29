@@ -40,6 +40,7 @@ visualizer = Visualizer(opt)
     
 
 for epoch in iter_counter.training_epochs():
+    print('epoch', epoch)
     iter_counter.record_epoch_start(epoch)
     for i, data_i in enumerate(dataloader, start=iter_counter.epoch_iter):
         iter_counter.record_one_iteration()

@@ -31,16 +31,17 @@ class BaseOptions():
         parser.add_argument('--phase', type=str, default='train', help='train, val, test, etc')
 
         # input/output sizes
-        parser.add_argument('--batchSize', type=int, default=1, help='input batch size')
+        parser.add_argument('--batchSize', type=int, default=10, help='input batch size')
         parser.add_argument('--preprocess_mode', type=str, default='scale_width_and_crop', help='scaling and cropping of images at load time.', choices=("resize_and_crop", "crop", "scale_width", "scale_width_and_crop", "scale_shortside", "scale_shortside_and_crop", "fixed", "none"))
         parser.add_argument('--load_size', type=int, default=1024, help='Scale images to this size. The final image will be cropped to --crop_size.')
-        parser.add_argument('--crop_size', type=int, default=128, help='Crop to the width of crop_size (after initially scaling the images to load_size.)')
+        parser.add_argument('--crop_size', type=int, default=512, help='Crop to the width of crop_size (after initially scaling the images to load_size.)')
         parser.add_argument('--aspect_ratio', type=float, default=1.0, help='The ratio width/height. The final height of the load image will be crop_size/aspect_ratio')
         parser.add_argument('--input_nc', type=int, default=4, help='# of input label classes without unknown class. If you have unknown class as class label, specify --contain_dopntcare_label.')
+        ##
         parser.add_argument('--rec_loss', type=str, default='CE', help='recontrcution loss for VAE: choose between BCE  MSE L1 L1F Dice')
 
-        parser.add_argument('--label_nc', type=int, default=4, help='# of input label classes without unknown class. If you have unknown class as class label, specify --contain_dopntcare_label.')
-        parser.add_argument('--semantic_nc', type=int, default=4, help='# of input label classes without unknown class. If you have unknown class as class label, specify --contain_dopntcare_label.')
+        parser.add_argument('--label_nc', type=int, default=8, help='# of input label classes without unknown class. If you have unknown class as class label, specify --contain_dopntcare_label.')
+        parser.add_argument('--semantic_nc', type=int, default=8, help='# of input label classes without unknown class. If you have unknown class as class label, specify --contain_dopntcare_label.')
 
         parser.add_argument('--contain_dontcare_label', action='store_true', default= False, help='if the label map contains dontcare label (dontcare=255)')
         parser.add_argument('--output_nc', type=int, default=1, help='# of output image channels')
@@ -61,7 +62,8 @@ class BaseOptions():
 
         # for generator
         parser.add_argument('--netG', type=str, default='stylespade', help='selects model to use for netG (pix2pixhd | spade | stylespade)')
-        parser.add_argument('--ngf', type=int, default=32, help='# of gen filters in first conv layer')
+        ## 
+        parser.add_argument('--ngf', type=int, default=4, help='# of gen filters in first conv layer')
         parser.add_argument('--init_type', type=str, default='xavier', help='network initialization [normal|xavier|kaiming|orthogonal]')
         parser.add_argument('--init_variance', type=float, default=0.02, help='variance of the initialization distribution')
         parser.add_argument('--z_dim', type=int, default=256, help="dimension of the latent z vector")
@@ -203,7 +205,8 @@ class BaseOptions():
             id = int(str_id)
             if id >= 0:
                 opt.gpu_ids.append(id)
-        if len(opt.gpu_ids) > 0:
+
+        if len(opt.gpu_ids) > 0 and torch.cuda.is_available():
             torch.cuda.set_device(opt.gpu_ids[0])
 
         assert len(opt.gpu_ids) == 0 or opt.batchSize % len(opt.gpu_ids) == 0, \

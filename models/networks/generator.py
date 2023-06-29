@@ -26,7 +26,7 @@ class SPADEGenerator(BaseNetwork):
     def modify_commandline_options(parser, is_train):
         parser.set_defaults(norm_G='spectralspadesyncbatch3x3')
         parser.add_argument('--num_upsampling_layers',
-                            choices=('few','normal', 'more', 'most'), default='normal',
+                            choices=('few','normal', 'more', 'most', 'most512'), default='normal',
                             help="If 'more', adds upsampling layer between the two middle resnet blocks. If 'most', also add one more upsampling + resnet layer at the end of the generator")
 
         return parser
@@ -66,6 +66,11 @@ class SPADEGenerator(BaseNetwork):
         if opt.num_upsampling_layers == 'most':
             self.up_4 = SPADEResnetBlock(1 * nf, nf // 2, opt)
             final_nc = nf // 2
+        if opt.num_upsampling_layers == 'most512':
+            self.up_4 = SPADEResnetBlock(1 * nf, nf // 2, opt)
+            final_nc = nf // 2
+            self.up_5 = SPADEResnetBlock(nf // 2, nf // 4, opt)
+            final_nc = nf // 4
 
         self.conv_img = nn.Sequential(
             nn.Conv2d(final_nc, opt.output_nc, 3, padding=1),  # sina changing the number of the channels for the output conv layer from 3 to opt.output_nc
@@ -83,6 +88,9 @@ class SPADEGenerator(BaseNetwork):
             num_up_layers = 6
         elif opt.num_upsampling_layers == 'most':
             num_up_layers = 7
+        elif opt.num_upsampling_layers == 'most512':
+            num_up_layers = 8
+
         else:
             raise ValueError('opt.num_upsampling_layers [%s] not recognized' %
                              opt.num_upsampling_layers)
@@ -142,6 +150,12 @@ class SPADEGenerator(BaseNetwork):
         if self.opt.num_upsampling_layers == 'most':
             x = self.up(x)
             x = self.up_4(x, seg, input_dist)
+        if self.opt.num_upsampling_layers == 'most512':
+            x = self.up(x)
+            x = self.up_4(x, seg, input_dist)
+            x = self.up(x)
+            x = self.up_5(x, seg, input_dist)
+
 
         x = self.conv_img(F.leaky_relu(x, 2e-1))
         # x = nn.Tanh(x)
@@ -197,6 +211,11 @@ class SPADEEncGenerator(BaseNetwork):
         if opt.num_upsampling_layers == 'most':
             self.up_4 = SPADEResnetBlock(1 * nf, nf // 2, opt)
             final_nc = nf // 2
+        if opt.num_upsampling_layers == 'most512':
+            self.up_4 = SPADEResnetBlock(1 * nf, nf // 2, opt)
+            self.up_5 = SPADEResnetBlock(nf // 2, nf // 4, opt)
+            final_nc = nf // 4
+
 
         self.conv_img = nn.Sequential(
             nn.Conv2d(final_nc, opt.output_nc, 3, padding=1),  # sina changing the number of the channels for the output conv layer from 3 to opt.output_nc
@@ -214,6 +233,8 @@ class SPADEEncGenerator(BaseNetwork):
             num_up_layers = 6
         elif opt.num_upsampling_layers == 'most':
             num_up_layers = 7
+        elif opt.num_upsampling_layers == 'most512':
+            num_up_layers = 8
         else:
             raise ValueError('opt.num_upsampling_layers [%s] not recognized' %
                              opt.num_upsampling_layers)
@@ -254,7 +275,7 @@ class SPADEEncGenerator(BaseNetwork):
             x = self.G_middle_0(x, seg, input_dist)
 
         if self.opt.num_upsampling_layers == 'more' or \
-           self.opt.num_upsampling_layers == 'most':
+           self.opt.num_upsampling_layers == 'most' or  self.opt.num_upsampling_layers == 'most512':
             x = self.up(x)
 
         x = self.G_middle_1(x, seg, input_dist)
@@ -354,7 +375,7 @@ class StyleSPADEGenerator(BaseNetwork):
     def modify_commandline_options(parser, is_train):
         
         parser.add_argument('--num_upsampling_layers',
-                            choices=('few','normal', 'more', 'most'), default='few',
+                            choices=('few','normal', 'more', 'most','most512'), default='few',
                             help="If 'more', adds upsampling layer between the two middle resnet blocks. If 'most', also add one more upsampling + resnet layer at the end of the generator")
         
         # parser.add_argument('--resnet_n_downsample', type=int, default=5, help='number of downsampling layers in netG')
@@ -429,11 +450,16 @@ class StyleSPADEGenerator(BaseNetwork):
         if self.opt.crop_size == 256:
             in_fea = 2 * 16
             self.opt.num_upsampling_layers = 'most'
+        if self.opt.crop_size == 512:
+            in_fea = 4 * 16
+            self.opt.num_upsampling_layers = 'most512'
         if self.opt.crop_size == 128:
             in_fea = 1 * 16
+            
+        print(f'variables for linear FC layer: in_fea: {in_fea}, nf: {nf}')
         
-        self.fc_img = nn.Linear(in_fea * nf * 8 * 8, in_fea * nf)
-        self.fc_img2 = nn.Linear(in_fea * nf, in_fea * nf * 8 * 8)
+        self.fc_img = nn.Linear(in_fea * nf * 16 * 16, in_fea * nf //4)
+        self.fc_img2 = nn.Linear(in_fea * nf // 4, in_fea * nf * 8 * 8)
         self.fc = nn.Conv2d(self.opt.semantic_nc, in_fea * nf, 3, padding=1)
 
         self.head_0 = SPADEResnetBlock(in_fea * nf, in_fea * nf, opt)
@@ -448,9 +474,16 @@ class StyleSPADEGenerator(BaseNetwork):
 
         final_nc = nf
 
+        #Increase upsampling if you want the fake images to be generated in higher resolution -> 512
         if self.opt.num_upsampling_layers == 'most':
             self.up_4 = SPADEResnetBlock(1 * nf, nf // 2, opt)
             final_nc = nf // 2
+        
+        if self.opt.num_upsampling_layers == 'most512':
+            self.up_4 = SPADEResnetBlock(1 * nf, nf // 2, opt)
+            self.up_5 = SPADEResnetBlock(nf // 2, nf // 4, opt)
+            final_nc = nf // 4
+
 
         self.conv_img = nn.Sequential(
             nn.Conv2d(final_nc, opt.output_nc, 3, padding=1),  # sina changing the number of the channels for the output conv layer from 3 to opt.output_nc
@@ -480,7 +513,6 @@ class StyleSPADEGenerator(BaseNetwork):
     def forward(self, input, image, input_dist=None):
         seg = input
         image = image
-
         # if self.opt.use_vae:
         #     # we sample z from unit normal and reshape the tensor
         #     if z is None:
@@ -502,27 +534,49 @@ class StyleSPADEGenerator(BaseNetwork):
         #     x = self.fc(x)
         x = self.model(image)
         # seg = F.interpolate(seg, size=(x.shape[-1], x.shape[-2]))
+        # print(f'######################################')
+        # print(f'inspetion in generator.py, after x=self.model(image):')
+        # print(f'inspect the image shape that is coming from the encoder {x.shape}, image shape: {image.shape} and the seg shape {seg.shape}, ')
+        # print(f'######################################')
+
         # seg = self.fc(seg)
         
         x = x.view(x.size(0), -1)
-        
-
+        # print(f'######################################')
+        # print(f'inspetion in generator.py after x.view():')
+        # print(f'inspect the image shape that is coming from the encoder {x.shape},image shape: {image.shape}  and the seg shape {seg.shape}')
         x = self.fc_img(x)
         x = self.fc_img2(x)
 
+        #print(f'self.opt.crop_size {self.opt.crop_size}')
         if self.opt.crop_size == 256:
             in_fea = 2 * 16
+        if self.opt.crop_size == 512:
+            in_fea = 4 * 16
         if self.opt.crop_size == 128:
             in_fea = 1 * 16
-   
-        x = x.view(-1, in_fea * self.opt.ngf, 8, 8)
+    
+        #Old try!!
+        x = x.view(-1, in_fea * self.opt.ngf , 8, 8)
+        #hard coded:
+        #x= x.view(1,-1,8,8)
+        #print(f'After view: {x.shape}')
+        
+
+
+        # print(f'in generator.py, after x.view(): {x.shape}')
+        # print(f'seg.shape: {seg.shape}')
+        # print(f'input_dist.shape: {input_dist.shape}')
 
         x = self.head_0(x, seg, input_dist)
+        #print(f'After head_0: {x.shape}')
 
-        # if self.opt.num_upsampling_layers != 'few':
+        # if self.opt.num_upsampling_layers != 'fgit adew':
             
         #     x = self.up(x)
         x = self.G_middle_0(x, seg, input_dist)
+        #print(f'After G_middle_0: {x.shape}')
+
 
         # if self.opt.num_upsampling_layers == 'more' or \
         #    self.opt.num_upsampling_layers == 'most':
@@ -542,8 +596,17 @@ class StyleSPADEGenerator(BaseNetwork):
         if self.opt.num_upsampling_layers == 'most':
             x = self.up(x)
             x = self.up_4(x, seg, input_dist)
+        if self.opt.num_upsampling_layers == 'most512':
+            x = self.up(x)
+            x = self.up_4(x, seg, input_dist)
+            x = self.up(x)
+            x = self.up_5(x, seg, input_dist)
+
+ 
+
 
         x = self.conv_img(F.leaky_relu(x, 2e-1))
         # x = nn.Tanh(x)
+
 
         return x

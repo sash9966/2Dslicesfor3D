@@ -33,26 +33,32 @@ opt = TestOptions().parse()
 opt.batchSize = 1
 opt.selected_labels = True
 
-opt.label_dir = "/data/sina/dataset/cmrVAE/mms1/training_crop_noBA_NR/vendors/Vendor_A/Mask/"
-opt.image_dir = "/data/sina/dataset/cmrVAE/mms1/training_crop_noBA_NR/vendors/Vendor_A/Image/"
-opt.label_dir_B = "/data/sina/dataset/cmrVAE/mms1/training_crop_noBA_NR/vendors/Vendor_B/Mask/"
-opt.image_dir_B = "/data/sina/dataset/cmrVAE/mms1/training_crop_noBA_NR/vendors/Vendor_B/Image/"
+# opt.label_dir = "/data/sina/dataset/cmrVAE/mms1/training_crop_noBA_NR/vendors/Vendor_A/Mask/"
+# opt.image_dir = "/data/sina/dataset/cmrVAE/mms1/training_crop_noBA_NR/vendors/Vendor_A/Image/"
+# opt.label_dir_B = "/data/sina/dataset/cmrVAE/mms1/training_crop_noBA_NR/vendors/Vendor_B/Mask/"
+# opt.image_dir_B = "/data/sina/dataset/cmrVAE/mms1/training_crop_noBA_NR/vendors/Vendor_B/Image/"
 
 # opt.acdc_dir = "/data/sina/dataset/ACDC/pathology_crop_noBA_NR_C128_correct_pixdim/"
-opt.acdc_dir = "/data/sina/dataset/cmrVAE/acdc/"
+#opt.acdc_dir = "/data/sina/dataset/cmrVAE/acdc/" 
 # opt.name = '220127_mms1_acdc_z32_128_beta10'
 opt.name = '220119_mms1_acdc_z16_128_beta15'
-opt.zdim = 16
+opt.zdim = 64
 opt.serial_batches = True
 
 ### setting the GPU ID
-torch.cuda.set_device('cuda:' + str(opt.gpu_ids[0]))
-device = torch.device('cuda:' + str(opt.gpu_ids[0]))
+if(torch.cuda.is_available()):
+
+    torch.cuda.set_device('cuda:' + str(opt.gpu_ids[0]))
+    device = torch.device('cuda:' + str(opt.gpu_ids[0]))
+else:
+    device = torch.device('cpu')
+    print("Running on the CPU")
+
 
 ### creating the dataloader
 # opt.dataset_mode = 'mms1BB'
 opt.serial_batches = True
-opt.isTrain = False
+opt.isTrain = True
 opt.what_data = 'acdc'
 opt.dataset_mode = 'mms1acdcBB'
 dataloader = data.create_dataloader(opt)
@@ -71,7 +77,7 @@ print(device)
 
 # %%
 vae = VAE(opt).to(device)
-opt.isTrain = False
+opt.isTrain = True
 opt.continue_train = True
 opt.which_epoch = 200
 if opt.continue_train or not opt.isTrain :
@@ -202,6 +208,10 @@ def condition_df(list_sujects, sujects_embedings):
     condition = phase_df['subject'] == True
     return condition
 
+
+#This is not need
+#BUG: -> remove without breaking the code... 
+#Best to fix to the number of slices in the data!
 def interpolate_slices(sub_slice_np):
     n_slice = sub_slice_np.shape[0]
     x = np.arange(0, n_slice)
@@ -313,8 +323,12 @@ def show_image_from_z_synthesize(latent_z_np, input_image):
     label_recon = label.cpu()
     label_recon = torch.argmax(label_recon, dim=1).cuda().type(torch.cuda.FloatTensor)
     data_i = {}
-    data_i['label'] = label_recon.cuda().type(torch.cuda.FloatTensor).unsqueeze(dim=0)
-    data_i['image'] = torch.from_numpy(input_image).cuda().type(torch.cuda.FloatTensor).unsqueeze(dim=0).unsqueeze(dim=0)
+    if(torch.cuda.is_available()):
+        data_i['label'] = label_recon.cuda().type(torch.cuda.FloatTensor).unsqueeze(dim=0)
+        data_i['image'] = torch.from_numpy(input_image).cuda().type(torch.cuda.FloatTensor).unsqueeze(dim=0).unsqueeze(dim=0)
+    else:
+        data_i['label'] = label_recon.type(torch.FloatTensor).unsqueeze(dim=0)
+        data_i['image'] = torch.from_numpy(input_image).type(torch.FloatTensor).unsqueeze(dim=0).unsqueeze(dim=0)
     data_i['instance'] = torch.tensor([0])
     data_i['dist'] = torch.tensor([0])
     generated = model(data_i, mode='inference')

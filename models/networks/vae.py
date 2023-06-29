@@ -37,6 +37,8 @@ class VAE(nn.Module):
         super(VAE, self).__init__()
         # torch.manual_seed(opt.seed)
         self.img_size = opt.crop_size
+
+
         self.nef = 64   # number of encoder filters
         self.ndf = 64   # number of decoder filters
         self.input_nc = opt.input_nc
@@ -56,10 +58,14 @@ class VAE(nn.Module):
             Conv( 8*  self.nef, 8* self.nef, 3, stride=1, padding=1))
 
         # self.conv_layer_6 = Conv(16*self.nef, 32*self.nef, 3, stride=2, padding=1)
+
         if self.img_size == 128:
             s = 8
         elif self.img_size == 64:
             s = 4
+        elif self.img_size == 512:
+            s = 32
+
         else:
             raise RuntimeError(' the image size is not supported') 
         self.fc_bneck = nn.Linear(8 * self.nef * s * s, self.bneck)
@@ -103,6 +109,8 @@ class VAE(nn.Module):
         x = self.conv_block_4(x)
 
         x = x.view(x.shape[0], -1)
+
+
         x = self.fc_bneck(x)
         x = self.bneck_bneck(x)
         mu = self.encoder_mu(x)
@@ -118,12 +126,15 @@ class VAE(nn.Module):
         z = self.fc_z_bneck(z)
         z = self.fc_bneck_bneck(z)
         z = self.fc_z1(z)
+
+
         if self.img_size == 128:
             s = 8
         elif self.img_size == 64:
             s = 4
-        else:
-            raise RuntimeError(' the image size is not supported') 
+        elif self.img_size == 512:
+            s = 32
+        else: raise RuntimeError(' the image size is not supported') 
         z = z.view(-1, 8 * self.nef , s, s )
         z = self.conv_t_block_1(z)
         z = self.conv_t_block_2(z)

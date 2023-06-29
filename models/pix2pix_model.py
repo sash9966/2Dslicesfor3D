@@ -7,6 +7,7 @@ import torch
 import models.networks as networks
 import util.util as util
 import random
+import matplotlib.pyplot as plt
 try:
     from torch.cuda.amp import autocast as autocast, GradScaler
     AMP = True
@@ -53,7 +54,7 @@ class Pix2PixModel(torch.nn.Module):
     # routines based on |mode|.
     def forward(self, data, mode):
         input_semantics, real_image, input_dist = self.preprocess_input(data)
-
+        print(f'mode is {mode}')
         if mode == 'generator':
             g_loss, generated = self.compute_generator_loss(
                 input_semantics, real_image, input_dist)
@@ -106,6 +107,7 @@ class Pix2PixModel(torch.nn.Module):
         netE = networks.define_E(opt) if opt.use_vae else None
 
         if not opt.isTrain or opt.continue_train:
+            print(f'Train is False or continue train is True')
             netG = util.load_network(netG, 'G', opt.which_epoch, opt)
             if opt.isTrain:
                 netD = util.load_network(netD, 'D', opt.which_epoch, opt)
@@ -120,20 +122,97 @@ class Pix2PixModel(torch.nn.Module):
 
     def preprocess_input(self, data):
         # move to GPU and change data types
+
         data['label'] = data['label'].long()
         if self.use_gpu():
-            data['label'] = data['label'].cuda()
-            data['instance'] = data['instance'].cuda()
-            data['image'] = data['image'].cuda()
-            data['dist'] = data['dist'].cuda()
+            if(torch.cuda.is_available()):
+                data['label'] = data['label'].cuda()
+                data['instance'] = data['instance'].cuda()
+                data['image'] = data['image'].cuda()
+                data['dist'] = data['dist'].cuda()
+            else:
+                data['label'] = data['label'].cpu()
+                data['instance'] = data['instance'].cpu()
+                data['image'] = data['image'].cpu()
+                data['dist'] = data['dist'].cpu()
 
+        
         # create one-hot label map
         label_map = data['label']
+
+        # #understand what label_map does:
+        # print(f'type of label_map: {type(label_map)}')
+        # print(f' get the tensor object inside the label map: {label_map}')
+        # print(f'label_map shape: {label_map.shape}')
+        # print(f'label map contains: {label_map.unique()}')
+
+
+        # #check out what the dist contains:
+        # print(f'dist contains: {data["dist"].unique()}')
+
+        # #check out what is in our data
+        # print(f'data contains, via keys parameter: {data.keys()}')
+
+
+
+
         bs, _, h, w = label_map.size()
+
         nc = self.opt.label_nc + 1 if self.opt.contain_dontcare_label \
             else self.opt.label_nc
+        
+        # print(f'nc has size: {nc}')
         input_label = self.FloatTensor(bs, nc, h, w).zero_()
-        input_semantics = input_label.scatter_(1, label_map, 1.0)
+
+        # print(f'########################')
+        # print(f'before input_semantics')
+        # print(f'input_label has size: {input_label.shape}')
+        # print(f'label_map has size: {label_map.shape}')
+        # print(f'b: {bs}, nc: {nc}, h: {h}, w: {w}')
+        #Plot what the label map and the input label looks like:
+
+        # fig, ax = plt.subplots(1,9)
+        # #name the axis it's plotted on
+        # fig, ax = plt.subplots(3, 3, figsize=(12, 12))  # Adjust the figure size as desired
+
+        # ax[0, 0].imshow(label_map[0, 0, :, :])
+        # ax[0, 0].set_title('label_map1')
+
+        # ax[0, 1].imshow(input_label[0, 1, :, :])
+        # ax[0, 1].set_title('label_map2')
+
+        # ax[0, 2].imshow(input_label[0, 2, :, :])
+        # ax[0, 2].set_title('label_map3')
+
+        # ax[1, 0].imshow(input_label[0, 3, :, :])
+        # ax[1, 0].set_title('label_map4')
+
+        # ax[1, 1].imshow(input_label[0, 4, :, :])
+        # ax[1, 1].set_title('label_map5')
+
+        # ax[1, 2].imshow(input_label[0, 5, :, :])
+        # ax[1, 2].set_title('label_map6')
+
+        # ax[2, 0].imshow(input_label[0, 6, :, :])
+        # ax[2, 0].set_title('label_map7')
+
+        # ax[2, 1].imshow(input_label[0, 7, :, :])
+        # ax[2, 1].set_title('label_map8')
+
+        # ax[2, 2].imshow(input_label[0, 0, :, :])
+        # ax[2, 2].set_title('input_label')
+
+        # plt.tight_layout()  # Adjust the spacing between subplots
+
+        # plt.show()
+
+        # print(f'input_label has size: {input_label.shape}')
+        # print(f'label_map has size: {label_map.shape}')
+
+        input_semantics = input_label.scatter_(1, label_map.clamp(max=7), 1.0)
+
+ 
+
         
         if self.opt.no_BG:
             input_semantics[:,0,:,:]= 0
@@ -151,6 +230,7 @@ class Pix2PixModel(torch.nn.Module):
 
         fake_image, KLD_loss, L1_loss = self.generate_fake(
             input_semantics, real_image, input_dist, compute_kld_loss=self.opt.use_vae)
+        
 
         if self.opt.use_vae:
             G_losses['KLD'] = KLD_loss
@@ -224,7 +304,11 @@ class Pix2PixModel(torch.nn.Module):
             with autocast():
                 fake_image = self.netG(input_semantics, z=z, input_dist=input_dist)
         if self.opt.netG=='stylespade':
+            
+
             fake_image = self.netG(input_semantics, real_image, input_dist=input_dist)
+
+
         else:
             fake_image = self.netG(input_semantics, z=z, input_dist=input_dist)
         
@@ -242,6 +326,10 @@ class Pix2PixModel(torch.nn.Module):
     # for each fake and real image.
 
     def discriminate(self, input_semantics, fake_image, real_image):
+        #check out size and shape of the images
+
+
+
         fake_concat = torch.cat([input_semantics, fake_image], dim=1)
         real_concat = torch.cat([input_semantics, real_image], dim=1)
 

@@ -60,6 +60,7 @@ class SPADEResnetBlock(nn.Module):
     def forward(self, x, seg, input_dist=None):
         x_s = self.shortcut(x, seg, input_dist)
 
+        #get info on the parameters of the network
         dx = self.conv_0(self.actvn(self.norm_0(x, seg, input_dist)))
         dx = self.conv_1(self.actvn(self.norm_1(dx, seg, input_dist)))
 

@@ -27,6 +27,9 @@ class ConvEncoder(BaseNetwork):
         self.layer5 = norm_layer(nn.Conv2d(ndf * 8, ndf * 8, kw, stride=2, padding=pw))
         if opt.crop_size >= 256:
             self.layer6 = norm_layer(nn.Conv2d(ndf * 8, ndf * 8, kw, stride=2, padding=pw))
+        if opt.crop_size >= 512:
+            self.layer7 = norm_layer(nn.Conv2d(ndf * 8, ndf * 8, kw, stride=2, padding=pw))
+
 
         self.so = s0 = 8
 
@@ -51,10 +54,13 @@ class ConvEncoder(BaseNetwork):
         # x = self.layer5(self.actvn(x))
         if self.opt.crop_size >= 256:
             x = self.layer6(self.actvn(x))
+        if self.opt.crop_size >= 512:
+            x = self.layer7(self.actvn(x))
         x = self.actvn(x)
         xout = x
 
         x = x.view(x.size(0), -1)
+        
         mu = self.fc_mu(x)
         logvar = self.fc_var(x)
 
@@ -78,8 +84,11 @@ class Conv64Encoder(BaseNetwork):
         self.layer5 = norm_layer(nn.Conv2d(ndf * 8, ndf * 8, kw, stride=2, padding=pw))
         if opt.crop_size >= 256:
             self.layer6 = norm_layer(nn.Conv2d(ndf * 8, ndf * 8, kw, stride=2, padding=pw))
+        if opt.crop_size >= 512:
+            self.layer7 = norm_layer(nn.Conv2d(ndf * 8, ndf * 8, kw, stride=2, padding=pw))
 
-        self.so = s0 = 4
+
+        self.so = s0 = 16
 
         self.fc_mu = nn.Linear(ndf * 8 * s0 * s0, 256)
         self.fc_var = nn.Linear(ndf * 8 * s0 * s0, 256)
@@ -102,6 +111,9 @@ class Conv64Encoder(BaseNetwork):
         # x = self.layer5(self.actvn(x))
         if self.opt.crop_size >= 256:
             x = self.layer6(self.actvn(x))
+        if self.opt.crop_size >= 512:
+            x = self.layer7(self.actvn(x))
+
         x = self.actvn(x)
         xout = x
 

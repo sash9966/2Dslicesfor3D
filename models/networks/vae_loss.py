@@ -4,6 +4,7 @@ import torch.nn as nn
 from typing import Optional
 from torch.nn import functional as F
 import abc
+import matplotlib.pyplot as plt
 
 def one_hot(
     labels: torch.Tensor,
@@ -111,22 +112,48 @@ class L1FLoss(nn.Module):
 
 
 class CELoss(nn.Module):
-
     # https://pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html
+
+#Chat GPT adjusted for input with labels
     def __init__(self):
         super(CELoss, self).__init__()
         self.criterion = nn.CrossEntropyLoss(reduction ='sum')
-        # Input: (N, C)(N,C) where C = number of classes
-        # Target: (N)(N) where each value is 0 \leq \text{targets}[i] \leq C-10≤targets[i]≤C−1, or
-        # self.reduction = 'sum'
+
     def forward(self, fake, real):
+        # Reshape the tensors to fit the input shape requirements of CrossEntropyLoss
+        fake = fake.permute(0, 2, 3, 1)  # Change to shape [1,512,512,8]
+        fake = fake.contiguous()
+        fake = fake.view(-1, 8)  # reshape to [1*512*512, 8]
+
+        real = real.view(-1)  # reshape to [1*512*512]
+
         bs = fake.shape[0]
+
         return self.criterion(fake, real) / bs
+    
+## Old Approach: BUG -> unsure why but reconstructed image had shape: [1,8,512,512] for some reason
+# and original input image had shape 512,512 .... unsure why
+# class CELoss(nn.Module):
+
+#     # https://pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html
+#     def __init__(self):
+#         super(CELoss, self).__init__()
+#         self.criterion = nn.CrossEntropyLoss(reduction ='sum')
+#         # Input: (N, C)(N,C) where C = number of classes
+#         # Target: (N)(N) where each value is 0 \leq \text{targets}[i] \leq C-10≤targets[i]≤C−1, or
+#         # self.reduction = 'sum'
+#     def forward(self, fake, real):
+#         #plot fake and real image and compare
+#         #create figure with 5 subplots
+
+#         bs = fake.shape[0]
+#         return self.criterion(fake, real) / bs
 
 
 
 
 class KLDALoss(nn.Module):
+
     def forward(self, mu, logvar):
         return -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
 

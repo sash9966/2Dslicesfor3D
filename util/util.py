@@ -149,7 +149,13 @@ def combined_loss(reconstructed, output_image, mu, logvar, type = 'BCE', lamda_k
 
 def combined_loss_beta_VAE(reconstructed, output_image, mu, logvar, type = 'CE', lamda_kld = 1, n_train_steps=1 ):
 
-    output_image = output_image.cuda().type(torch.cuda.LongTensor).squeeze()
+    if(torch.cuda.is_available()):
+
+        output_image = output_image.cuda().type(torch.cuda.LongTensor).squeeze()
+
+    else:
+        output_image = output_image.type(torch.LongTensor).squeeze()
+    
     # choose between 'BCE'  'MSE' 'L1' and 'L1F'
     losses = {'KLD': [], 'Rec': [], 'comb':[]}
     if type == 'BCE':
@@ -170,7 +176,7 @@ def combined_loss_beta_VAE(reconstructed, output_image, mu, logvar, type = 'CE',
     else:
         raise ValueError("Unkown reconstruction loss: {}".format(type))
 
-
+    
     REC = rec_loss(reconstructed, output_image)
     
     # kld_loss = vae_losses.KLDLoss()
@@ -404,6 +410,9 @@ def save_network(net, label, epoch, opt):
     torch.save(net.cpu().state_dict(), save_path)
     if len(opt.gpu_ids) and torch.cuda.is_available():
         net.cuda()
+    else:
+        net.cpu()
+
 
 
 def load_network(net, label, epoch, opt):
