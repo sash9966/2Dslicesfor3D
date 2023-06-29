@@ -3,6 +3,9 @@ Copyright (C) 2019 NVIDIA Corporation.  All rights reserved.
 Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
 """
 
+import matplotlib.pyplot as plt
+import PIL 
+
 import os
 import ntpath
 import time
@@ -72,9 +75,28 @@ class Visualizer():
                         util.save_image(image_numpy[i], img_path)
                 else:
                     img_path = os.path.join(self.img_dir, 'epoch%.3d_iter%.3d_%s.png' % (epoch, step, label))
-                    if len(image_numpy.shape) >= 4:
-                        image_numpy = image_numpy[0]                    
-                    util.save_image(image_numpy, img_path)
+                    print(f' shape of the image: {image_numpy.shape}')
+                    print(f' dimensions of the image, len! {len(image_numpy.shape)}')
+
+                    #Safe and handle images different for generated vs orginal image 
+                    if(image_numpy.shape[0] == image_numpy.shape[1]):
+                        #show PIL image
+                        pil_img = PIL.Image.fromarray(image_numpy)
+                        #pil_img.show()
+                        #save PIL image
+                        pil_img.save(img_path)
+                    if(image_numpy.shape[1] == image_numpy.shape[2]):
+                        #plt.imshow(image_numpy[0,:,:])
+                        #plt.title('image, probably generated or full')
+                        #plt.show()
+                        util.save_image(image_numpy[0,:,:], img_path)
+
+                    
+                    # if len(image_numpy.shape) >= 4:
+                    #     print(f' len is called!')
+                    #     image_numpy = image_numpy[0,0,:,:]      
+
+                    
 
             # update website
             webpage = html.HTML(self.web_dir, 'Experiment name = %s' % self.name, refresh=5)

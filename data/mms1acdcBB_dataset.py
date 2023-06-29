@@ -37,17 +37,19 @@ class Mms1acdcBBDataset(BaseDataset):
 
         parser.add_argument('--label_dir', type=str, required=False, default = "/Users/saschastocker/Desktop/Data/StyleTransfer/segmentationTestFullResolution",
                             help='path to the directory that contains label images')
-        parser.add_argument('--label_dir_B', type=str, required=False, default = "/Users/saschastocker/Desktop/Data/StyleTransfer/segmentationTestFullResolution",
-                            help='path to the directory that contains label images')
-        
         parser.add_argument('--image_dir', type=str, required=False, default ="/Users/saschastocker/Desktop/Data/StyleTransfer/imageTestFullResolution" ,
                             help='path to the directory that contains photo images')
-        parser.add_argument('--image_dir_B', type=str, required=False, default ="/Users/saschastocker/Desktop/Data/StyleTransfer/imageTestFullResolution" ,
-                            help='path to the directory that contains photo images')
-        parser.add_argument('--instance_dir', type=str, default='',
-                            help='path to the directory that contains instance maps. Leave black if not exists')
-        parser.add_argument('--acdc_dir', type=str, required=False, default = "/Users/saschastocker/Desktop/Data/StyleTransfer/SlicedMRI/patient101_frame01.nii/",
-                            help='path to the directory that contains label images')
+        
+        # parser.add_argument('--label_dir_B', type=str, required=False, default = "/Users/saschastocker/Desktop/Data/StyleTransfer/segmentationTestFullResolution",
+        #                     help='path to the directory that contains label images')
+        
+
+        # parser.add_argument('--image_dir_B', type=str, required=False, default ="/Users/saschastocker/Desktop/Data/StyleTransfer/imageTestFullResolution" ,
+        #                     help='path to the directory that contains photo images')
+        # parser.add_argument('--instance_dir', type=str, default='',
+        #                     help='path to the directory that contains instance maps. Leave black if not exists')
+        # parser.add_argument('--acdc_dir', type=str, required=False, default = "/Users/saschastocker/Desktop/Data/StyleTransfer/SlicedMRI/patient101_frame01.nii/",
+        #                     help='path to the directory that contains label images')
                         
         return parser
 
@@ -59,38 +61,37 @@ class Mms1acdcBBDataset(BaseDataset):
         SA_image_list = sorted(os.listdir(os.path.join(opt.image_dir)))
         SA_mask_list = sorted(os.listdir(os.path.join(opt.label_dir)))
 
-        SA_image_list_B = sorted(os.listdir(os.path.join(opt.image_dir_B)))
-        SA_mask_list_B = sorted(os.listdir(os.path.join(opt.label_dir_B)))
+        # SA_image_list_B = sorted(os.listdir(os.path.join(opt.image_dir_B)))
+        # SA_mask_list_B = sorted(os.listdir(os.path.join(opt.label_dir_B)))
 
-        pathologies = sorted(os.listdir(os.path.join(opt.acdc_dir)))
+        #pathologies = sorted(os.listdir(os.path.join(opt.acdc_dir)))
         
         print(f'length of SA_image_list: {len(SA_image_list)}')
         print(f'length of SA_mask_list: {len(SA_mask_list)}')
-        print(f'length of SA_image_list_B: {len(SA_image_list_B)}')
-        print(f'length of SA_mask_list_B: {len(SA_mask_list_B)}')
 
 
-        assert len(SA_mask_list_B) == len(SA_image_list_B) 
+
+        # assert len(SA_mask_list_B) == len(SA_image_list_B) 
         assert len(SA_image_list) == len(SA_mask_list)
 
 
         SA_filename_pairs = [] 
-        SA_filename_pairs_B = []
+        #SA_filename_pairs_B = []
 
-        SA_filename_pairs_acdc = [] 
-        SA_image_list_acdc_all = []
-        SA_mask_list_acdc_all = []
+        # SA_filename_pairs_acdc = [] 
+        # SA_image_list_acdc_all = []
+        # SA_mask_list_acdc_all = []
 
         ##Test: turn off pathologies -> none, switch to all for all pathologies
-        what_pathology = 'none'
-        if what_pathology == 'all':
-            for pathology in pathologies:
-                SA_image_list_acdc = sorted(os.listdir(os.path.join(opt.acdc_dir, pathology, 'Image')))
-                SA_mask_list_acdc = sorted(os.listdir(os.path.join(opt.acdc_dir, pathology, 'Label_c')))
-                SA_image_list_acdc_all += SA_image_list_acdc
-                SA_mask_list_acdc_all += SA_mask_list_acdc
-                for i in range(len(SA_image_list_acdc)):
-                    SA_filename_pairs_acdc += [(os.path.join(opt.acdc_dir, pathology, 'Image',SA_image_list_acdc[i]), os.path.join(opt.acdc_dir, pathology, 'Label_c', SA_mask_list_acdc[i]))]
+        # what_pathology = 'none'
+        # if what_pathology == 'all':
+        #     for pathology in pathologies:
+        #         SA_image_list_acdc = sorted(os.listdir(os.path.join(opt.acdc_dir, pathology, 'Image')))
+        #         SA_mask_list_acdc = sorted(os.listdir(os.path.join(opt.acdc_dir, pathology, 'Label_c')))
+        #         SA_image_list_acdc_all += SA_image_list_acdc
+        #         SA_mask_list_acdc_all += SA_mask_list_acdc
+        #         for i in range(len(SA_image_list_acdc)):
+        #             SA_filename_pairs_acdc += [(os.path.join(opt.acdc_dir, pathology, 'Image',SA_image_list_acdc[i]), os.path.join(opt.acdc_dir, pathology, 'Label_c', SA_mask_list_acdc[i]))]
 
 
 
@@ -102,39 +103,50 @@ class Mms1acdcBBDataset(BaseDataset):
         for i in range(len(SA_image_list)):
             SA_filename_pairs += [(os.path.join(opt.image_dir,SA_image_list[i]), os.path.join(opt.label_dir, SA_mask_list[i]))]
 
-        for i in range(len(SA_image_list_B)):
-            SA_filename_pairs_B += [(os.path.join(opt.image_dir_B,SA_image_list_B[i]), os.path.join(opt.label_dir_B, SA_mask_list_B[i]))]
+        # for i in range(len(SA_image_list_B)):
+        #     SA_filename_pairs_B += [(os.path.join(opt.image_dir_B,SA_image_list_B[i]), os.path.join(opt.label_dir_B, SA_mask_list_B[i]))]
 
         # for i in range(len(LA_image_list)):
         #     LA_filename_pairs += [(os.path.join(opt.main_dir, 'Image',LA_image_list[i]), os.path.join(opt.main_dir, label, LA_mask_list[i]))]
                 
 
-        imglist = []
-        msklist = []
-        filename_pairs = []
-        if not opt.VAE_altered_anatomy: # use the VAE deformed version of the labels
-            imglist = SA_image_list + SA_image_list_B
-            msklist = SA_mask_list + SA_mask_list_B
-            filename_pairs = SA_filename_pairs + SA_filename_pairs_B
+        # imglist = []
+        # msklist = []
+        # filename_pairs = []
+        # if not opt.VAE_altered_anatomy: # use the VAE deformed version of the labels
+        #     # imglist = SA_image_list + SA_image_list_B
+        #     # msklist = SA_mask_list + SA_mask_list_B
+        #     #filename_pairs = SA_filename_pairs + SA_filename_pairs_B
+        #     filename_pairs = SA_filename_pairs 
 
-        if not opt.selected_labels:
-            imglist = SA_image_list + SA_image_list_B
-            msklist = SA_mask_list + SA_mask_list_B
-            filename_pairs = SA_filename_pairs + SA_filename_pairs_B
-        else:
-            imglist = SA_image_list 
-            msklist = SA_mask_list 
-            filename_pairs = SA_filename_pairs
+        # if not opt.selected_labels:
+        #     # imglist = SA_image_list + SA_image_list_B
+        #     # msklist = SA_mask_list + SA_mask_list_B
+        #     #filename_pairs = SA_filename_pairs + SA_filename_pairs_B
+        #     filename_pairs = SA_filename_pairs 
+        #     print(f'exected selected_labels')
+        # else:
+            
+        #     imglist = SA_image_list 
+        #     msklist = SA_mask_list 
+        #     filename_pairs = SA_filename_pairs
+        #     self.filename_pairs = filename_pairs
+        #     self.img_list = imglist
+        #     self.msk_list = msklist
 
-        if opt.what_data == 'acdc':
-            self.img_list = SA_image_list_acdc_all
-            self.msk_list = SA_mask_list_acdc_all
-            self.filename_pairs = SA_filename_pairs_acdc
-        else:
-            self.img_list = imglist + SA_image_list_acdc_all
-            self.msk_list = msklist + SA_mask_list_acdc_all
-            self.filename_pairs = filename_pairs + SA_filename_pairs_acdc
+
+        # if opt.what_data == 'acdc':
+        #     self.img_list = SA_image_list_acdc_all
+        #     self.msk_list = SA_mask_list_acdc_all
+        #     self.filename_pairs = SA_filename_pairs_acdc
+        # else:
+        #     self.img_list = imglist + SA_image_list_acdc_all
+        #     self.msk_list = msklist + SA_mask_list_acdc_all
+        #     self.filename_pairs = filename_pairs + SA_filename_pairs_acdc
         
+        self.img_list = SA_image_list
+        self.msk_list = SA_mask_list
+        self.filename_pairs = SA_filename_pairs
     
         return self.filename_pairs, self.img_list, self.msk_list
 

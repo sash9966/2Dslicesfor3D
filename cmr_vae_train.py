@@ -26,20 +26,21 @@ parser = argparse.ArgumentParser(description='Add some arguments for the model')
 ### ================================================================================  options starts
 # parser.add_argument('--gpu_ids', type=str, default='1', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
 
-parser.add_argument('--label_dir', type=str, required=False, default = "/data/sina/dataset/cmrVAE/mms1/training_crop_BB/vendors/Vendor_A/Mask/",
+parser.add_argument('--label_dir', type=str, required=False, default = "/Users/saschastocker/Desktop/Data/StyleTransfer/segmentationTestFullResolution",
                     help='path to the directory that contains label images')
-parser.add_argument('--label_dir_B', type=str, required=False, default = "/data/sina/dataset/cmrVAE/mms1/training_crop_BB/vendors/Vendor_B/Mask/",
-                    help='path to the directory that contains label images')
-parser.add_argument('--image_dir', type=str, required=False, default ="/data/sina/dataset/cmrVAE/mms1/training_crop_BB/vendors/Vendor_A/Image/" ,
+parser.add_argument('--image_dir', type=str, required=False, default ="/Users/saschastocker/Desktop/Data/StyleTransfer/imageTestFullResolution" ,
                     help='path to the directory that contains photo images')
-parser.add_argument('--image_dir_B', type=str, required=False, default ="/data/sina/dataset/cmrVAE/mms1/training_crop_BB/vendors/Vendor_B/Image/" ,
-                    help='path to the directory that contains photo images')
-parser.add_argument('--image_dir_mms2', type=str, required=False, default ="/data/sina/dataset/cmrVAE/mms1/training_crop_BB/vendors/Vendor_B/Image/" ,
-                    help='path to the directory that contains photo images')
-parser.add_argument('--acdc_dir', type=str, required=False, default = "/data/sina/dataset/ACDC/pathology_crop_noBA_NR_C128/",
-                            help='path to the directory that contains label images')
+#Different vendor and mms data from Amirajab
+# parser.add_argument('--label_dir_B', type=str, required=False, default = "/Users/saschastocker/Desktop/Data/StyleTransfer/segmentationTestFullResolution",
+#                     help='path to the directory that contains label images')
+# parser.add_argument('--image_dir_B', type=str, required=False, default ="/Users/saschastocker/Desktop/Data/StyleTransfer/imageTestFullResolution" ,
+#                     help='path to the directory that contains photo images')
+# parser.add_argument('--image_dir_mms2', type=str, required=False, default ="/Users/saschastocker/Desktop/Data/StyleTransfer/MRITestSingle" ,
+#                     help='path to the directory that contains photo images')
+# parser.add_argument('--acdc_dir', type=str, required=False, default = "/Users/saschastocker/Desktop/Data/StyleTransfer/MRITestSingle",
+#                             help='path to the directory that contains label images')
 parser.add_argument('--batchSize', type=int, default=1, help='input batch size')
-parser.add_argument('--crop_size', type=int, default=128, help='Crop to the width of crop_size (after initially scaling the images to load_size.)')
+parser.add_argument('--crop_size', type=int, default=512, help='Crop to the width of crop_size (after initially scaling the images to load_size.)')
 parser.add_argument('--target_res', type=int, default=1.25, help='Crop to the width of crop_size (after initially scaling the images to load_size.)')
 
 
@@ -55,8 +56,8 @@ parser.add_argument('--isTrain', action='store_true', default=True, help='')
 
 parser.add_argument('--nThreads', default=0, type=int, help='# threads for loading data')
 parser.add_argument('--print_freq', default=100, type=int, help='#print frequency')
-parser.add_argument('--niter', type=int, default=300, help='# of iter at starting learning rate. This is NOT the total #epochs. Totla #epochs is niter + niter_decay')
-parser.add_argument('--niter_decay', type=int, default=100, help='# of iter to linearly decay learning rate to zero')
+parser.add_argument('--niter', type=int, default=1, help='# of iter at starting learning rate. This is NOT the total #epochs. Totla #epochs is niter + niter_decay')
+parser.add_argument('--niter_decay', type=int, default=1, help='# of iter to linearly decay learning rate to zero')
 parser.add_argument('--checkpoints_dir', type=str, default='./checkpoints', help='models are saved here')
 parser.add_argument('--web_dir', type=str, help='models are saved here')
 parser.add_argument('--name', type=str, default='labelmanipulation', help='name of the experiment. It decides where to store samples and models')
@@ -85,25 +86,25 @@ del sys
 
 ### parsing options
 opt = parser.parse_args()
-opt.batchSize = 20
+#opt.batchSize = 20 
 opt.output_nc = 1
 
-#Changed from 4 to 7, they used 4 lables, Background, LV, and two bloodpools
-opt.input_nc = 7
-opt.label_nc = 7
+#Changed from 4 to 8, they used 4 lables, Background, LV, and two bloodpools
+opt.input_nc = 8
+opt.label_nc = 8
 opt.rec_loss = 'CE'
 opt.add_dist = False
 # opt.rec_loss = 'CEDice'
 
 #changed crop size to 512 from 128 
-opt.crop_size = 128
+#opt.crop_size = 128
 # opt.target_res = 1.5
 
-### experiments using mms-1 data
-opt.label_dir = "/Users/saschastocker/Documents/Stanford/data/StyleTransfer/imagesTest/ct_1001_image.nii"
-opt.image_dir = "/Users/saschastocker/Documents/Stanford/data/StyleTransfer/segmentationTest/ct_1001_image.nii"
-# opt.label_dir_B = "/data/sina/dataset/cmrVAE/mms1/training_crop_noBA_NR/vendors/Vendor_B/Mask/"
-# opt.image_dir_B = "/data/sina/dataset/cmrVAE/mms1/training_crop_noBA_NR/vendors/Vendor_B/Image/"
+# ### experiments using mms-1 data
+# opt.label_dir = "/Users/saschastocker/Desktop/Data/StyleTransfer/imagesTest/ct_1001_image.nii"
+# opt.image_dir = "/Users/saschastocker/Desktop/Data/StyleTransfer/segmentationTestFullResolution"
+# # opt.label_dir_B = "/data/sina/dataset/cmrVAE/mms1/training_crop_noBA_NR/vendors/Vendor_B/Mask/"
+# # opt.image_dir_B = "/data/sina/dataset/cmrVAE/mms1/training_crop_noBA_NR/vendors/Vendor_B/Image/"
 
 # opt.image_dir_mms2 = "/data/sina/dataset/cmrVAE/mms2_sorted/PerDisease_crop_noBA_R_128/"
 # opt.acdc_dir = "/data/sina/dataset/cmrVAE/acdc/"
@@ -112,7 +113,7 @@ opt.image_dir = "/Users/saschastocker/Documents/Stanford/data/StyleTransfer/segm
 
 
 ### for paper dont use the mms2 data, the heart for mms2 case positined differently
-opt.name = '220909_mms1_acdc_z16_128_beta15'
+opt.name = 'CHD Experiment 1'
 writer = SummaryWriter("runs/" + opt.name , comment=opt.name)
 
 opt.zdim = 32
@@ -122,8 +123,13 @@ opt.isTrain = True
 opt.continue_train = False
 
 ### setting the GPU ID
-torch.cuda.set_device('cuda:' + str(opt.gpu_ids[0]))
-device = torch.device('cuda:' + str(opt.gpu_ids[0]))
+if(torch.cuda.is_available()):
+    torch.cuda.set_device('cuda:' + str(opt.gpu_ids[0]))
+    device = torch.device('cuda:' + str(opt.gpu_ids[0]))
+else:
+    device = torch.device('cpu')
+    print("using CPU")
+
 
 ### creating the dataloader
 
@@ -143,7 +149,7 @@ opt.web_dir = web_dir
 
 
 ### ================================================================================  training parameters starts
-max_epoch = 100000 # maximum number of epochs, break
+max_epoch = 1 # maximum number of epochs, break
 max_image = 100000 # maximum number of images per epoch, break
 input_labels_list = []
 # init_lr = 0.0000025
@@ -182,12 +188,20 @@ model_to_tensorboard = False # something is wrong here! there is a warninig when
 if model_to_tensorboard:
     data_i = next(iter(dataloader))
     # send image to cuda
-    input_image = data_i['label'].cuda().type(torch.cuda.FloatTensor)
+    if(torch.cuda.is_available()):
+        input_image = data_i['label'].cuda().type(torch.cuda.FloatTensor)
+    else:
+        input_image = data_i['label'].type(torch.FloatTensor)
     # create one-hot vector for label map 
     size = input_image.size()
     oneHot_size = (size[0], opt.label_nc, size[2], size[3])
-    input_label = torch.cuda.FloatTensor(torch.Size(oneHot_size)).zero_()
-    input_label = input_label.scatter_(1, input_image.data.long().cuda(), 1.0)
+    if(torch.cuda.is_available()):
+
+        input_label = torch.cuda.FloatTensor(torch.Size(oneHot_size)).zero_()
+        input_label = input_label.scatter_(1, input_image.data.long().cuda(), 1.0)
+    else:
+        input_label = torch.FloatTensor(torch.Size(oneHot_size)).zero_()
+        input_label = input_label.scatter_(1, input_image.data.long(), 1.0)
     writer.add_graph(vae, input_label)
     writer.flush()
 
@@ -214,13 +228,22 @@ for epoch in iter_counter.training_epochs():
         input_labels_list.append(data_i['label'])
         
         # send image to cuda
-        input_image = data_i['label'].cuda().type(torch.cuda.FloatTensor)
+        if(torch.cuda.is_available()):
+            input_image = data_i['label'].cuda().type(torch.cuda.FloatTensor)
+        else:
+            input_image = data_i['label'].type(torch.FloatTensor)
+
         ############################
         # create one-hot vector for label map 
         size = input_image.size()
         oneHot_size = (size[0], opt.label_nc, size[2], size[3])
-        input_label = torch.cuda.FloatTensor(torch.Size(oneHot_size)).zero_()
-        input_label = input_label.scatter_(1, input_image.data.long().cuda(), 1.0)
+        if(torch.cuda.is_available()):
+
+            input_label = torch.cuda.FloatTensor(torch.Size(oneHot_size)).zero_()
+            input_label = input_label.scatter_(1, input_image.data.long().cuda(), 1.0)
+        else:
+            input_label = torch.FloatTensor(torch.Size(oneHot_size)).zero_()
+            input_label = input_label.scatter_(1, input_image.data.long(), 1.0) 
 
 
         optimizer.zero_grad()
@@ -230,7 +253,20 @@ for epoch in iter_counter.training_epochs():
         
         # forward + backward + optimize
         reconstructed, mu, logvar = vae(input_label)
+        # print(f'reconstructed shape before calling the loss is: {reconstructed.shape}')
+        # print(f'input_image shape before calling the loss is: {input_image.shape}')
+        # #plot the reconstructed image and the input image
 
+        # #show input image next to reconstructed image
+        # fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+        # axes[0].imshow(input_image[0,0,:,:].detach().cpu())
+        # axes[0].set_title('input image')
+        # axes[1].imshow(reconstructed[0,0,:,:].detach().cpu())
+        # axes[1].set_title('reconstructed image')
+        # plt.show()
+
+
+                
         loss, losses_dic = combined_loss_beta_VAE(reconstructed, input_image, mu, logvar, type = opt.rec_loss, lamda_kld = lamda_kld, n_train_steps = iter_counter.total_steps_so_far)
         
         loss.backward()
@@ -259,7 +295,10 @@ for epoch in iter_counter.training_epochs():
     # visualize reconstruction and synthesis
     if(epoch==1) or (epoch%5==0):
         print("Saving training examples . . . ")
-        reverted_recon = torch.argmax(reconstructed, dim=1).cuda().type(torch.cuda.FloatTensor).unsqueeze(dim=1)
+        if(torch.cuda.is_available()):
+            reverted_recon = torch.argmax(reconstructed, dim=1).cuda().type(torch.cuda.FloatTensor).unsqueeze(dim=1)
+        else:
+            reverted_recon = torch.argmax(reconstructed, dim=1).type(torch.FloatTensor).unsqueeze(dim=1)
         rec_img_grid = make_grid(reverted_recon, nrow=opt.batchSize//2, padding=12, pad_value=-1, normalize=True)
         real_img_grid = make_grid(input_image, nrow=opt.batchSize//2, padding=12, pad_value=-1, normalize=True)
         real_name= os.path.join(web_dir, 'images/') + str(epoch) + '_real_image.png'
@@ -269,7 +308,10 @@ for epoch in iter_counter.training_epochs():
     
     if epoch%2==0:
         ## saving images in tensorboard:
-        reverted_recon = torch.argmax(reconstructed, dim=1).cuda().type(torch.cuda.FloatTensor).unsqueeze(dim=1)
+        if(torch.cuda.is_available()):
+            reverted_recon = torch.argmax(reconstructed, dim=1).cuda().type(torch.cuda.FloatTensor).unsqueeze(dim=1)
+        else:
+            reverted_recon = torch.argmax(reconstructed, dim=1).type(torch.FloatTensor).unsqueeze(dim=1)
         rec_img_grid = make_grid(reverted_recon, padding=12, pad_value=-1, normalize=True)
         real_img_grid = make_grid(input_image,  padding=12, pad_value=-1, normalize=True)
         writer.add_image('reconstructed', rec_img_grid, epoch)

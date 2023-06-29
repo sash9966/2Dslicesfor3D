@@ -44,9 +44,10 @@ def create_network(cls, opt):
     net.print_network()
     print(f'this is the network')
     print(f'what  is cls and opt? {cls} {opt}')
-    if len(opt.gpu_ids) > 0:
-        assert(torch.cuda.is_available())
+    if len(opt.gpu_ids) > 0 and torch.cuda.is_available():
         net.cuda()
+    else:
+        net.cpu()
     net.init_weights(opt.init_type, opt.init_variance)
     return net
 
