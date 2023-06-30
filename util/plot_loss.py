@@ -3,6 +3,10 @@ To plot the loss curves.
 Example:
     python3 plot_loss.py  --log_file checkpoints/test-cityscape/loss_log.txt  --out_dir checkpoints/test-cityscape/ --nrows 2
 """
+import matplotlib
+
+matplotlib.use('Agg')
+
 import matplotlib.pyplot as plt
 import argparse
 import os

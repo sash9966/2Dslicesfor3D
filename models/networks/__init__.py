@@ -3,13 +3,34 @@ Copyright (C) 2019 NVIDIA Corporation.  All rights reserved.
 Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
 """
 
+
+import importlib.util
+
+# BUG: Unsure why import fails, this fixed it, from chatgpt
+path_to_util = "/home/sastocke/2Dslicesfor3D/util/util.py"
+
+spec = importlib.util.spec_from_file_location("util", path_to_util)
+util = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(util)
+
+# Now you can use the util module and call its functions
+
+# import sys
+# print(f'sys path: {sys.path}')
+# sys.path.insert(0,'/home/sastocke/2Dslicesfor3D/util/util.py')
+# print(f'sys path: {sys.path}')
+# print('done')
+# import traceback
+
+
 import torch
 from models.networks.base_network import BaseNetwork
 from models.networks.loss import *
 from models.networks.discriminator import *
 from models.networks.generator import *
 from models.networks.encoder import *
-import util.util as util
+
+
 
 
 def find_network_using_name(target_network_name, filename):

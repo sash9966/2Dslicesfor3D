@@ -1,5 +1,8 @@
 # %%
+import matplotlib
 import numpy as np
+matplotlib.use('Agg')
+
 
 import matplotlib.pyplot as plt
 from torch.functional import norm
@@ -24,11 +27,11 @@ from torch.utils.tensorboard import SummaryWriter
 plt.rcParams["figure.figsize"] = (16, 10)
 parser = argparse.ArgumentParser(description='Add some arguments for the model')
 ### ================================================================================  options starts
-# parser.add_argument('--gpu_ids', type=str, default='1', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
+parser.add_argument('--gpu_ids', type=str, default='3', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
 
-parser.add_argument('--label_dir', type=str, required=False, default = "/Users/saschastocker/Desktop/Data/StyleTransfer/segmentationTestFullResolution",
+parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/2Dslicesfor3D/data/masks",
                     help='path to the directory that contains label images')
-parser.add_argument('--image_dir', type=str, required=False, default ="/Users/saschastocker/Desktop/Data/StyleTransfer/imageTestFullResolution" ,
+parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/2Dslicesfor3D/data/images" ,
                     help='path to the directory that contains photo images')
 #Different vendor and mms data from Amirajab
 # parser.add_argument('--label_dir_B', type=str, required=False, default = "/Users/saschastocker/Desktop/Data/StyleTransfer/segmentationTestFullResolution",
@@ -44,8 +47,8 @@ parser.add_argument('--crop_size', type=int, default=512, help='Crop to the widt
 parser.add_argument('--target_res', type=int, default=1.25, help='Crop to the width of crop_size (after initially scaling the images to load_size.)')
 
 
-parser.add_argument('--label_nc', type=int, default=7, help='# of input label classes.')
-parser.add_argument('--output_nc', type=int, default=7, help='# of output image channels')
+parser.add_argument('--label_nc', type=int, default=8, help='# of input label classes.')
+parser.add_argument('--output_nc', type=int, default=8, help='# of output image channels')
 parser.add_argument('--input_nc', type=int, default=1, help='# of input image channels')
 parser.add_argument('--which_epoch', type=int, default=100, help='# of output image channels')
 parser.add_argument('--dataset_mode', type=str, default='mms2BB')
@@ -56,7 +59,7 @@ parser.add_argument('--isTrain', action='store_true', default=True, help='')
 
 parser.add_argument('--nThreads', default=0, type=int, help='# threads for loading data')
 parser.add_argument('--print_freq', default=100, type=int, help='#print frequency')
-parser.add_argument('--niter', type=int, default=1, help='# of iter at starting learning rate. This is NOT the total #epochs. Totla #epochs is niter + niter_decay')
+parser.add_argument('--niter', type=int, default=300, help='# of iter at starting learning rate. This is NOT the total #epochs. Totla #epochs is niter + niter_decay')
 parser.add_argument('--niter_decay', type=int, default=1, help='# of iter to linearly decay learning rate to zero')
 parser.add_argument('--checkpoints_dir', type=str, default='./checkpoints', help='models are saved here')
 parser.add_argument('--web_dir', type=str, help='models are saved here')
@@ -149,7 +152,7 @@ opt.web_dir = web_dir
 
 
 ### ================================================================================  training parameters starts
-max_epoch = 1 # maximum number of epochs, break
+max_epoch = 100000 # maximum number of epochs, break
 max_image = 100000 # maximum number of images per epoch, break
 input_labels_list = []
 # init_lr = 0.0000025

@@ -1,4 +1,8 @@
 # %%
+import matplotlib
+
+matplotlib.use('Agg')
+
 import torch
 import os
 import numpy as np

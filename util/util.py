@@ -2,6 +2,9 @@
 Copyright (C) 2019 NVIDIA Corporation.  All rights reserved.
 Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
 """
+import matplotlib
+
+matplotlib.use('Agg')
 
 import re
 import importlib
@@ -19,6 +22,7 @@ import random
 import matplotlib.pyplot as plt
 from torchvision.utils import make_grid , save_image
 from models.networks import vae_loss
+from util import util
 def one_hot(
     labels: torch.Tensor,
     num_classes: int,
@@ -387,7 +391,6 @@ def str2bool(v):
         return False
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
-
 
 def find_class_in_module(target_cls_name, module):
     target_cls_name = target_cls_name.replace('_', '').lower()
