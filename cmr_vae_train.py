@@ -1,4 +1,7 @@
 # %%
+
+#!/usr/bin/env python2.7
+
 import numpy as np
 
 import matplotlib.pyplot as plt
@@ -44,8 +47,8 @@ parser.add_argument('--crop_size', type=int, default=512, help='Crop to the widt
 parser.add_argument('--target_res', type=int, default=1.25, help='Crop to the width of crop_size (after initially scaling the images to load_size.)')
 
 
-parser.add_argument('--label_nc', type=int, default=7, help='# of input label classes.')
-parser.add_argument('--output_nc', type=int, default=7, help='# of output image channels')
+parser.add_argument('--label_nc', type=int, default=8, help='# of input label classes.')
+parser.add_argument('--output_nc', type=int, default=8, help='# of output image channels')
 parser.add_argument('--input_nc', type=int, default=1, help='# of input image channels')
 parser.add_argument('--which_epoch', type=int, default=100, help='# of output image channels')
 parser.add_argument('--dataset_mode', type=str, default='mms2BB')
@@ -149,7 +152,7 @@ opt.web_dir = web_dir
 
 
 ### ================================================================================  training parameters starts
-max_epoch = 1 # maximum number of epochs, break
+max_epoch = 100 # maximum number of epochs, break
 max_image = 100000 # maximum number of images per epoch, break
 input_labels_list = []
 # init_lr = 0.0000025
