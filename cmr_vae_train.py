@@ -48,8 +48,8 @@ parser.add_argument('--target_res', type=int, default=1.25, help='Crop to the wi
 
 
 parser.add_argument('--label_nc', type=int, default=8, help='# of input label classes.')
-parser.add_argument('--output_nc', type=int, default=8, help='# of output image channels')
-parser.add_argument('--input_nc', type=int, default=1, help='# of input image channels')
+parser.add_argument('--output_nc', type=int, default=1, help='# of output image channels')
+parser.add_argument('--input_nc', type=int, default=8, help='# of input image channels')
 parser.add_argument('--which_epoch', type=int, default=100, help='# of output image channels')
 parser.add_argument('--dataset_mode', type=str, default='mms2BB')
 parser.add_argument('--vendor', type=str, default='All_SA', help='selects a vendor for training [Philips_LA, Philips_SA, Siemens_LA, Siemens_SA, All_SA]')
