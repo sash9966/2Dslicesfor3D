@@ -29,9 +29,9 @@ parser = argparse.ArgumentParser(description='Add some arguments for the model')
 ### ================================================================================  options starts
 # parser.add_argument('--gpu_ids', type=str, default='1', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
 
-parser.add_argument('--label_dir', type=str, required=False, default = "/Users/saschastocker/Desktop/Data/StyleTransfer/segmentationTestFullResolution",
+parser.add_argument('--label_dir', type=str, required=False, default = "/Users/saschastocker/Documents/data/segmentationTestFullResolution",
                     help='path to the directory that contains label images')
-parser.add_argument('--image_dir', type=str, required=False, default ="/Users/saschastocker/Desktop/Data/StyleTransfer/imageTestFullResolution" ,
+parser.add_argument('--image_dir', type=str, required=False, default ="/Users/saschastocker/Documents/data/imageTestFullResolution" ,
                     help='path to the directory that contains photo images')
 #Different vendor and mms data from Amirajab
 # parser.add_argument('--label_dir_B', type=str, required=False, default = "/Users/saschastocker/Desktop/Data/StyleTransfer/segmentationTestFullResolution",
