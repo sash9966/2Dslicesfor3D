@@ -2,6 +2,9 @@
 Copyright (C) University of Science and Technology of China.
 Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
 """
+import matplotlib
+
+matplotlib.use('Agg')
 
 import numpy as np
 from PIL import Image

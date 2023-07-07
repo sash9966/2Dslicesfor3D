@@ -18,6 +18,7 @@ import numpy as np
 # parse options
 opt = TrainOptions().parse()
 
+#BUG: Unsure if for larger crop size this should be changed, seems to work without!
 if opt.crop_size == 256:
      opt.resnet_n_downsample = 5
      opt.resnet_n_blocks = 2
@@ -73,6 +74,9 @@ for epoch in iter_counter.training_epochs():
 
         iter_counter.record_one_iteration()
 
+        #print(f'type of the image, is it PIL or torch tensor: {type(data_i['label'])}') 
+        #print(f'data_i label type: {type(data_i)}')
+
         # Training
         # train generator
         if i % opt.D_steps_per_G == 0:
@@ -80,6 +84,9 @@ for epoch in iter_counter.training_epochs():
 
         # train discriminator
         trainer.run_discriminator_one_step(data_i)
+
+        #print(f'trainer contains which type of generated image: {type(trainer.get_latest_generated)}')
+        #print(f'trainer containes generated {trainer.get_latest_generated().shape}')
 
         # Visualizations
         if iter_counter.needs_printing():

@@ -8,3 +8,9 @@ nibabel
 medicaltorch    
 kornia
 opencv-python
+tensorboard
+nibabel
+medicaltorch
+kornia
+opencv-python
+python-utils

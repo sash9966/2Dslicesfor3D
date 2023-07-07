@@ -1,8 +1,8 @@
 # %%
-
-#!/usr/bin/env python2.7
-
+import matplotlib
 import numpy as np
+matplotlib.use('Agg')
+
 
 import matplotlib.pyplot as plt
 from torch.functional import norm
@@ -27,11 +27,11 @@ from torch.utils.tensorboard import SummaryWriter
 plt.rcParams["figure.figsize"] = (16, 10)
 parser = argparse.ArgumentParser(description='Add some arguments for the model')
 ### ================================================================================  options starts
-# parser.add_argument('--gpu_ids', type=str, default='1', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
+parser.add_argument('--gpu_ids', type=str, default='3', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
 
-parser.add_argument('--label_dir', type=str, required=False, default = "/Users/saschastocker/Documents/data/segmentationTestFullResolution",
+parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/2Dslicesfor3D/data/testmasks",
                     help='path to the directory that contains label images')
-parser.add_argument('--image_dir', type=str, required=False, default ="/Users/saschastocker/Documents/data/imageTestFullResolution" ,
+parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/2Dslicesfor3D/data/testimages" ,
                     help='path to the directory that contains photo images')
 #Different vendor and mms data from Amirajab
 # parser.add_argument('--label_dir_B', type=str, required=False, default = "/Users/saschastocker/Desktop/Data/StyleTransfer/segmentationTestFullResolution",
@@ -42,14 +42,14 @@ parser.add_argument('--image_dir', type=str, required=False, default ="/Users/sa
 #                     help='path to the directory that contains photo images')
 # parser.add_argument('--acdc_dir', type=str, required=False, default = "/Users/saschastocker/Desktop/Data/StyleTransfer/MRITestSingle",
 #                             help='path to the directory that contains label images')
-parser.add_argument('--batchSize', type=int, default=1, help='input batch size')
+parser.add_argument('--batchSize', type=int, default=10, help='input batch size')
 parser.add_argument('--crop_size', type=int, default=512, help='Crop to the width of crop_size (after initially scaling the images to load_size.)')
 parser.add_argument('--target_res', type=int, default=1.25, help='Crop to the width of crop_size (after initially scaling the images to load_size.)')
 
 
 parser.add_argument('--label_nc', type=int, default=8, help='# of input label classes.')
-parser.add_argument('--output_nc', type=int, default=8, help='# of output image channels')
-parser.add_argument('--input_nc', type=int, default=1, help='# of input image channels')
+parser.add_argument('--output_nc', type=int, default=1, help='# of output image channels')
+parser.add_argument('--input_nc', type=int, default=8, help='# of input image channels')
 parser.add_argument('--which_epoch', type=int, default=100, help='# of output image channels')
 parser.add_argument('--dataset_mode', type=str, default='mms2BB')
 parser.add_argument('--vendor', type=str, default='All_SA', help='selects a vendor for training [Philips_LA, Philips_SA, Siemens_LA, Siemens_SA, All_SA]')
@@ -59,7 +59,7 @@ parser.add_argument('--isTrain', action='store_true', default=True, help='')
 
 parser.add_argument('--nThreads', default=0, type=int, help='# threads for loading data')
 parser.add_argument('--print_freq', default=100, type=int, help='#print frequency')
-parser.add_argument('--niter', type=int, default=1, help='# of iter at starting learning rate. This is NOT the total #epochs. Totla #epochs is niter + niter_decay')
+parser.add_argument('--niter', type=int, default=300, help='# of iter at starting learning rate. This is NOT the total #epochs. Totla #epochs is niter + niter_decay')
 parser.add_argument('--niter_decay', type=int, default=1, help='# of iter to linearly decay learning rate to zero')
 parser.add_argument('--checkpoints_dir', type=str, default='./checkpoints', help='models are saved here')
 parser.add_argument('--web_dir', type=str, help='models are saved here')
@@ -116,11 +116,11 @@ opt.add_dist = False
 
 
 ### for paper dont use the mms2 data, the heart for mms2 case positined differently
-opt.name = 'CHD Experiment 1'
+opt.name = 'VAETrial3zdim256kld2batchsize10'
 writer = SummaryWriter("runs/" + opt.name , comment=opt.name)
 
-opt.zdim = 32
-lamda_kld = 15
+opt.zdim =256
+lamda_kld = 2
 
 opt.isTrain = True
 opt.continue_train = False
@@ -152,7 +152,8 @@ opt.web_dir = web_dir
 
 
 ### ================================================================================  training parameters starts
-max_epoch = 100 # maximum number of epochs, break
+max_epoch = 100000 # maximum number of epochs, break
+
 max_image = 100000 # maximum number of images per epoch, break
 input_labels_list = []
 # init_lr = 0.0000025

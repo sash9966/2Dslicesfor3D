@@ -8,7 +8,14 @@ import numpy as np
 import torch.nn.functional as F
 from models.networks.base_network import BaseNetwork
 from models.networks.normalization import get_nonspade_norm_layer
-import util.util as util
+import importlib
+
+path_to_util = "/home/sastocke/2Dslicesfor3D/util/util.py"
+
+spec = importlib.util.spec_from_file_location("util", path_to_util)
+util = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(util)
+#import util.util as util
 
 
 class MultiscaleDiscriminator(BaseNetwork):

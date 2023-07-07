@@ -2,6 +2,9 @@
 Copyright (C) 2019 NVIDIA Corporation.  All rights reserved.
 Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
 """
+import matplotlib
+
+matplotlib.use('Agg')
 
 import matplotlib.pyplot as plt
 import PIL 
@@ -41,10 +44,10 @@ class Visualizer():
                 now = time.strftime("%c")
                 log_file.write('================ Training Loss (%s) ================\n' % now)
 
-    # |visuals|: dictionary of images to display or save
+    #|visuals|: dictionary of images to display or save
     def display_current_results(self, visuals, epoch, step):
 
-        ## convert tensors to numpy arrays
+        # convert tensors to numpy arrays
         visuals = self.convert_visuals_to_numpy(visuals)
                 
         if self.tf_log: # show images in tensorboard output
@@ -75,8 +78,7 @@ class Visualizer():
                         util.save_image(image_numpy[i], img_path)
                 else:
                     img_path = os.path.join(self.img_dir, 'epoch%.3d_iter%.3d_%s.png' % (epoch, step, label))
-                    print(f' shape of the image: {image_numpy.shape}')
-                    print(f' dimensions of the image, len! {len(image_numpy.shape)}')
+
 
                     #Safe and handle images different for generated vs orginal image 
                     if(image_numpy.shape[0] == image_numpy.shape[1]):

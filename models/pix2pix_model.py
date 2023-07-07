@@ -7,6 +7,10 @@ import torch
 import models.networks as networks
 import util.util as util
 import random
+import matplotlib
+
+matplotlib.use('Agg')
+
 import matplotlib.pyplot as plt
 try:
     from torch.cuda.amp import autocast as autocast, GradScaler
@@ -54,7 +58,7 @@ class Pix2PixModel(torch.nn.Module):
     # routines based on |mode|.
     def forward(self, data, mode):
         input_semantics, real_image, input_dist = self.preprocess_input(data)
-        print(f'mode is {mode}')
+        
         if mode == 'generator':
             g_loss, generated = self.compute_generator_loss(
                 input_semantics, real_image, input_dist)

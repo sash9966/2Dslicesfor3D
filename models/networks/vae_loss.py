@@ -1,6 +1,10 @@
 import torch
 import torch.nn as nn
 # import kornia
+import matplotlib
+
+matplotlib.use('Agg')
+
 from typing import Optional
 from torch.nn import functional as F
 import abc
