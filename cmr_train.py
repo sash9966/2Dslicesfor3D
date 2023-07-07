@@ -112,38 +112,47 @@ for epoch in iter_counter.training_epochs():
             print('saving the latest model (epoch %d, total_steps %d)' %
                   (epoch, iter_counter.total_steps_so_far))
         
-            trainer.save('latest')
+
+        ##Failed 3D trial
+        #     trainer.save('latest')
+        # print(f'i : {i}')
         
+        # if(i>0):
+        #     print(f'current path is: {path} and data_i path is:{data_i["path"][0]}' )
+        # if(i==0):
+        #     path = data_i['path'][0]
+        #     print(f'path : {path}')
+        #     print(f'path type: {type(path)}')
+        #     #Expected 3D
+        #     image3D_epoch = torch.empty(221,512,512)
+        #     print(f'initial done')
+        #     print(f'image3D_epoch: {image3D_epoch.shape}')
+        # elif((path != data_i['path'][0] ) and (iter_counter.needs_displaying) ):
+        #     #save old 3D stacked, should be 221 images stacked together
+        #     #Override for the new 3D stacked image
+        #     affine = np.eye(4)
+        #     image3D_epoch_np = image3D_epoch.detach().numpy()
+        #     img = nib.Nifti1Image(image3D_epoch_np, affine)
 
-        if(i==0):
-            path = data_i['path']
-            #Expected 3D
-            image3D_epoch = torch.empty(221,512,512)
-            print(f'initial done')
-            print(f'image3D_epoch: {image3D_epoch.shape}')
+        #     #get image nr. from path file name
+        #     path = data_i['path'][0]
+        #     print(f'path : {path}')
+        #     print(f'path type: {type(path)}')
+        #     imgNr= path[-17:-13]
+        #     print(f'number {imgNr}')
+        #     filename = "3Depoch{epoch}Image{imgNr}.nii.gz"
+        #     nib.save(img, os.path.join(opt.checkpoints_dir, opt.name,'web','images', filename))
 
-
-        elif(path != data_i['path'] and iter_counter.needs_displaying ):
-            #save old 3D stacked, should be 221 images stacked together
-            print(f'stacked image shape: {image3D_epoch.shape()}')
-            #Override for the new 3D stacked image
-            img = nib.Nifti1Image(image3D_epoch, affine)
-
-            #get image nr. from path file name
-            imgNr= data['path'][3:7]
-            filename = "3Depoch{epoch}Image{imgNr}.nii.gz"
-            nib.save(nifti_image, os.path.join(opt.checkpoints_dir, opt.name, 'images', filename))
-
-            # start new stacking for the next 3D image
-            image3D_epoch = torch.empty(221,512,512)
-            image3D_epoch[0,:,:] = trainer.get_latest_generated()[0,0,:,:]
-            path = data_i['path']
+        #     # start new stacking for the next 3D image
+        #     image3D_epoch = torch.empty(221,512,512)
+        #     image3D_epoch[0,:,:] = trainer.get_latest_generated()[0,0,:,:]
+        #     path = data_i['path']
         
-        else:
-            print(f'image_3d_epoch shape= {image3D_epoch.shape}')
-            print(f'latest generated is: {trainer.get_latest_generated().shape}')
+        # else:
+        #     print(f'image_3d_epoch shape= {image3D_epoch.shape}')
+        #     print(f'latest generated is: {trainer.get_latest_generated().shape}')
 
-            image3D_epoch[i%221,:,:] = trainer.get_latest_generated()[0,0,:,:]
+        #     image3D_epoch[i%221,:,:] = trainer.get_latest_generated()[0,0,:,:]
 
 
 
@@ -157,9 +166,6 @@ for epoch in iter_counter.training_epochs():
         trainer.save(epoch)
     #check the shape of the stacked image
     #convert to numpy arry and save with nib
-    image3D_epoch = image3D_epoch.cpu().detach().numpy()
-    print(f' shape of image3D_epoch: {image3D_epoch.shape}')
-    nifti_image = nib.Nifti1Image(image3D_epoch, affine=np.eye(4))
     
 
 
