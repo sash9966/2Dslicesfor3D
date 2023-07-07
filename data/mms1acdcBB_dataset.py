@@ -147,7 +147,10 @@ class Mms1acdcBBDataset(BaseDataset):
         self.img_list = SA_image_list
         self.msk_list = SA_mask_list
         self.filename_pairs = SA_filename_pairs
-    
+
+        #print the file names and their content
+
+
         return self.filename_pairs, self.img_list, self.msk_list
 
 

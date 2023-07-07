@@ -41,6 +41,7 @@ class ConvEncoder(BaseNetwork):
 
     def forward(self, x):
         
+        print(f' encoder used?')
         ### sina why upsampling to 256?
 
         # if x.size(2) != 256 or x.size(3) != 256:
@@ -72,6 +73,7 @@ class Conv64Encoder(BaseNetwork):
 
     def __init__(self, opt):
         super().__init__()
+        print(f'crop size: {opt.crop_size}')
 
         kw = 3
         pw = int(np.ceil((kw - 1.0) / 2))

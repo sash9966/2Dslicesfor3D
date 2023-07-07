@@ -153,6 +153,7 @@ opt.web_dir = web_dir
 
 ### ================================================================================  training parameters starts
 max_epoch = 100000 # maximum number of epochs, break
+
 max_image = 100000 # maximum number of images per epoch, break
 input_labels_list = []
 # init_lr = 0.0000025

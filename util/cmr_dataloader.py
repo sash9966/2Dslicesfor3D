@@ -136,6 +136,7 @@ class SegmentationPair2D(object):
         """
         if self.cache:
             input_dataobj, gt_dataobj = self.get_pair_data()
+            
         else:
             # use dataobj to avoid caching
             input_dataobj = self.input_handle.dataobj
@@ -144,6 +145,8 @@ class SegmentationPair2D(object):
                 gt_dataobj = None
             else:
                 gt_dataobj = self.gt_handle.dataobj
+        print(f'shape of the data image:{input_dataobj.shape}')
+        print(f'shape of the data mask:{gt_dataobj.shape}')
 
         if slice_axis not in [0, 1, 2]:
             raise RuntimeError("Invalid axis, must be between 0 and 2.")

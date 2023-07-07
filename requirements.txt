@@ -3,6 +3,11 @@ torchvision
 dominate>=2.3.1
 dill
 scikit-image
+matplotlib
+nibabel
+medicaltorch    
+kornia
+opencv-python
 tensorboard
 nibabel
 medicaltorch
