@@ -29,9 +29,9 @@ parser = argparse.ArgumentParser(description='Add some arguments for the model')
 ### ================================================================================  options starts
 parser.add_argument('--gpu_ids', type=str, default='3', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
 
-parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/2Dslicesfor3D/data/masks",
+parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/2Dslicesfor3D/data/testmasks",
                     help='path to the directory that contains label images')
-parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/2Dslicesfor3D/data/images" ,
+parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/2Dslicesfor3D/data/testimages" ,
                     help='path to the directory that contains photo images')
 #Different vendor and mms data from Amirajab
 # parser.add_argument('--label_dir_B', type=str, required=False, default = "/Users/saschastocker/Desktop/Data/StyleTransfer/segmentationTestFullResolution",
@@ -42,7 +42,7 @@ parser.add_argument('--image_dir', type=str, required=False, default ="/home/sas
 #                     help='path to the directory that contains photo images')
 # parser.add_argument('--acdc_dir', type=str, required=False, default = "/Users/saschastocker/Desktop/Data/StyleTransfer/MRITestSingle",
 #                             help='path to the directory that contains label images')
-parser.add_argument('--batchSize', type=int, default=1, help='input batch size')
+parser.add_argument('--batchSize', type=int, default=10, help='input batch size')
 parser.add_argument('--crop_size', type=int, default=512, help='Crop to the width of crop_size (after initially scaling the images to load_size.)')
 parser.add_argument('--target_res', type=int, default=1.25, help='Crop to the width of crop_size (after initially scaling the images to load_size.)')
 
@@ -116,11 +116,11 @@ opt.add_dist = False
 
 
 ### for paper dont use the mms2 data, the heart for mms2 case positined differently
-opt.name = 'CHD Experiment 1'
+opt.name = 'VAETrial3zdim256kld2batchsize10'
 writer = SummaryWriter("runs/" + opt.name , comment=opt.name)
 
-opt.zdim = 32
-lamda_kld = 15
+opt.zdim =256
+lamda_kld = 2
 
 opt.isTrain = True
 opt.continue_train = False
