@@ -38,13 +38,16 @@ class VAE(nn.Module):
         # torch.manual_seed(opt.seed)
         self.img_size = opt.crop_size
 
-
+        #Increased from 64->128
         self.nef = 64   # number of encoder filters
         self.ndf = 64   # number of decoder filters
         self.input_nc = opt.input_nc
         self.output_nc = opt.label_nc
+
+        ## Testing increase in latent space 
+        # increase from 256 -> 512
         self.z_dim = opt.zdim   # the sized of the latent code
-        self.bneck = 256
+        self.bneck = 512
         self.conv_block_1 = nn.Sequential(Conv(self.input_nc, self.nef, 3, stride=2, padding=1), Conv( self.nef, self.nef, 3, stride=1, padding=1),
             Conv( self.nef, self.nef, 3, stride=1, padding=1))
 

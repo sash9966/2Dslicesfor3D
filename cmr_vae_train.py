@@ -116,10 +116,10 @@ opt.add_dist = False
 
 
 ### for paper dont use the mms2 data, the heart for mms2 case positined differently
-opt.name = 'VAETrial3zdim256kld2batchsize10'
+opt.name = 'VAETrial3zdim512kld2batchsize10IncreasedFilter'
 writer = SummaryWriter("runs/" + opt.name , comment=opt.name)
 
-opt.zdim =256
+opt.zdim =512
 lamda_kld = 2
 
 opt.isTrain = True

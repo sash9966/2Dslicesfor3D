@@ -6,6 +6,9 @@ from options.test_options import TestOptions
 from models.pix2pix_model import Pix2PixModel
 from util.visualizer import Visualizer
 from util import html
+import torch
+import numpy as np
+import nibabel as nib
 
 opt = TestOptions().parse()
 
@@ -19,6 +22,8 @@ visualizer = Visualizer(opt)
 # create a webpage that summarizes the all results
 web_dir = os.path.join(opt.results_dir, opt.name,
                        '%s_%s' % (opt.phase, opt.which_epoch))
+
+
 webpage = html.HTML(web_dir,
                     'Experiment = %s, Phase = %s, Epoch = %s' %
                     (opt.name, opt.phase, opt.which_epoch))
@@ -26,17 +31,53 @@ webpage = html.HTML(web_dir,
 # test
 for i, data_i in enumerate(dataloader):
 
+
+    #print(f'i: {i}')
+
     if i * opt.batchSize >= opt.how_many:
         break
 
     generated = model(data_i, mode='inference')
-    print(f' Generated Data shape: {generated.shape}')
-
+    
     img_path = data_i['path']
-    for b in range(generated.shape[0]):
-        print('process image... %s' % img_path[b])
-        visuals = OrderedDict([('input_label', data_i['label'][b]),
-                               ('synthesized_image', generated[b])])
-        visualizer.save_images(webpage, visuals, img_path[b:b + 1])
+    
+    if(i==0):
+        print(f'inital')
+        path = data_i['path'][0]
+        #Expected 3D
+        image3D_epoch = torch.empty(221,512,512)
+    elif(path != data_i['path'][0] or (len(dataloader)-1 )== i):
+        #save old 3D stacked, should be 221 images stacked together
+        #Override for the new 3D stacked image
+        print(f'new image')
+        if((len(dataloader)-1 )== i):
+            print(f'last image')
+        affine = np.array([[1, 0, 0, 0],
+                   [0, 1, 0, 0],
+                   [0, 0, 1, 0],
+                   [0, 0, 0, 1]])
+        image3D_epoch_np = image3D_epoch.detach().numpy()
+        img = nib.Nifti1Image(image3D_epoch_np, affine)
+
+        #get image nr. from path file name
+        path = data_i['path'][0]
+        imgNr= path[-17:-13]    
+        filename = f"3DImage{imgNr}synthetic.nii.gz"
+        nib.save(img, filename = os.path.join(opt.checkpoints_dir, opt.name,'web','images', filename))
+        nib.save(img,filename= '/home/sastocke/2Dslicesfor3D/results'+filename)
+
+        # start new stacking for the next 3D image
+        image3D_epoch = torch.empty(221,512,512)
+        generated = model(data_i, mode='inference')
+        image3D_epoch[0,:,:] = generated[0,0,:,:]
+        path = data_i['path']
+    elif(True):
+        print(f'adding')
+        #Add to the stack of 3D
+        image3D_epoch[i%221,:,:] = generated[0,0,:,:]
+
+
+
+
 
 webpage.save()

@@ -8,6 +8,9 @@ matplotlib.use('Agg')
 
 import matplotlib.pyplot as plt
 import PIL 
+import nibabel as nib
+
+import numpy as np
 
 import os
 import ntpath
@@ -190,3 +193,4 @@ class Visualizer():
             txts.append(label)
             links.append(image_name)
         webpage.add_images(ims, txts, links, width=self.win_size)
+        
