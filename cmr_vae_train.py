@@ -71,7 +71,7 @@ parser.add_argument('--seed', type=int, default=1220,
                         help='Random seed. Can be `None` for stochastic behavior.')
 
 #z-dim test increase from 32->64
-parser.add_argument('--zdim', default=64, type=int, help='# size of latent vector')
+parser.add_argument('--zdim', default=512, type=int, help='# size of latent vector')
 parser.add_argument('--corrected_labels', action='store_true', help='continue training: load the latest model')
 parser.add_argument('--VAE_altered_anatomy', action='store_true', help='continue training: load the latest model')
 parser.add_argument('--selected_labels', action='store_true', help='continue training: load the latest model')
@@ -87,11 +87,13 @@ del sys
 # %%
 
 
+
 ### parsing options
 opt = parser.parse_args()
 #opt.batchSize = 20 
 opt.output_nc = 1
 
+opt.name = "VAETrial4nef64lr0.00001"
 #Changed from 4 to 8, they used 4 lables, Background, LV, and two bloodpools
 opt.input_nc = 8
 opt.label_nc = 8
@@ -116,7 +118,6 @@ opt.add_dist = False
 
 
 ### for paper dont use the mms2 data, the heart for mms2 case positined differently
-opt.name = 'VAETrial3zdim512kld2batchsize10IncreasedFilter'
 writer = SummaryWriter("runs/" + opt.name , comment=opt.name)
 
 opt.zdim =512
@@ -157,7 +158,7 @@ max_epoch = 100000 # maximum number of epochs, break
 max_image = 100000 # maximum number of images per epoch, break
 input_labels_list = []
 # init_lr = 0.0000025
-init_lr = 0.00002
+init_lr = 0.00001
 # init_lr = 0.0002
 # init_lr_sch = [0.002, 0.0002, 0.00002, 0.000002, 0.000001, 0.0000001]
 # init_lr = 0.00006

@@ -25,7 +25,7 @@ if opt.crop_size == 256:
 else:
     opt.resnet_n_downsample = 4
     opt.resnet_n_blocks = 2
-
+opt.use_vae = True
 
 
 # print options to help debugging

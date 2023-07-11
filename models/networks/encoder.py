@@ -41,7 +41,7 @@ class ConvEncoder(BaseNetwork):
 
     def forward(self, x):
         
-        print(f' encoder used?')
+        #print(f' encoder used?')
         ### sina why upsampling to 256?
 
         # if x.size(2) != 256 or x.size(3) != 256:

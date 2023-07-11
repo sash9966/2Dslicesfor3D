@@ -72,7 +72,9 @@ class Mms1acdcBBDataset(BaseDataset):
 
 
         # assert len(SA_mask_list_B) == len(SA_image_list_B) 
-        assert len(SA_image_list) == len(SA_mask_list)
+        if(opt.phase != 'test'):
+
+            assert len(SA_image_list) == len(SA_mask_list)
 
 
         SA_filename_pairs = [] 
@@ -217,6 +219,9 @@ class Mms1acdcBBDataset(BaseDataset):
 
             ])
         
+        #if(opt.phase == 'test'):
+            #self.cmr_dataset(cmr.MRI2DSegmentationDataset(self.msk_list, transform = train_transforms, slice_axis=2, canonical = False))
+
         self.cmr_dataset = cmr.MRI2DSegmentationDataset(self.filename_pairs, transform = train_transforms, slice_axis=2, canonical = False)
         
         
