@@ -27,6 +27,7 @@ else:
     opt.resnet_n_blocks = 2
 opt.use_vae = True
 
+print(f'3D testing!!')
 
 # print options to help debugging
 print(' '.join(sys.argv))
