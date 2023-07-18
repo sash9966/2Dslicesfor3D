@@ -302,6 +302,7 @@ class SPADEEncGenerator(BaseNetwork):
 
 
 class Pix2PixHDGenerator(BaseNetwork):
+
     @staticmethod
     def modify_commandline_options(parser, is_train):
         parser.add_argument('--resnet_n_downsample', type=int, default=4, help='number of downsampling layers in netG')

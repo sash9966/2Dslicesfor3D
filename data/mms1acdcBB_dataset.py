@@ -163,7 +163,6 @@ class Mms1acdcBBDataset(BaseDataset):
         self.filename_pairs, _, _  = self.get_paths(self.opt)
 
 
-        print('the size of the image list', len(self.filename_pairs))
    
 
         if opt.isTrain:
