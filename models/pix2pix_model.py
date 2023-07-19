@@ -72,6 +72,7 @@ class Pix2PixModel(torch.nn.Module):
             return mu, logvar
         elif mode == 'inference':
             with torch.no_grad():
+                print(f'using generate_fake')
                 fake_image, _ , _ = self.generate_fake(input_semantics, real_image, input_dist)
             return fake_image
         else:
@@ -322,6 +323,8 @@ class Pix2PixModel(torch.nn.Module):
         if self.opt.use_vae:
             
             if compute_kld_loss:
+                #permute to the same shape as the fake image that's generated 
+                real_image = real_image.permute(0, 3, 1, 2)
                 L1_loss = self.L1Loss(fake_image, real_image ) * self.opt.lambda_L1
 
         assert (not compute_kld_loss) or self.opt.use_vae, \
@@ -334,7 +337,13 @@ class Pix2PixModel(torch.nn.Module):
 
     def discriminate(self, input_semantics, fake_image, real_image):
         #check out size and shape of the images
+       
+        
+        real_image = real_image.permute(0, 3, 1, 2)
 
+        print(f'input_semantics shape: {input_semantics.shape}')
+        print(f'fake_image shape: {fake_image.shape}')
+        print(f'real_image shape: {real_image.shape}')
 
 
         fake_concat = torch.cat([input_semantics, fake_image], dim=1)

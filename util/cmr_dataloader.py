@@ -13,6 +13,7 @@ import torch
 #from torch._six import string_classes, inclasses
 string_classes = str
 int_classes = int
+import matplotlib as plt
 
 from PIL import Image
 
@@ -141,6 +142,7 @@ class SegmentationPair2D(object):
             # use dataobj to avoid caching
             input_dataobj = self.input_handle.dataobj
 
+
             if self.gt_handle is None:
                 gt_dataobj = None
             else:
@@ -148,11 +150,13 @@ class SegmentationPair2D(object):
         #print(f'shape of the data image:{input_dataobj.shape}')
         #print(f'shape of the data mask:{gt_dataobj.shape}')
 
+        print(f'input_dataobj shape: {input_dataobj.shape}')
         if slice_axis not in [0, 1, 2]:
             raise RuntimeError("Invalid axis, must be between 0 and 2.")
+        
 
         if slice_axis == 2:
-            input_slice = np.asarray(input_dataobj[..., slice_index],
+            input_slice = np.asarray(input_dataobj[..., slice_index: slice_index +3],
                                      dtype=np.float32)
         elif slice_axis == 1:
             input_slice = np.asarray(input_dataobj[:, slice_index, ...],
@@ -160,6 +164,8 @@ class SegmentationPair2D(object):
         elif slice_axis == 0:
             input_slice = np.asarray(input_dataobj[slice_index, ...],
                                      dtype=np.float32)
+            
+
 
         # Handle the case for unlabeled data
         gt_meta_dict = None
@@ -167,7 +173,7 @@ class SegmentationPair2D(object):
             gt_slice = None
         else:
             if slice_axis == 2:
-                gt_slice = np.asarray(gt_dataobj[..., slice_index],
+                gt_slice = np.asarray(gt_dataobj[..., slice_index: slice_index +3],
                                       dtype=np.float32)
             elif slice_axis == 1:
                 gt_slice = np.asarray(gt_dataobj[:, slice_index, ...],
@@ -192,6 +198,19 @@ class SegmentationPair2D(object):
             "input_metadata": input_meta_dict,
             "gt_metadata": gt_meta_dict,
         }
+        # print(f'testing in dataloader:')
+        # print(f'input shape: {dreturn["input"].shape}') 
+        # print(f'gt shape: {dreturn["gt"].shape}')
+
+
+        # #plot the two images with the plot function of matplot lib
+        # fig, ax = plt.pyplot.subplots(1,2)
+        # ax[0].imshow(dreturn["input"])
+        # ax[1].imshow(dreturn["gt"])
+        # plt.pyplot.show()
+
+        #pause to see if the data is correct
+        #input("Press Enter to continue...")
 
         return dreturn
 
@@ -327,13 +346,15 @@ class MRI2DSegmentationDataset(Dataset):
         # Consistency with torchvision, returning PIL Image
         # Using the "Float mode" of PIL, the only mode
         # supporting unbounded float32 values
-        input_img = Image.fromarray(pair_slice["input"], mode='F')
+        #input_img = Image.fromarray(pair_slice["input"], mode='F')
+        input_img = pair_slice["input"]
 
         # Handle unlabeled data
         if pair_slice["gt"] is None:
             gt_img = None
         else:
-            gt_img = Image.fromarray(pair_slice["gt"], mode='F')
+            #gt_img = Image.fromarray(pair_slice["gt"], mode='F')
+            gt_img = pair_slice["gt"]
 
         data_dict = {
             'input': input_img,
@@ -347,8 +368,8 @@ class MRI2DSegmentationDataset(Dataset):
             'segpair_slice':segpair_slice,
         }
 
-        if self.transform is not None:
-            data_dict = self.transform(data_dict)
+        # if self.transform is not None:
+        #     data_dict = self.transform(data_dict)
 
         return data_dict
 

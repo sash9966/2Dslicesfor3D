@@ -533,6 +533,7 @@ class StyleSPADEGenerator(BaseNetwork):
         #     # we downsample segmap and run convolution
         #     x = F.interpolate(seg, size=(self.sh, self.sw))
         #     x = self.fc(x)
+        image = image.permute(0, 3, 1, 2)
         x = self.model(image)
         # seg = F.interpolate(seg, size=(x.shape[-1], x.shape[-2]))
         # print(f'######################################')

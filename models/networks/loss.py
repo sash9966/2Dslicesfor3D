@@ -129,5 +129,14 @@ class L1Loss(nn.Module):
         super(L1Loss, self).__init__()
         self.criterion = nn.L1Loss()
     def forward(self, fake, real):
-        return self.criterion(fake, real)
+        #look at shake of fake and real
+        
+        #have to make sure the shapes are the same
+
+        #BUG: Why is [0,:,:,:] needed?
+        print(f'fake shape: {fake.shape}')
+        print(f'real shape: {real.shape}')
+        print(f' fake[0,:,:,:] shape {fake[0,:,:,:].shape}')
+        print(f' real[0,:,:,:] shape {real[0,:,:,:].shape}')
+        return self.criterion(fake[0,:,:,:], real[0,:,:,:])
 
