@@ -125,6 +125,30 @@ class Pix2PixModel(torch.nn.Module):
     # transforming the label map to one-hot encoding
     # |data|: dictionary of the input data
 
+    def voxel_semantics(self,input_label, label_map):
+        input_semantics_slices = []
+
+        for i in range(input_label.shape[2]):
+            # Get the slice
+            input_label_slice = input_label[..., i]
+            label_map_slice = label_map[..., i]
+
+            print(f'input_label_slice shape: {input_label_slice.shape}')
+            print(f'label_map_slice shape: {label_map_slice.shape}')
+
+
+            # Perform the scatter operation on the slice
+            input_semantics_slice = input_label_slice.scatter_(1, label_map_slice.clamp(max=7), 1.0)
+
+            # Append to the list
+            input_semantics_slices.append(input_semantics_slice.unsqueeze(2))
+        
+        # Concatenate the list into a tensor
+        input_semantics = torch.cat(input_semantics_slices, dim=2)
+
+        return input_semantics
+
+
     def preprocess_input(self, data):
         # move to GPU and change data types
 
@@ -161,13 +185,19 @@ class Pix2PixModel(torch.nn.Module):
 
 
 
-        bs, _, h, w = label_map.size()
-
         nc = self.opt.label_nc + 1 if self.opt.contain_dontcare_label \
             else self.opt.label_nc
         
-        # print(f'nc has size: {nc}')
-        input_label = self.FloatTensor(bs, nc, h, w).zero_()
+        print(f'label_map size: {label_map.size()}')
+        if(self.opt.voxel_size == 0):
+            bs, _, h, w, = label_map.size()
+            input_label = self.FloatTensor(bs, nc, h, w).zero_()
+        elif(self.opt.voxel_size>= 1):
+            bs,h,w,depth = label_map.size()
+            input_label = self.FloatTensor(bs, nc, h, w,depth).zero_()
+
+
+        
 
         # print(f'########################')
         # print(f'before input_semantics')
@@ -214,10 +244,18 @@ class Pix2PixModel(torch.nn.Module):
         # print(f'input_label has size: {input_label.shape}')
         # print(f'label_map has size: {label_map.shape}')
 
-        input_semantics = input_label.scatter_(1, label_map.clamp(max=7), 1.0)
+        print(f'input label shape: {input_label.shape}')
+        print(f'label map shape: {label_map.shape}')
+
+
+        if(self.opt.voxel_size >= 1):
+            input_semantics = self.voxel_semantics(input_label,label_map)
+        else:
+            print(f'single slice scatter shapes:input label {input_label.shape},  label map{label_map.shape}')
+            input_semantics = input_label.scatter_(1, label_map.clamp(max=7), 1.0)
 
  
-
+        print(f'input_semantics after scatter: {input_semantics.shape}')
         
         if self.opt.no_BG:
             input_semantics[:,0,:,:]= 0

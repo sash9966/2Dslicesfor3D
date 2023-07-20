@@ -154,7 +154,7 @@ class SegmentationPair2D(object):
         if slice_axis not in [0, 1, 2]:
             raise RuntimeError("Invalid axis, must be between 0 and 2.")
         
-
+        
         if slice_axis == 2:
             input_slice = np.asarray(input_dataobj[..., slice_index: slice_index +3],
                                      dtype=np.float32)
@@ -346,6 +346,8 @@ class MRI2DSegmentationDataset(Dataset):
         # Consistency with torchvision, returning PIL Image
         # Using the "Float mode" of PIL, the only mode
         # supporting unbounded float32 values
+
+        #BUG: -> could we use RGB for 3 channels? What are the different modes?
         #input_img = Image.fromarray(pair_slice["input"], mode='F')
         input_img = pair_slice["input"]
 
