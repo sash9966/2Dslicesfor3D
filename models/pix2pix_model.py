@@ -213,6 +213,11 @@ class Pix2PixModel(torch.nn.Module):
         # print(f'input_label has size: {input_label.shape}')
         # print(f'label_map has size: {label_map.shape}')
 
+
+        print(f'working 2D!')
+        print(f' input label shape: {input_label.shape}')
+        print(f' label map shape: {label_map.shape}')
+
         input_semantics = input_label.scatter_(1, label_map.clamp(max=7), 1.0)
 
  
