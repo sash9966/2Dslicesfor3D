@@ -514,6 +514,15 @@ class StyleSPADEGenerator(BaseNetwork):
     def forward(self, input, image, input_dist=None):
         seg = input
         image = image
+
+        print(f'incoming image shape: {image.shape} and the seg shape {seg.shape}, ')
+
+
+
+
+
+
+
         # if self.opt.use_vae:
         #     # we sample z from unit normal and reshape the tensor
         #     if z is None:
@@ -534,6 +543,7 @@ class StyleSPADEGenerator(BaseNetwork):
         #     x = F.interpolate(seg, size=(self.sh, self.sw))
         #     x = self.fc(x)
         x = self.model(image)
+        print(f'x shape after self.model(image): {x.shape}')
         # seg = F.interpolate(seg, size=(x.shape[-1], x.shape[-2]))
         # print(f'######################################')
         # print(f'inspetion in generator.py, after x=self.model(image):')
@@ -546,6 +556,7 @@ class StyleSPADEGenerator(BaseNetwork):
         # print(f'######################################')
         # print(f'inspetion in generator.py after x.view():')
         # print(f'inspect the image shape that is coming from the encoder {x.shape},image shape: {image.shape}  and the seg shape {seg.shape}')
+        print(f'x shape before fc_img: {x.shape}')
         x = self.fc_img(x)
         x = self.fc_img2(x)
 
