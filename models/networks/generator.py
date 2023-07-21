@@ -509,8 +509,8 @@ class StyleSPADEGenerator(BaseNetwork):
             x = x.unsqueeze(2)  # Adds an extra dimension at the third position
             x = x.expand(-1, -1, 3, -1, -1)  # Expands the third dimension to a size of 3
 
-        if(self.voxel_size >1):
-            x = x.reshape(x.size(0), -1, x.size(3), x.size(4))
+        # if(self.voxel_size >1):
+        #     x = x.reshape(x.size(0), -1, x.size(3), x.size(4))
 
         else:
             x = x.view(x.size(0), -1)
