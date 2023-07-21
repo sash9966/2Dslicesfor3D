@@ -443,7 +443,7 @@ class StyleSPADEGenerator(BaseNetwork):
             
         print(f'variables for linear FC layer: in_fea: {in_fea}, nf: {nf}')
         
-        self.fc_img = nn.Linear(in_fea * nf * 16 * 16*16, in_fea * nf //4)
+        self.fc_img = nn.Linear(in_fea * nf * 16 * 16, in_fea * nf //4)
         self.fc_img2 = nn.Linear(in_fea * nf // 4, in_fea * nf * 8 * 8,8)
         self.fc = nn.Conv3d(self.opt.semantic_nc, in_fea * nf, 3, padding=1)
 
@@ -499,12 +499,12 @@ class StyleSPADEGenerator(BaseNetwork):
         seg = input
         image = image
 
-
+        print(f'incoming image shape: {image.shape} and the seg shape {seg.shape}, ')
         if(self.voxel_size >1):
             image = image.permute(0, 3, 1, 2)
         print(f'after permute: image shape: {image.shape} and the seg shape {seg.shape}, ')
         x = self.model(image)
-
+        print(f'x shape after self.model(image): {x.shape}')
         if(self.opt.voxel_size >1):
             x = x.unsqueeze(2)  # Adds an extra dimension at the third position
             x = x.expand(-1, -1, 3, -1, -1)  # Expands the third dimension to a size of 3
