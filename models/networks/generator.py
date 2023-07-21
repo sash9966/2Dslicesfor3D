@@ -393,12 +393,215 @@ class StyleSPADEGenerator(BaseNetwork):
         return parser
 
     def __init__(self, opt):
+        print(f'using StyleSPADEGenerator')
         super().__init__()
+        self.voxel_size = opt.voxel_size
         self.opt = opt
         nf = opt.ngf
         norm_layer_style = get_nonspade_norm_layer(opt, 'spectralsync_batch')
         # norm_layer_style = get_nonspade_norm_layer(opt, 'spectralinstance') dont use
         # norm_layer_style = get_nonspade_norm_layer(opt, opt.norm_E)
+        
+        activation = nn.ReLU(False)
+        model = []
+
+        ##   style encoder 
+
+         # initial conv
+        model += [nn.ReflectionPad2d(opt.resnet_initial_kernel_size // 2),
+                  norm_layer_style(nn.Conv2d(self.opt.output_nc, opt.ngf,
+                                       kernel_size=opt.resnet_initial_kernel_size,
+                                       padding=0)),
+                  activation]
+
+        # downsample
+        mult = 1
+        for i in range(opt.resnet_n_downsample):
+            model += [norm_layer_style(nn.Conv2d(opt.ngf * mult, opt.ngf * mult * 2,
+                                           kernel_size=3, stride=2, padding=1)),
+                      activation]
+            mult *= 2
+
+
+        # resnet blocks
+        for i in range(opt.resnet_n_blocks):
+            model += [ResnetBlock(opt.ngf * mult,
+                                  norm_layer=norm_layer_style,
+                                  activation=activation,
+                                  kernel_size=opt.resnet_kernel_size)]
+
+        self.model = nn.Sequential(*model)
+
+        if self.opt.crop_size == 256:
+            in_fea = 2 * 16
+            self.opt.num_upsampling_layers = 'most'
+        if self.opt.crop_size == 512:
+            in_fea = 4 * 16
+            self.opt.num_upsampling_layers = 'most512'
+        if self.opt.crop_size == 128:
+            in_fea = 1 * 16
+            
+        print(f'variables for linear FC layer: in_fea: {in_fea}, nf: {nf}')
+        
+        self.fc_img = nn.Linear(in_fea * nf * 16 * 16*16, in_fea * nf //4)
+        self.fc_img2 = nn.Linear(in_fea * nf // 4, in_fea * nf * 8 * 8,8)
+        self.fc = nn.Conv3d(self.opt.semantic_nc, in_fea * nf, 3, padding=1)
+
+        self.head_0 = SPADEResnetBlock(in_fea * nf, in_fea * nf, opt)
+
+        self.G_middle_0 = SPADEResnetBlock(in_fea * nf, in_fea * nf, opt)
+        self.G_middle_1 = SPADEResnetBlock(in_fea * nf, in_fea * nf, opt)
+
+        self.up_0 = SPADEResnetBlock(in_fea * nf, 8 * nf, opt)
+        self.up_1 = SPADEResnetBlock(8 * nf, 4 * nf, opt)
+        self.up_2 = SPADEResnetBlock(4 * nf, 2 * nf, opt)
+        self.up_3 = SPADEResnetBlock(2 * nf, 1 * nf, opt)
+
+        final_nc = nf
+
+        #Increase upsampling if you want the fake images to be generated in higher resolution -> 512
+        if self.opt.num_upsampling_layers == 'most':
+            self.up_4 = SPADEResnetBlock(1 * nf, nf // 2, opt)
+            final_nc = nf // 2
+        
+        if self.opt.num_upsampling_layers == 'most512':
+            self.up_4 = SPADEResnetBlock(1 * nf, nf // 2, opt)
+            self.up_5 = SPADEResnetBlock(nf // 2, nf // 4, opt)
+            final_nc = nf // 4
+
+
+        self.conv_img = nn.Sequential(
+            nn.Conv2d(final_nc, opt.output_nc, 3, padding=1),  # sina changing the number of the channels for the output conv layer from 3 to opt.output_nc
+            nn.Tanh()
+        )
+
+        self.up = nn.Upsample(scale_factor=2)
+
+    # def compute_latent_vector_size(self, opt):
+    #     if opt.num_upsampling_layers == 'few':
+    #         num_up_layers = 4
+    #     elif opt.num_upsampling_layers == 'normal':
+    #         num_up_layers = 5
+    #     elif opt.num_upsampling_layers == 'more':
+    #         num_up_layers = 6
+    #     elif opt.num_upsampling_layers == 'most':
+    #         num_up_layers = 7
+    #     else:
+    #         raise ValueError('opt.num_upsampling_layers [%s] not recognized' %
+    #                          opt.num_upsampling_layers)
+
+    #     sw = opt.crop_size // (2**num_up_layers)
+    #     sh = round(sw / opt.aspect_ratio)
+
+    #     return sw, sh
+
+    def forward(self, input, image, input_dist=None):
+        seg = input
+        image = image
+
+
+        if(self.voxel_size >1):
+            image = image.permute(0, 3, 1, 2)
+        print(f'after permute: image shape: {image.shape} and the seg shape {seg.shape}, ')
+        x = self.model(image)
+
+        if(self.opt.voxel_size >1):
+            x = x.unsqueeze(2)  # Adds an extra dimension at the third position
+            x = x.expand(-1, -1, 3, -1, -1)  # Expands the third dimension to a size of 3
+
+        if(self.voxel_size >1):
+            x = x.reshape(x.size(0), -1, x.size(3), x.size(4))
+
+        else:
+            x = x.view(x.size(0), -1)
+        print(f'x shape before fc_img: {x.shape}')
+        x = self.fc_img(x)
+        x = self.fc_img2(x)
+
+        #print(f'self.opt.crop_size {self.opt.crop_size}')
+        if self.opt.crop_size == 256:
+            in_fea = 2 * 16
+        if self.opt.crop_size == 512:
+            in_fea = 4 * 16
+        if self.opt.crop_size == 128:
+            in_fea = 1 * 16
+    
+        #Old try!!
+        if(self.voxel_size >1):
+            x = x.view(-1, in_fea * self.opt.ngf ,self.voxel_size, 8, 8)
+        else:
+            x = x.view(-1, in_fea * self.opt.ngf , 8, 8)
+        #hard coded:
+        #x= x.view(1,-1,8,8)
+        #print(f'After view: {x.shape}')
+        
+
+
+        # print(f'in generator.py, after x.view(): {x.shape}')
+        # print(f'seg.shape: {seg.shape}')
+        # print(f'input_dist.shape: {input_dist.shape}')
+        print(f'x shape before failed line: {x.shape}')
+        x = self.head_0(x, seg, input_dist)
+        #print(f'After head_0: {x.shape}')
+
+        # if self.opt.num_upsampling_layers != 'fgit adew':
+            
+        #     x = self.up(x)
+        x = self.G_middle_0(x, seg, input_dist)
+        #print(f'After G_middle_0: {x.shape}')
+
+
+        # if self.opt.num_upsampling_layers == 'more' or \
+        #    self.opt.num_upsampling_layers == 'most':
+        #     x = self.up(x)
+
+        # x = self.G_middle_1(x, seg, input_dist)
+
+        x = self.up(x)
+        x = self.up_0(x, seg, input_dist)
+        x = self.up(x)
+        x = self.up_1(x, seg, input_dist)
+        x = self.up(x)
+        x = self.up_2(x, seg, input_dist)
+        x = self.up(x)
+        x = self.up_3(x, seg, input_dist)
+
+        if self.opt.num_upsampling_layers == 'most':
+            x = self.up(x)
+            x = self.up_4(x, seg, input_dist)
+        if self.opt.num_upsampling_layers == 'most512':
+            x = self.up(x)
+            x = self.up_4(x, seg, input_dist)
+            x = self.up(x)
+            x = self.up_5(x, seg, input_dist)
+
+ 
+
+
+        x = self.conv_img(F.leaky_relu(x, 2e-1))
+        # x = nn.Tanh(x)
+
+
+        return x
+    
+
+"""
+class StyleSPADEGenerator3D(BaseNetwork):
+    @staticmethod
+    def modify_commandline_options(parser, is_train):
+        
+        parser.add_argument('--num_upsampling_layers',
+                            choices=('few','normal', 'more', 'most','most512'), default='few',
+                            help="If 'more', adds upsampling layer between the two middle resnet blocks. If 'most', also add one more upsampling + resnet layer at the end of the generator")
+        parser.set_defaults(norm_G='spectralspadesyncbatch3x3')
+        return parser
+
+    def __init__(self, opt):
+        super().__init__()
+        self.voxel_size = opt.voxel_size
+        self.opt = opt
+        nf = opt.ngf
+        norm_layer_style = get_nonspade_norm_layer(opt, 'spectralsync_batch')
         
         activation = nn.ReLU(False)
         model = []
@@ -493,60 +696,17 @@ class StyleSPADEGenerator(BaseNetwork):
 
         self.up = nn.Upsample(scale_factor=2)
 
-    # def compute_latent_vector_size(self, opt):
-    #     if opt.num_upsampling_layers == 'few':
-    #         num_up_layers = 4
-    #     elif opt.num_upsampling_layers == 'normal':
-    #         num_up_layers = 5
-    #     elif opt.num_upsampling_layers == 'more':
-    #         num_up_layers = 6
-    #     elif opt.num_upsampling_layers == 'most':
-    #         num_up_layers = 7
-    #     else:
-    #         raise ValueError('opt.num_upsampling_layers [%s] not recognized' %
-    #                          opt.num_upsampling_layers)
 
-    #     sw = opt.crop_size // (2**num_up_layers)
-    #     sh = round(sw / opt.aspect_ratio)
-
-    #     return sw, sh
 
     def forward(self, input, image, input_dist=None):
         seg = input
         image = image
-        # if self.opt.use_vae:
-        #     # we sample z from unit normal and reshape the tensor
-        #     if z is None:
-        #         z = torch.randn(input.size(0), self.opt.z_dim,
-        #                         dtype=torch.float32, device=input.get_device())
-        #     x = self.fc(z)
-        #     x = x.view(-1, 16 * self.opt.ngf, self.sh, self.sw)
-        #     ### sina
-        # elif self.opt.use_noise:
-        #     # print('yes got the noise')
-        #     z = torch.randn(input.size(0), self.opt.z_dim,
-        #                         dtype=torch.float32, device=input.get_device())
-        #     x = self.fc(z)
-        #     x = x.view(-1, 16 * self.opt.ngf, self.sh, self.sw)
-        #     ### sina
-        # else:
-        #     # we downsample segmap and run convolution
-        #     x = F.interpolate(seg, size=(self.sh, self.sw))
-        #     x = self.fc(x)
-        image = image.permute(0, 3, 1, 2)
-        x = self.model(image)
-        # seg = F.interpolate(seg, size=(x.shape[-1], x.shape[-2]))
-        # print(f'######################################')
-        # print(f'inspetion in generator.py, after x=self.model(image):')
-        # print(f'inspect the image shape that is coming from the encoder {x.shape}, image shape: {image.shape} and the seg shape {seg.shape}, ')
-        # print(f'######################################')
 
-        # seg = self.fc(seg)
-        
+
+        x = self.model(image)
+
+
         x = x.view(x.size(0), -1)
-        # print(f'######################################')
-        # print(f'inspetion in generator.py after x.view():')
-        # print(f'inspect the image shape that is coming from the encoder {x.shape},image shape: {image.shape}  and the seg shape {seg.shape}')
         x = self.fc_img(x)
         x = self.fc_img2(x)
 
@@ -559,32 +719,15 @@ class StyleSPADEGenerator(BaseNetwork):
             in_fea = 1 * 16
     
         #Old try!!
-        x = x.view(-1, in_fea * self.opt.ngf , 8, 8)
-        #hard coded:
-        #x= x.view(1,-1,8,8)
-        #print(f'After view: {x.shape}')
-        
-
-
-        # print(f'in generator.py, after x.view(): {x.shape}')
-        # print(f'seg.shape: {seg.shape}')
-        # print(f'input_dist.shape: {input_dist.shape}')
-
+        if(self.voxel_size >1):
+            x = x.view(-1, in_fea * self.opt.ngf ,self.voxel_size, 8, 8)
+        else:
+            x = x.view(-1, in_fea * self.opt.ngf , 8, 8)
+      
         x = self.head_0(x, seg, input_dist)
-        #print(f'After head_0: {x.shape}')
 
-        # if self.opt.num_upsampling_layers != 'fgit adew':
-            
-        #     x = self.up(x)
         x = self.G_middle_0(x, seg, input_dist)
-        #print(f'After G_middle_0: {x.shape}')
 
-
-        # if self.opt.num_upsampling_layers == 'more' or \
-        #    self.opt.num_upsampling_layers == 'most':
-        #     x = self.up(x)
-
-        # x = self.G_middle_1(x, seg, input_dist)
 
         x = self.up(x)
         x = self.up_0(x, seg, input_dist)
@@ -612,3 +755,5 @@ class StyleSPADEGenerator(BaseNetwork):
 
 
         return x
+    
+    """

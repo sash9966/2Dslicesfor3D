@@ -134,9 +134,9 @@ class L1Loss(nn.Module):
         #have to make sure the shapes are the same
 
         #BUG: Why is [0,:,:,:] needed?
-        print(f'fake shape: {fake.shape}')
-        print(f'real shape: {real.shape}')
-        print(f' fake[0,:,:,:] shape {fake[0,:,:,:].shape}')
-        print(f' real[0,:,:,:] shape {real[0,:,:,:].shape}')
+        # print(f'fake shape: {fake.shape}')
+        # print(f'real shape: {real.shape}')
+        # print(f' fake[0,:,:,:] shape {fake[0,:,:,:].shape}')
+        # print(f' real[0,:,:,:] shape {real[0,:,:,:].shape}')
         return self.criterion(fake[0,:,:,:], real[0,:,:,:])
 

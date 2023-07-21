@@ -128,23 +128,29 @@ class Pix2PixModel(torch.nn.Module):
     def voxel_semantics(self,input_label, label_map):
         input_semantics_slices = []
 
-        for i in range(input_label.shape[2]):
+        for i in range(self.opt.voxel_size):
             # Get the slice
+            # print(f'input_label shape: {input_label.shape}')
+            # print(f'i: {i}')
             input_label_slice = input_label[..., i]
-            label_map_slice = label_map[..., i]
+            label_map_slice = label_map[..., i].unsqueeze(1)
 
-            print(f'input_label_slice shape: {input_label_slice.shape}')
-            print(f'label_map_slice shape: {label_map_slice.shape}')
+            # print(f'input_label_slice shape: {input_label_slice.shape}')
+            # print(f'label_map_slice shape: {label_map_slice.shape}')
 
 
             # Perform the scatter operation on the slice
             input_semantics_slice = input_label_slice.scatter_(1, label_map_slice.clamp(max=7), 1.0)
+            input_semantics_slice = input_semantics_slice.unsqueeze(-1)
+            # print(f'input_semantics_slice shape: {input_semantics_slice.shape}')
 
             # Append to the list
-            input_semantics_slices.append(input_semantics_slice.unsqueeze(2))
+            input_semantics_slices.append(input_semantics_slice)
+
         
         # Concatenate the list into a tensor
-        input_semantics = torch.cat(input_semantics_slices, dim=2)
+        input_semantics = torch.cat(input_semantics_slices, dim=-1)
+        #print(f'input_semantics shape after voxel_cat: {input_semantics.shape} ')
 
         return input_semantics
 
@@ -244,18 +250,14 @@ class Pix2PixModel(torch.nn.Module):
         # print(f'input_label has size: {input_label.shape}')
         # print(f'label_map has size: {label_map.shape}')
 
-        print(f'input label shape: {input_label.shape}')
-        print(f'label map shape: {label_map.shape}')
+        # print(f'input label shape: {input_label.shape}')
+        # print(f'label map shape: {label_map.shape}')
 
 
         if(self.opt.voxel_size >= 1):
             input_semantics = self.voxel_semantics(input_label,label_map)
         else:
-            print(f'single slice scatter shapes:input label {input_label.shape},  label map{label_map.shape}')
             input_semantics = input_label.scatter_(1, label_map.clamp(max=7), 1.0)
-
- 
-        print(f'input_semantics after scatter: {input_semantics.shape}')
         
         if self.opt.no_BG:
             input_semantics[:,0,:,:]= 0
@@ -274,6 +276,9 @@ class Pix2PixModel(torch.nn.Module):
         fake_image, KLD_loss, L1_loss = self.generate_fake(
             input_semantics, real_image, input_dist, compute_kld_loss=self.opt.use_vae)
         
+        print(f'fake_image shape in compute_generator_loss: {fake_image.shape}')  
+        print(f'real_image shape in compute_generator_loss {real_image.shape}')
+        print(f'input_semantics shape in compute_generator_loss: {input_semantics.shape}')
 
         if self.opt.use_vae:
             G_losses['KLD'] = KLD_loss

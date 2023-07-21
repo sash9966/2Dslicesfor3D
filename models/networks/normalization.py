@@ -49,6 +49,56 @@ def get_nonspade_norm_layer(opt, norm_type='instance'):
 
     return add_norm_layer
 
+#### Adjusted prompt via chatGPT to extend SPADE to 3D
+class SPADE3D(nn.Module):
+    def __init__(self, config_text, norm_nc, label_nc):
+        super().__init__()
+
+
+        assert config_text.startswith('spade')
+        parsed = re.search('spade(\D+)(\d)x\d', config_text)
+        param_free_norm_type = str(parsed.group(1))
+        ks = int(parsed.group(2))
+
+        if param_free_norm_type == 'instance':
+            self.param_free_norm = nn.InstanceNorm3d(norm_nc, affine=False)
+        elif param_free_norm_type == 'syncbatch':
+            # TODO: Replace with SynchronizedBatchNorm3d if available
+            self.param_free_norm = nn.BatchNorm3d(norm_nc, affine=False)
+        elif param_free_norm_type == 'batch':
+            self.param_free_norm = nn.BatchNorm3d(norm_nc, affine=False)
+        else:
+            raise ValueError('%s is not a recognized param-free norm type in SPADE'
+                             % param_free_norm_type)
+
+        # The dimension of the intermediate embedding space. Yes, hardcoded.
+        nhidden = 128
+
+        pw = ks // 2
+        self.mlp_shared = nn.Sequential(
+            nn.Conv3d(label_nc, nhidden, kernel_size=ks, padding=pw),
+            nn.ReLU()
+        )
+        self.mlp_gamma = nn.Conv3d(nhidden, norm_nc, kernel_size=ks, padding=pw)
+        self.mlp_beta = nn.Conv3d(nhidden, norm_nc, kernel_size=ks, padding=pw)
+
+    def forward(self, x, segmap, input_dist=None):
+
+        # Part 1. generate parameter-free normalized activations
+        #print(f'x shape: {x.shape}')
+        normalized = self.param_free_norm(x)
+
+        # Part 2. produce scaling and bias conditioned on semantic map
+        segmap = F.interpolate(segmap, size=x.size()[2:], mode='nearest')
+        actv = self.mlp_shared(segmap)
+        gamma = self.mlp_gamma(actv)
+        beta = self.mlp_beta(actv)
+
+        # apply scale and bias
+        out = normalized * (1 + gamma) + beta
+
+        return out
+
 
 # Creates SPADE normalization layer based on the given configuration
 # SPADE consists of two steps. First, it normalizes the activations using
@@ -70,6 +120,7 @@ class SPADE(nn.Module):
         assert config_text.startswith('spade')
         parsed = re.search('spade(\D+)(\d)x\d', config_text)
         param_free_norm_type = str(parsed.group(1))
+        print(f' param_free_norm_type: {param_free_norm_type}')
         ks = int(parsed.group(2))
 
         if param_free_norm_type == 'instance':
@@ -99,8 +150,18 @@ class SPADE(nn.Module):
         #print(f' x shape: {x.shape}')
         normalized = self.param_free_norm(x)
 
+        print(f' segmap shape before permute: {segmap.shape}')
         # Part 2. produce scaling and bias conditioned on semantic map
-        segmap = F.interpolate(segmap, size=x.size()[2:], mode='nearest')
+
+
+        #permutate for interpolation readin: mini-batch x channels x [optional depth] x [optional height] x width
+        segmap = segmap.permute(0, 1, 4, 2, 3)
+        print(f' segmap shape after permute: {segmap.shape}')
+        x_expanded = x.unsqueeze(2).repeat(1, 1, segmap.size(2), 1, 1)
+
+        print(f'shape of x: {x.shape}') 
+
+        segmap = F.interpolate(segmap, size=x_expanded.size()[2:], mode='nearest')
         actv = self.mlp_shared(segmap)
         gamma = self.mlp_gamma(actv)
         beta = self.mlp_beta(actv)

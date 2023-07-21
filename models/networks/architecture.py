@@ -8,7 +8,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torchvision
 import torch.nn.utils.spectral_norm as spectral_norm
-from models.networks.normalization import SPADE, SPADELight
+from models.networks.normalization import SPADE, SPADELight, SPADE3D
 
 
 # ResNet block that uses SPADE.
@@ -52,6 +52,11 @@ class SPADEResnetBlock(nn.Module):
             self.norm_1 = SPADELight(spade_config_str, fmiddle, input_nc, opt.no_instance, opt.add_dist)
             if self.learned_shortcut:
                 self.norm_s = SPADELight(spade_config_str, fin, input_nc, opt.no_instance, opt.add_dist)
+        elif opt.norm_mode == 'spade3d':
+            self.norm_0 = SPADE3D(spade_config_str, fin, opt.semantic_nc)
+            self.norm_1 = SPADE3D(spade_config_str, fmiddle, opt.semantic_nc)
+            if self.learned_shortcut:
+                self.norm_s = SPADE3D(spade_config_str, fin, opt.semantic_nc)
         else:
             raise ValueError('%s is not a defined normalization method' % opt.norm_mode)
 

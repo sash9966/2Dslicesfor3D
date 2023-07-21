@@ -69,7 +69,7 @@ class BaseOptions():
         parser.add_argument('--init_type', type=str, default='xavier', help='network initialization [normal|xavier|kaiming|orthogonal]')
         parser.add_argument('--init_variance', type=float, default=0.02, help='variance of the initialization distribution')
         parser.add_argument('--z_dim', type=int, default=512, help="dimension of the latent z vector")
-        parser.add_argument('--norm_mode', type=str, default='spade', help='[spade | clade]')
+        parser.add_argument('--norm_mode', type=str, default='spade3d', help='[spade | clade | spade3d]')
         parser.add_argument('--add_dist', action='store_true', help='if specified, use additional intra-class positional encoding map')
 
         # for style generator
