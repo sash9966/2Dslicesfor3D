@@ -107,6 +107,25 @@ class ResnetBlock(nn.Module):
         y = self.conv_block(x)
         out = x + y
         return out
+    
+class ResnetBlock3D(nn.Module):
+    def __init__(self, dim, norm_layer, activation=nn.ReLU(False), kernel_size=3):
+        super().__init__()
+
+        pw = (kernel_size - 1) // 2 -1
+        self.conv_block = nn.Sequential(
+            nn.ReplicationPad3d(pw),
+            norm_layer(nn.Conv3d(dim, dim, kernel_size=kernel_size)),
+            activation,
+            nn.ReplicationPad3d(pw),
+            norm_layer(nn.Conv3d(dim, dim, kernel_size=kernel_size))
+        )
+
+    def forward(self, x):
+        y = self.conv_block(x)
+        out = x + y
+        return out
+
 
 
 # VGG architecter, used for the perceptual loss using a pretrained VGG network

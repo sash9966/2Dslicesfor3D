@@ -39,7 +39,8 @@ def find_network_using_name(target_network_name, filename):
 
     print(f'module name that is being loaded is: {module_name}')
     network = util.find_class_in_module(target_class_name, module_name)
-
+    print(f'target_class_name:{target_class_name}')
+    print(f'module_name : {module_name}')
     assert issubclass(network, BaseNetwork), \
         "Class %s should be a subclass of BaseNetwork" % network
 

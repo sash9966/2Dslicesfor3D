@@ -63,7 +63,7 @@ class BaseOptions():
         parser.add_argument('--display_winsize', type=int, default=400, help='display window size')
 
         # for generator
-        parser.add_argument('--netG', type=str, default='stylespade', help='selects model to use for netG (pix2pixhd | spade | stylespade)')
+        parser.add_argument('--netG', type=str, default='stylespade3d', help='selects model to use for netG (pix2pixhd | spade | stylespade | stylespade3d )')
         ## 
         parser.add_argument('--ngf', type=int, default=16, help='# of gen filters in first conv layer')
         parser.add_argument('--init_type', type=str, default='xavier', help='network initialization [normal|xavier|kaiming|orthogonal]')
@@ -77,13 +77,13 @@ class BaseOptions():
         parser.add_argument('--resnet_n_blocks', type=int, default=2, help='number of residual blocks in the global generator network')
         parser.add_argument('--resnet_kernel_size', type=int, default=3,
                             help='kernel size of the resnet block')
-        parser.add_argument('--resnet_initial_kernel_size', type=int, default=7,
+        parser.add_argument('--resnet_initial_kernel_size', type=int, default=6,
                             help='kernel size of the first convolution')
 
         # for instance-wise features
         parser.add_argument('--no_instance', action='store_true',default=True, help='if specified, do *not* add instance map as input')
         parser.add_argument('--nef', type=int, default=32, help='# of encoder filters in the first conv layer')
-        parser.add_argument('--use_vae', action='store_true', help='enable training with an image encoder.')
+        parser.add_argument('--use_vae', action='store_false', help='enable training with an image encoder.')
         parser.add_argument('--use_noise', action='store_true', help='enable training with an image encoder.')
 
         # for training and test
