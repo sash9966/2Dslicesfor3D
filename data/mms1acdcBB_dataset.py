@@ -30,8 +30,6 @@ class Mms1acdcBBDataset(BaseDataset):
        
         # parser.set_defaults(label_nc=4)
 
-        #For 3D trial!!
-        parser.set_defaults(output_nc=3)
         # parser.set_defaults(crop_size=128)
         parser.set_defaults(no_instance=True)
         parser.set_defaults(add_dist=False)

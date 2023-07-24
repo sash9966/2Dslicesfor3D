@@ -602,9 +602,10 @@ class StyleSPADE3DGenerator(BaseNetwork):
         ##   style encoder 
 
         # initial conv ##Changed to 2 padding for 3D with 3
-        model += [nn.ReflectionPad3d(opt.resnet_initial_kernel_size // 2 -1),
+        # In 3D -> with ChatGPT -> changed padding to 0 to avoid dimension mismatch
+        model += [nn.ReflectionPad3d(0),
                   norm_layer_style(nn.Conv3d(self.opt.output_nc, opt.ngf,
-                                       kernel_size=opt.resnet_initial_kernel_size,
+                                       kernel_size=[2,opt.resnet_initial_kernel_size,opt.resnet_initial_kernel_size],
                                        padding=0)),
                   activation]
 
@@ -612,7 +613,7 @@ class StyleSPADE3DGenerator(BaseNetwork):
         mult = 1
         for i in range(opt.resnet_n_downsample):
             model += [norm_layer_style(nn.Conv3d(opt.ngf * mult, opt.ngf * mult * 2,
-                                           kernel_size=3, stride=2, padding=1)),
+                                           kernel_size=[1,3,3], stride=2, padding=1)),
                       activation]
             mult *= 2
 
@@ -625,7 +626,9 @@ class StyleSPADE3DGenerator(BaseNetwork):
 
         self.model = nn.Sequential(*model)
 
-        self.fc_img = nn.Linear(in_fea * nf * 16 * 16, in_fea * nf // 4)
+
+        #Hardcoded
+        self.fc_img = nn.Linear(524288, in_fea * nf // 4)
         self.fc_img2 = nn.Linear(in_fea * nf // 4, in_fea * nf * 8 * 8)
         self.fc = nn.Conv3d(self.opt.semantic_nc, in_fea * nf, 3, padding=1)
 
@@ -669,8 +672,6 @@ class StyleSPADE3DGenerator(BaseNetwork):
         image = image.unsqueeze(1)
 
         print(f' image after unsqueeze: {image.shape}')
-        image = image.permute(0, 1, 4, 2, 3)
-        seg = seg.permute(0, 1,4, 2, 3) # Reorders the dimensions to (Batch, Channel, Depth, Height x width)
 
 
 
@@ -684,18 +685,21 @@ class StyleSPADE3DGenerator(BaseNetwork):
             in_fea = 1 * 16
 
 
-        print(f' after permute image shape: {image.shape}')
-        print(f' after permute segmentaiton shape: {seg.shape}')
+
+        seg = seg.permute(0, 1, 4, 2,3 ) # This reorders the dimensions to (Batch, Channel, Depth, Height, Width)
+        image = image.permute(0, 1, 4, 2, 3) # This reorders the dimensions to (Batch, Channel, Depth, Height, Width
         x = self.model(image)
         # x = x.permute(0, 1, 3, 2, 4) # This reorders the dimensions to (Batch, Channel, Depth, Height, Width)
-        x = x.view(x.size(0), -1)
+
+        x = x.view(1, -1, 32 * 32 * 2 * 256)
+
         x = self.fc_img(x)
+        print(f'x shape after fc_img: {x.shape}')
         x = self.fc_img2(x)
 
-        if self.voxel_size > 1:
-            x = x.view(-1, in_fea * self.opt.ngf , self.voxel_size, 8, 8, 8)
-        else:
-            x = x.view(-1, in_fea * self.opt.ngf , 8, 8, 8)
+        print(f'x shape after fc_img2 : {x.shape}')
+        x = x.view(1, 1, 4, 8, 2048)  # reshaping to [1, 1, 4, 8, 2048] 
+
 
         x = self.head_0(x, seg, input_dist)
 

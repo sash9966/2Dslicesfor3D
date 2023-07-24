@@ -24,7 +24,7 @@ class SPADEResnetBlock(nn.Module):
         # Attributes
         self.learned_shortcut = (fin != fout)
         fmiddle = min(fin, fout)
-
+        print(f'fin: {fin}, fout: {fout}, fmiddle: {fmiddle}')
         # create conv layers
         add_channels = 1 if (opt.norm_mode == 'clade' and not opt.no_instance) else 0
         if (opt.norm_mode == 'spade3d'): 
@@ -68,10 +68,13 @@ class SPADEResnetBlock(nn.Module):
     # the semantic segmentation map as input
     def forward(self, x, seg, input_dist=None):
         x_s = self.shortcut(x, seg, input_dist)
+        print(f'x: {x.shape}, seg: {seg.shape}, input_dist: {input_dist.shape}')
 
         #get info on the parameters of the network
         dx = self.conv_0(self.actvn(self.norm_0(x, seg, input_dist)))
+        print(f'dx after conv_0: {dx.shape}')
         dx = self.conv_1(self.actvn(self.norm_1(dx, seg, input_dist)))
+        print(f'dx after_conv1: {dx.shape}')
 
         out = x_s + dx
 
@@ -112,17 +115,18 @@ class ResnetBlock3D(nn.Module):
     def __init__(self, dim, norm_layer, activation=nn.ReLU(False), kernel_size=3):
         super().__init__()
 
-        pw = (kernel_size - 1) // 2 -1
+        pw = (kernel_size - 1) // 2 
         self.conv_block = nn.Sequential(
-            nn.ReplicationPad3d(pw),
-            norm_layer(nn.Conv3d(dim, dim, kernel_size=kernel_size)),
+            nn.ConstantPad3d((pw, pw, pw, pw, 0, 0), 0),
+            norm_layer(nn.Conv3d(dim, dim, kernel_size=[1,kernel_size,kernel_size])),
             activation,
-            nn.ReplicationPad3d(pw),
-            norm_layer(nn.Conv3d(dim, dim, kernel_size=kernel_size))
+            nn.ConstantPad3d((pw, pw, pw, pw, 0, 0), 0),
+            norm_layer(nn.Conv3d(dim, dim, kernel_size=[1,kernel_size,kernel_size]))
         )
 
     def forward(self, x):
         y = self.conv_block(x)
+        print(f'x: {x.shape}, y: {y.shape}')
         out = x + y
         return out
 

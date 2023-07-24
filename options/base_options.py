@@ -46,7 +46,7 @@ class BaseOptions():
         parser.add_argument('--semantic_nc', type=int, default=8, help='# of input label classes without unknown class. If you have unknown class as class label, specify --contain_dopntcare_label.')
 
         parser.add_argument('--contain_dontcare_label', action='store_true', default= False, help='if the label map contains dontcare label (dontcare=255)')
-        parser.add_argument('--output_nc', type=int, default=3, help='# of output image channels')
+        parser.add_argument('--output_nc', type=int, default=1, help='# of output image channels')
 
         # for setting inputs
         parser.add_argument('--dataroot', type=str, default='./datasets/cityscapes/')
@@ -77,7 +77,7 @@ class BaseOptions():
         parser.add_argument('--resnet_n_blocks', type=int, default=2, help='number of residual blocks in the global generator network')
         parser.add_argument('--resnet_kernel_size', type=int, default=3,
                             help='kernel size of the resnet block')
-        parser.add_argument('--resnet_initial_kernel_size', type=int, default=6,
+        parser.add_argument('--resnet_initial_kernel_size', type=int, default=7,
                             help='kernel size of the first convolution')
 
         # for instance-wise features
