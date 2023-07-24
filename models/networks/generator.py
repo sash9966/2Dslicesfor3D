@@ -560,6 +560,8 @@ class StyleSPADEGenerator(BaseNetwork):
         x = self.fc_img(x)
         x = self.fc_img2(x)
 
+        print(f'x shape after fc_img2: {x.shape}')
+
         #print(f'self.opt.crop_size {self.opt.crop_size}')
         if self.opt.crop_size == 256:
             in_fea = 2 * 16
@@ -572,7 +574,7 @@ class StyleSPADEGenerator(BaseNetwork):
         x = x.view(-1, in_fea * self.opt.ngf , 8, 8)
         #hard coded:
         #x= x.view(1,-1,8,8)
-        #print(f'After view: {x.shape}')
+        print(f'After view and before head_0: {x.shape}')
         
 
 
