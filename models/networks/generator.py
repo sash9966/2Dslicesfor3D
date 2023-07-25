@@ -512,6 +512,9 @@ class StyleSPADEGenerator(BaseNetwork):
     #     return sw, sh
 
     def forward(self, input, image, input_dist=None):
+
+        print(f'######################################')
+        print(f' start forward pass in generator.py')
         seg = input
         image = image
 
@@ -634,5 +637,6 @@ class StyleSPADEGenerator(BaseNetwork):
         x = self.conv_img(F.leaky_relu(x, 2e-1))
         # x = nn.Tanh(x)
 
-
+        print('end one forward pass')
+        print(f'######################################')
         return x

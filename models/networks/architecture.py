@@ -73,6 +73,8 @@ class SPADEResnetBlock(nn.Module):
         return out
 
     def shortcut(self, x, seg, input_dist=None):
+
+        print(f'shortcut is called: x: {x.shape}, seg: {seg.shape}, input_dist: {input_dist.shape}')
         if self.learned_shortcut:
             x_s = self.conv_s(self.norm_s(x, seg, input_dist))
         else:
