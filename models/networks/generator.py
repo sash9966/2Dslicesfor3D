@@ -640,7 +640,7 @@ class StyleSPADE3DGenerator(BaseNetwork):
         self.G_middle_1 = SPADEResnetBlock(in_fea * nf, in_fea * nf, opt)
 
 
-        self.up = nn.Upsample(scale_factor=(2, 2, 2), mode='trilinear')
+        self.up = nn.Upsample(scale_factor=(1, 2, 2), mode='trilinear')
 
         self.up_0 = SPADEResnetBlock(64 * nf, 32 * nf, opt)
         self.up_1 = SPADEResnetBlock(32 * nf, 16 * nf, opt)
@@ -667,6 +667,8 @@ class StyleSPADE3DGenerator(BaseNetwork):
 
 
     def forward(self, input, image, input_dist=None):
+        print(f'#############################')
+        print(f'start of one forward pass:')
         seg = input
         image = image
 
@@ -674,27 +676,14 @@ class StyleSPADE3DGenerator(BaseNetwork):
         print(f' image shape: {image.shape}')
         print(f'segmentaiton shape: {seg.shape}')
         image = image.unsqueeze(1)
-
-        print(f' image after unsqueeze: {image.shape}')
-
-
-
-        if self.opt.crop_size == 256:
-            in_fea = 2 * 16
-            self.opt.num_upsampling_layers = 'most'
-        if self.opt.crop_size == 512:
-            in_fea = 4 * 16
-            self.opt.num_upsampling_layers = 'most512'
-        if self.opt.crop_size == 128:
-            in_fea = 1 * 16
-
-
         
         seg = seg.permute(0, 1, 4, 2,3 ) # This reorders the dimensions to (Batch, Channel, Depth, Height, Width)
         image = image.permute(0, 1, 4, 2, 3) # This reorders the dimensions to (Batch, Channel, Depth, Height, Width
+        print(f' image after unsqueeze and permutation: {image.shape}') 
+        print(f'segmentation: {seg.shape}')
         x = self.model(image)
-        # x = x.permute(0, 1, 3, 2, 4) # This reorders the dimensions to (Batch, Channel, Depth, Height, Width)
-
+        
+        #self.opt.ngf = 16
         x = x.view(1, 32768 *self.opt.ngf) 
 
         x = self.fc_img(x)
@@ -740,5 +729,7 @@ class StyleSPADE3DGenerator(BaseNetwork):
             x = self.up_5(x, seg, input_dist)
 
         x = self.conv_img(F.leaky_relu(x, 2e-1))
-
+        
+        print(f'#############################')
+        print(f'end of forward pass:')
         return x
