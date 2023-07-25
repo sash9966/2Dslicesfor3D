@@ -628,8 +628,9 @@ class StyleSPADE3DGenerator(BaseNetwork):
 
 
         #Hardcoded
-        self.fc_img = nn.Linear(524288, in_fea * nf // 4)
-        self.fc_img2 = nn.Linear(in_fea * nf // 4, in_fea * nf * 8 * 8)
+        self.fc_img = nn.Linear(524288, 1 * 256 * 2 * 2 * 2)
+        self.fc_img2 = nn.Linear(1 * 256 * 2 * 2 * 2, 1 * 256 * 4 * 8 * 64)  # output features = batch_size * channels * depth * height * width
+
         self.fc = nn.Conv3d(self.opt.semantic_nc, in_fea * nf, 3, padding=1)
 
 
@@ -638,21 +639,24 @@ class StyleSPADE3DGenerator(BaseNetwork):
         self.G_middle_0 = SPADEResnetBlock(in_fea * nf, in_fea * nf, opt)
         self.G_middle_1 = SPADEResnetBlock(in_fea * nf, in_fea * nf, opt)
 
-        self.up_0 = SPADEResnetBlock(in_fea * nf, 8 * nf, opt)
-        self.up_1 = SPADEResnetBlock(8 * nf, 4 * nf, opt)
-        self.up_2 = SPADEResnetBlock(4 * nf, 2 * nf, opt)
-        self.up_3 = SPADEResnetBlock(2 * nf, 1 * nf, opt)
+
+        self.up = nn.Upsample(scale_factor=(1, 2, 2), mode='trilinear')
+
+        self.up_0 = SPADEResnetBlock(64 * nf, 32 * nf, opt)
+        self.up_1 = SPADEResnetBlock(32 * nf, 16 * nf, opt)
+        self.up_2 = SPADEResnetBlock(16 * nf, 8 * nf, opt)
+        self.up_3 = SPADEResnetBlock(4 * nf, 2 * nf, opt)
 
         final_nc = nf
 
         #Increase upsampling if you want the fake images to be generated in higher resolution -> 512
         if self.opt.num_upsampling_layers == 'most':
-            self.up_4 = SPADEResnetBlock(1 * nf, nf // 2, opt)
+            self.up_4 = SPADEResnetBlock(2 * nf, nf, opt)
             final_nc = nf // 2
         
         if self.opt.num_upsampling_layers == 'most512':
-            self.up_4 = SPADEResnetBlock(1 * nf, nf // 2, opt)
-            self.up_5 = SPADEResnetBlock(nf // 2, nf // 4, opt)
+            self.up_4 = SPADEResnetBlock(4*nf, nf*2, opt)
+            self.up_5 = SPADEResnetBlock(nf * 2,  nf, opt)
             final_nc = nf // 4
 
 
@@ -685,20 +689,22 @@ class StyleSPADE3DGenerator(BaseNetwork):
             in_fea = 1 * 16
 
 
-
+        
         seg = seg.permute(0, 1, 4, 2,3 ) # This reorders the dimensions to (Batch, Channel, Depth, Height, Width)
         image = image.permute(0, 1, 4, 2, 3) # This reorders the dimensions to (Batch, Channel, Depth, Height, Width
         x = self.model(image)
         # x = x.permute(0, 1, 3, 2, 4) # This reorders the dimensions to (Batch, Channel, Depth, Height, Width)
 
-        x = x.view(1, -1, 32 * 32 * 2 * 256)
+        x = x.view(1, 32768 *self.opt.ngf) 
 
         x = self.fc_img(x)
         print(f'x shape after fc_img: {x.shape}')
         x = self.fc_img2(x)
 
         print(f'x shape after fc_img2 : {x.shape}')
-        x = x.view(1, 1, 4, 8, 2048)  # reshaping to [1, 1, 4, 8, 2048] 
+        x = x.view(1, 1024, 8, 8, 8)  # reshaping to have depth dimension again
+  
+
 
 
         x = self.head_0(x, seg, input_dist)
@@ -706,6 +712,9 @@ class StyleSPADE3DGenerator(BaseNetwork):
         x = self.G_middle_0(x, seg, input_dist)
 
         x = self.up(x)
+        print(f'x after up: {x.shape}')
+        print(f'input_dist.shape: {input_dist.shape}')
+        print(f'seg.shape: {seg.shape}')
         x = self.up_0(x, seg, input_dist)
         x = self.up(x)
         x = self.up_1(x, seg, input_dist)

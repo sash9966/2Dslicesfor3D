@@ -55,6 +55,10 @@ for epoch in iter_counter.training_epochs():
     print(f'lenght of dataloader: {len(dataloader)}')
     for i, data_i in enumerate(dataloader, start=iter_counter.epoch_iter):
 
+        ## skip the last two images
+        if((i+1)%220==0 or (i+1)%219 == 0):
+            print(f'last two images, skip: {i}')
+            continue
         #First initalisation
 
         #look at data that's loaded:

@@ -86,6 +86,7 @@ class SPADE3D(nn.Module):
 
         # Part 1. generate parameter-free normalized activations
         #print(f'x shape: {x.shape}')
+        print(f'x shape: {x.shape} in forward of SPADE3D')
         normalized = self.param_free_norm(x)
 
         # Part 2. produce scaling and bias conditioned on semantic map
