@@ -60,8 +60,7 @@ class SPADEResnetBlock(nn.Module):
         elif opt.norm_mode == 'spade3d':
             self.norm_0 = SPADE3D(spade_config_str, fin, opt.semantic_nc)
             self.norm_1 = SPADE3D(spade_config_str, fmiddle, opt.semantic_nc)
-            if self.learned_shortcut:
-                self.norm_s = SPADE3D(spade_config_str, fin, opt.semantic_nc)
+            self.norm_s = SPADE3D(spade_config_str, fin, opt.semantic_nc)
         else:
             raise ValueError('%s is not a defined normalization method' % opt.norm_mode)
 
@@ -82,6 +81,7 @@ class SPADEResnetBlock(nn.Module):
         return out
 
     def shortcut(self, x, seg, input_dist=None):
+
         if self.learned_shortcut:
             x_s = self.conv_s(self.norm_s(x, seg, input_dist))
         else:

@@ -613,7 +613,7 @@ class StyleSPADE3DGenerator(BaseNetwork):
         mult = 1
         for i in range(opt.resnet_n_downsample):
             model += [norm_layer_style(nn.Conv3d(opt.ngf * mult, opt.ngf * mult * 2,
-                                           kernel_size=[1,3,3], stride=2, padding=1)),
+                                           kernel_size=[2,3,3], stride=2, padding=1)),
                       activation]
             mult *= 2
 
@@ -640,7 +640,7 @@ class StyleSPADE3DGenerator(BaseNetwork):
         self.G_middle_1 = SPADEResnetBlock(in_fea * nf, in_fea * nf, opt)
 
 
-        self.up = nn.Upsample(scale_factor=(1, 2, 2), mode='trilinear')
+        self.up = nn.Upsample(scale_factor=(2, 2, 2), mode='trilinear')
 
         self.up_0 = SPADEResnetBlock(64 * nf, 32 * nf, opt)
         self.up_1 = SPADEResnetBlock(32 * nf, 16 * nf, opt)
@@ -716,12 +716,19 @@ class StyleSPADE3DGenerator(BaseNetwork):
         print(f'input_dist.shape: {input_dist.shape}')
         print(f'seg.shape: {seg.shape}')
         x = self.up_0(x, seg, input_dist)
+        print(f'x after up_0: {x.shape}')
         x = self.up(x)
+        print(f'x after up: {x.shape}')
         x = self.up_1(x, seg, input_dist)
+        print(f'x after up_1: {x.shape}')
         x = self.up(x)
+        print(f'x after up: {x.shape}')
         x = self.up_2(x, seg, input_dist)
+        print(f'x after up_2: {x.shape}')
         x = self.up(x)
+        print(f'x after up: {x.shape}')
         x = self.up_3(x, seg, input_dist)
+        print(f'x after up_3: {x.shape}')
 
         if self.opt.num_upsampling_layers == 'most':
             x = self.up(x)
