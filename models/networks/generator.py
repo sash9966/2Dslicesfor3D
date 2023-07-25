@@ -599,22 +599,34 @@ class StyleSPADEGenerator(BaseNetwork):
         # x = self.G_middle_1(x, seg, input_dist)
 
         x = self.up(x)
+        print(f'After up: {x.shape}')
         x = self.up_0(x, seg, input_dist)
+        print(f'After up_0: {x.shape}')
         x = self.up(x)
+        print(f'After up: {x.shape}')
         x = self.up_1(x, seg, input_dist)
+        print(f'After up_1: {x.shape}')
         x = self.up(x)
+        print(f'After up: {x.shape}')
         x = self.up_2(x, seg, input_dist)
+        print(f'After up_2: {x.shape}')
         x = self.up(x)
+        print(f'After up: {x.shape}')
         x = self.up_3(x, seg, input_dist)
+        print(f'After up_3: {x.shape}')
 
         if self.opt.num_upsampling_layers == 'most':
             x = self.up(x)
             x = self.up_4(x, seg, input_dist)
         if self.opt.num_upsampling_layers == 'most512':
             x = self.up(x)
+            print(f'After up: {x.shape}')
             x = self.up_4(x, seg, input_dist)
+            print(f'After up_4: {x.shape}')
             x = self.up(x)
+            print(f'After up: {x.shape}')
             x = self.up_5(x, seg, input_dist)
+            print(f'After up_5: {x.shape}')
 
  
 
