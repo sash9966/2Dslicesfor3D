@@ -493,23 +493,6 @@ class StyleSPADEGenerator(BaseNetwork):
 
         self.up = nn.Upsample(scale_factor=2)
 
-    # def compute_latent_vector_size(self, opt):
-    #     if opt.num_upsampling_layers == 'few':
-    #         num_up_layers = 4
-    #     elif opt.num_upsampling_layers == 'normal':
-    #         num_up_layers = 5
-    #     elif opt.num_upsampling_layers == 'more':
-    #         num_up_layers = 6
-    #     elif opt.num_upsampling_layers == 'most':
-    #         num_up_layers = 7
-    #     else:
-    #         raise ValueError('opt.num_upsampling_layers [%s] not recognized' %
-    #                          opt.num_upsampling_layers)
-
-    #     sw = opt.crop_size // (2**num_up_layers)
-    #     sh = round(sw / opt.aspect_ratio)
-
-    #     return sw, sh
 
     def forward(self, input, image, input_dist=None):
 
@@ -519,71 +502,22 @@ class StyleSPADEGenerator(BaseNetwork):
         image = image
 
         print(f'incoming image shape: {image.shape} and the seg shape {seg.shape}, ')
-
-
-
-
-
-
-
-        # if self.opt.use_vae:
-        #     # we sample z from unit normal and reshape the tensor
-        #     if z is None:
-        #         z = torch.randn(input.size(0), self.opt.z_dim,
-        #                         dtype=torch.float32, device=input.get_device())
-        #     x = self.fc(z)
-        #     x = x.view(-1, 16 * self.opt.ngf, self.sh, self.sw)
-        #     ### sina
-        # elif self.opt.use_noise:
-        #     # print('yes got the noise')
-        #     z = torch.randn(input.size(0), self.opt.z_dim,
-        #                         dtype=torch.float32, device=input.get_device())
-        #     x = self.fc(z)
-        #     x = x.view(-1, 16 * self.opt.ngf, self.sh, self.sw)
-        #     ### sina
-        # else:
-        #     # we downsample segmap and run convolution
-        #     x = F.interpolate(seg, size=(self.sh, self.sw))
-        #     x = self.fc(x)
         x = self.model(image)
         print(f'x shape after self.model(image): {x.shape}')
-        # seg = F.interpolate(seg, size=(x.shape[-1], x.shape[-2]))
-        # print(f'######################################')
-        # print(f'inspetion in generator.py, after x=self.model(image):')
-        # print(f'inspect the image shape that is coming from the encoder {x.shape}, image shape: {image.shape} and the seg shape {seg.shape}, ')
-        # print(f'######################################')
-
-        # seg = self.fc(seg)
         
         x = x.view(x.size(0), -1)
-        # print(f'######################################')
-        # print(f'inspetion in generator.py after x.view():')
-        # print(f'inspect the image shape that is coming from the encoder {x.shape},image shape: {image.shape}  and the seg shape {seg.shape}')
         print(f'x shape before fc_img: {x.shape}')
         x = self.fc_img(x)
         x = self.fc_img2(x)
 
         print(f'x shape after fc_img2: {x.shape}')
-
-        #print(f'self.opt.crop_size {self.opt.crop_size}')
-        if self.opt.crop_size == 256:
-            in_fea = 2 * 16
-        if self.opt.crop_size == 512:
-            in_fea = 4 * 16
-        if self.opt.crop_size == 128:
-            in_fea = 1 * 16
     
         #Old try!!
-        x = x.view(-1, in_fea * self.opt.ngf , 8, 8)
+        x = x.view(-1, 4*16 * self.opt.ngf , 8, 8)
         #hard coded:
         #x= x.view(1,-1,8,8)
         print(f'After view and before head_0: {x.shape}')
-        
 
-
-        # print(f'in generator.py, after x.view(): {x.shape}')
-        # print(f'seg.shape: {seg.shape}')
-        # print(f'input_dist.shape: {input_dist.shape}')
 
         x = self.head_0(x, seg, input_dist)
         #print(f'After head_0: {x.shape}')
