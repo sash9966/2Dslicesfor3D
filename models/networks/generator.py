@@ -613,16 +613,21 @@ class StyleSPADE3DGenerator(BaseNetwork):
         mult = 1
         for i in range(opt.resnet_n_downsample):
             model += [norm_layer_style(nn.Conv3d(opt.ngf * mult, opt.ngf * mult * 2,
-                                           kernel_size=[2,3,3], stride=2, padding=1)),
+                                           kernel_size=[2,3,3], stride=[1,2,2], padding=1)),
                       activation]
             mult *= 2
 
-        # resnet blocks
-        for i in range(opt.resnet_n_blocks):
+        # resnet blocks, first one takes 3D information
+        for i in range(opt.resnet_n_blocks-1):
+            print(f'adding resnet block {i}')
+            if (i == 0):
+                kernel_size_3d = [2,3,3]
+            else:
+                kernel_size_3d = [1,3,3]
             model += [ResnetBlock3D(opt.ngf * mult,  # use 3D version of ResnetBlock
                                   norm_layer=norm_layer_style,
                                   activation=activation,
-                                  kernel_size=opt.resnet_kernel_size)]
+                                  kernel_size=kernel_size_3d)]  
 
         self.model = nn.Sequential(*model)
 

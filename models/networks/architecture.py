@@ -113,23 +113,22 @@ class ResnetBlock(nn.Module):
         return out
     
 class ResnetBlock3D(nn.Module):
-    def __init__(self, dim, norm_layer, activation=nn.ReLU(False), kernel_size=3):
+    def __init__(self, dim, norm_layer,kernel_size,activation=nn.ReLU(False), ):
         super().__init__()
 
-        pw = (kernel_size - 1) // 2 
+        pad = ((kernel_size[1] - 1) // 2)
         self.conv_block = nn.Sequential(
-            nn.ConstantPad3d((pw, pw, pw, pw, 0, 0), 0),
-            norm_layer(nn.Conv3d(dim, dim, kernel_size=[1,kernel_size,kernel_size])),
+            nn.ConstantPad3d((pad, pad, pad, pad, 0, 0), 0),  # Only pad height and width dimensions
+            norm_layer(nn.Conv3d(dim, dim, kernel_size=kernel_size)),
             activation,
-            nn.ConstantPad3d((pw, pw, pw, pw, 0, 0), 0),
-            norm_layer(nn.Conv3d(dim, dim, kernel_size=[1,kernel_size,kernel_size]))
+            nn.ConstantPad3d((pad, pad, pad, pad, 0, 0), 0),  # Only pad height and width dimensions
+            norm_layer(nn.Conv3d(dim, dim, kernel_size=kernel_size))
         )
 
     def forward(self, x):
-        y = self.conv_block(x)
-        print(f'x: {x.shape}, y: {y.shape}')
-        out = x + y
-        return out
+        return x + self.conv_block(x)
+
+
 
 
 
