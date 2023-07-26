@@ -59,7 +59,7 @@ class SPADEResnetBlock(nn.Module):
     # the semantic segmentation map as input
     def forward(self, x, seg, input_dist=None):
         x_s = self.shortcut(x, seg, input_dist)
-        print(f'x: {x.shape}, seg: {seg.shape}, input_dist: {input_dist.shape}')
+        print(f'In forward of SPADEResnetBlock: \n x: {x.shape}, seg: {seg.shape}, input_dist: {input_dist.shape}')
 
 
         #get info on the parameters of the network

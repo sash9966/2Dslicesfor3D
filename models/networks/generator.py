@@ -521,12 +521,14 @@ class StyleSPADEGenerator(BaseNetwork):
 
 
         x = self.head_0(x, seg, input_dist)
+        print(f'After head_0: {x.shape}')
         #print(f'After head_0: {x.shape}')
 
         # if self.opt.num_upsampling_layers != 'fgit adew':
             
         #     x = self.up(x)
         x = self.G_middle_0(x, seg, input_dist)
+        print(f'After G_middle_0: {x.shape}')
         #print(f'After G_middle_0: {x.shape}')
 
 
