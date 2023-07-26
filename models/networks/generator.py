@@ -637,7 +637,7 @@ class StyleSPADE3DGenerator(BaseNetwork):
 
 
         #Hardcoded
-        self.fc_img = nn.Linear(524288, 1 * 256 * 2 * 2 * 2)
+        self.fc_img = nn.Linear(3*78642, 1 * 256 * 2 * 2 * 2)
         self.fc_img2 = nn.Linear(1 * 256 * 2 * 2 * 2, 1 * 256 * 4 * 8 * 64)  # output features = batch_size * channels * depth * height * width
 
         self.fc = nn.Conv3d(self.opt.semantic_nc, in_fea * nf, 3, padding=1)
@@ -678,6 +678,7 @@ class StyleSPADE3DGenerator(BaseNetwork):
     def forward(self, input, image, input_dist=None):
         print(f'#############################')
         print(f'start of one forward pass:')
+        
         seg = input
         image = image
 
@@ -688,13 +689,15 @@ class StyleSPADE3DGenerator(BaseNetwork):
         
         seg = seg.permute(0, 1, 4, 2,3 ) # This reorders the dimensions to (Batch, Channel, Depth, Height, Width)
         image = image.permute(0, 1, 4, 2, 3) # This reorders the dimensions to (Batch, Channel, Depth, Height, Width
+        depth= seg.shape[2]
+        print(f'depth: {depth}')
         print(f' image after unsqueeze and permutation: {image.shape}') 
         print(f'segmentation: {seg.shape}')
         summary(self.model, (1, 1, 3,512,512))
         x = self.model(image)
         
         #self.opt.ngf = 16
-        x = x.view(1, 32768 *self.opt.ngf) 
+        x = x.view(1, 49152*depth*self.opt.ngf) 
 
         x = self.fc_img(x)
         print(f'x shape after fc_img: {x.shape}')
