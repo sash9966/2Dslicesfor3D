@@ -637,7 +637,7 @@ class StyleSPADE3DGenerator(BaseNetwork):
 
 
         #Hardcoded
-        self.fc_img = nn.Linear(3*78642, 1 * 256 * 2 * 2 * 2)
+        self.fc_img = nn.Linear(in_fea * nf * 16 * 16 * 3, in_fea * nf //4)
         self.fc_img2 = nn.Linear(1 * 256 * 2 * 2 * 2, 1 * 256 * 4 * 8 * 64)  # output features = batch_size * channels * depth * height * width
 
         self.fc = nn.Conv3d(self.opt.semantic_nc, in_fea * nf, 3, padding=1)
