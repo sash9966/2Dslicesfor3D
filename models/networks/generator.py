@@ -506,8 +506,9 @@ class StyleSPADEGenerator(BaseNetwork):
         print(f'x shape after self.model(image): {x.shape}')
         
         x = x.view(x.size(0), -1)
-        print(f'x shape before fc_img: {x.shape}')
+        print(f'x shape before fc_img, after view change: {x.shape}')
         x = self.fc_img(x)
+        print(f'x shape after fc_img: {x.shape}')
         x = self.fc_img2(x)
 
         print(f'x shape after fc_img2: {x.shape}')
