@@ -636,8 +636,8 @@ class StyleSPADE3DGenerator(BaseNetwork):
         self.model = nn.Sequential(*model)
 
 
-        #Hardcoded
-        self.fc_img = nn.Linear(in_fea * nf * 16 * 16 * 3, in_fea * nf //4)
+        #Hardcoded, not sure if 3= depth?
+        self.fc_img = nn.Linear(in_fea * nf  *3 * 3*16*16, in_fea * nf //4 )
         self.fc_img2 = nn.Linear(1 * 256 * 2 * 2 * 2, 1 * 256 * 4 * 8 * 64)  # output features = batch_size * channels * depth * height * width
 
         self.fc = nn.Conv3d(self.opt.semantic_nc, in_fea * nf, 3, padding=1)
@@ -697,7 +697,7 @@ class StyleSPADE3DGenerator(BaseNetwork):
         x = self.model(image)
         
         #self.opt.ngf = 16
-        x = x.view(1, 49152*depth*self.opt.ngf) 
+        x = x.view(x.size(0), -1)
 
         x = self.fc_img(x)
         print(f'x shape after fc_img: {x.shape}')
