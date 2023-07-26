@@ -11,6 +11,7 @@ from models.networks.normalization import get_nonspade_norm_layer
 from models.networks.architecture import ResnetBlock as ResnetBlock
 from models.networks.architecture import ResnetBlock3D as ResnetBlock3D
 from models.networks.architecture import SPADEResnetBlock as SPADEResnetBlock
+from torchinfo import summary
 ### sina
 # ref:"https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html"
 # Set random seed for reproducibility
@@ -601,19 +602,22 @@ class StyleSPADE3DGenerator(BaseNetwork):
 
         ##   style encoder 
 
-        # initial conv ##Changed to 2 padding for 3D with 3
-        # In 3D -> with ChatGPT -> changed padding to 0 to avoid dimension mismatch
-        model += [nn.ReflectionPad3d(0),
+        #Padding needs different values for 3D
+        in_kernel = opt.resnet_initial_kernel_size
+        model += [nn.ReflectionPad3d((in_kernel//2, in_kernel//2, in_kernel//2, in_kernel//2, in_kernel//4, in_kernel//4)),
+
                   norm_layer_style(nn.Conv3d(self.opt.output_nc, opt.ngf,
-                                       kernel_size=[2,opt.resnet_initial_kernel_size,opt.resnet_initial_kernel_size],
+                                       kernel_size=[in_kernel//3,in_kernel,in_kernel],
                                        padding=0)),
                   activation]
 
         # downsample
         mult = 1
         for i in range(opt.resnet_n_downsample):
+            kernel_size_3d = [1,3,3]
+            stride_3d = [2,2,2] if i == 0 else [1,2,2]
             model += [norm_layer_style(nn.Conv3d(opt.ngf * mult, opt.ngf * mult * 2,
-                                           kernel_size=[2,3,3], stride=[1,2,2], padding=1)),
+                                           kernel_size_3d, stride_3d, padding=1)),
                       activation]
             mult *= 2
 
@@ -621,7 +625,7 @@ class StyleSPADE3DGenerator(BaseNetwork):
         for i in range(opt.resnet_n_blocks-1):
             print(f'adding resnet block {i}')
             if (i == 0):
-                kernel_size_3d = [2,3,3]
+                kernel_size_3d = [3,3,3]
             else:
                 kernel_size_3d = [1,3,3]
             model += [ResnetBlock3D(opt.ngf * mult,  # use 3D version of ResnetBlock
@@ -686,6 +690,7 @@ class StyleSPADE3DGenerator(BaseNetwork):
         image = image.permute(0, 1, 4, 2, 3) # This reorders the dimensions to (Batch, Channel, Depth, Height, Width
         print(f' image after unsqueeze and permutation: {image.shape}') 
         print(f'segmentation: {seg.shape}')
+        summary(self.model, (1, 1, 3,512,512))
         x = self.model(image)
         
         #self.opt.ngf = 16

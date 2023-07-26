@@ -18,6 +18,7 @@ def get_nonspade_norm_layer(opt, norm_type='instance'):
     def get_out_channel(layer):
         if hasattr(layer, 'out_channels'):
             return getattr(layer, 'out_channels')
+        print(f'layer: {layer}')
         return layer.weight.size(0)
 
     # this function will be returned
@@ -36,10 +37,26 @@ def get_nonspade_norm_layer(opt, norm_type='instance'):
             delattr(layer, 'bias')
             layer.register_parameter('bias', None)
 
-        if subnorm_type == 'batch':
+            ##3D case
+        if opt.voxel_size > 0:
+
+            if subnorm_type == 'batch':
+                norm_layer = nn.BatchNorm3d(get_out_channel(layer), affine=True)
+            elif subnorm_type == 'sync_batch':
+            # Note: The below is placeholder code. 
+            # TODO: Replace with your actual 3D synchronized batch normalization implementation.
+                norm_layer = nn.BatchNorm3d(get_out_channel(layer), affine=True)
+                print(f'3d synbach normlayer is called on layer: {layer}')
+            elif subnorm_type == 'instance':
+                norm_layer = nn.InstanceNorm3d(get_out_channel(layer), affine=False)
+            else:
+                raise ValueError('normalization layer %s is not recognized' % subnorm_type)
+
+        elif subnorm_type == 'batch':
             norm_layer = nn.BatchNorm2d(get_out_channel(layer), affine=True)
         elif subnorm_type == 'sync_batch':
             norm_layer = SynchronizedBatchNorm2d(get_out_channel(layer), affine=True)
+            print(f'2d synbach normlayer is called on layer: {layer}')
         elif subnorm_type == 'instance':
             norm_layer = nn.InstanceNorm2d(get_out_channel(layer), affine=False)
         else:
@@ -54,7 +71,7 @@ class SPADE3D(nn.Module):
     def __init__(self, config_text, norm_nc, label_nc):
         super().__init__()
 
-
+        print(f'spade3d is called')
         assert config_text.startswith('spade')
         parsed = re.search('spade(\D+)(\d)x\d', config_text)
         param_free_norm_type = str(parsed.group(1))
