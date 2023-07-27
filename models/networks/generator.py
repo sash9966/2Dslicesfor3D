@@ -395,7 +395,7 @@ class StyleSPADEGenerator(BaseNetwork):
         return parser
 
     def __init__(self, opt):
-        print(f'using StyleSPADEGenerator')
+        #print(f''using StyleSPADEGenerator')
         super().__init__()
         self.voxel_size = opt.voxel_size
         self.opt = opt
@@ -443,7 +443,7 @@ class StyleSPADEGenerator(BaseNetwork):
         if self.opt.crop_size == 128:
             in_fea = 1 * 16
             
-        print(f'variables for linear FC layer: in_fea: {in_fea}, nf: {nf}')
+        #print(f'variables for linear FC layer: in_fea: {in_fea}, nf: {nf}')
         
         self.fc_img = nn.Linear(in_fea * nf * 16 * 16, in_fea * nf //4)
         self.fc_img2 = nn.Linear(in_fea * nf // 4, in_fea * nf * 8 * 8,8)
@@ -484,11 +484,11 @@ class StyleSPADEGenerator(BaseNetwork):
         seg = input
         image = image
 
-        print(f'incoming image shape: {image.shape} and the seg shape {seg.shape}, ')
+        #print(f'incoming image shape: {image.shape} and the seg shape {seg.shape}, ')
         if(self.voxel_size >1):
            
             x = self.model(image)
-        print(f'x shape after self.model(image): {x.shape}')
+        #print(f'x shape after self.model(image): {x.shape}')
         if(self.opt.voxel_size >1):
             x = x.unsqueeze(2)  # Adds an extra dimension at the third position
             x = x.expand(-1, -1, 3, -1, -1)  # Expands the third dimension to a size of 3
@@ -498,7 +498,7 @@ class StyleSPADEGenerator(BaseNetwork):
 
         else:
             x = x.view(x.size(0), -1)
-        print(f'x shape before fc_img: {x.shape}')
+        #print(f'x shape before fc_img: {x.shape}')
         x = self.fc_img(x)
         x = self.fc_img2(x)
 
@@ -524,7 +524,7 @@ class StyleSPADEGenerator(BaseNetwork):
         # print(f'in generator.py, after x.view(): {x.shape}')
         # print(f'seg.shape: {seg.shape}')
         # print(f'input_dist.shape: {input_dist.shape}')
-        print(f'x shape before failed line: {x.shape}')
+        #print(f'x shape before failed line: {x.shape}')
         x = self.head_0(x, seg, input_dist)
         #print(f'After head_0: {x.shape}')
 
@@ -582,7 +582,7 @@ class StyleSPADE3DGenerator(BaseNetwork):
     def __init__(self, opt):
 
 
-        print(f'runnning 3D SPADE gan!')
+        #print(f'runnning 3D SPADE gan!')
         super().__init__()
         self.voxel_size = opt.voxel_size
         self.opt = opt
@@ -623,7 +623,7 @@ class StyleSPADE3DGenerator(BaseNetwork):
 
         # resnet blocks, first one takes 3D information
         for i in range(opt.resnet_n_blocks-1):
-            print(f'adding resnet block {i}')
+            #print(f'adding resnet block {i}')
             if (i == 0):
                 kernel_size_3d = [3,3,3]
             else:
@@ -676,23 +676,23 @@ class StyleSPADE3DGenerator(BaseNetwork):
 
 
     def forward(self, input, image, input_dist=None):
-        print(f'#############################')
-        print(f'start of one forward pass:')
+        #print(f'#############################')
+        #print(f'start of one forward pass:')
         
         seg = input
         image = image
+        nf = self.opt.ngf
 
-
-        print(f' image shape: {image.shape}')
-        print(f'segmentaiton shape: {seg.shape}')
+        #print(f' image shape: {image.shape}')
+        #print(f'segmentaiton shape: {seg.shape}')
         image = image.unsqueeze(1)
         
         seg = seg.permute(0, 1, 4, 2,3 ) # This reorders the dimensions to (Batch, Channel, Depth, Height, Width)
         image = image.permute(0, 1, 4, 2, 3) # This reorders the dimensions to (Batch, Channel, Depth, Height, Width
         depth= seg.shape[2]
-        print(f'depth: {depth}')
-        print(f' image after unsqueeze and permutation: {image.shape}') 
-        print(f'segmentation: {seg.shape}')
+        #print(f'depth: {depth}')
+        #print(f' image after unsqueeze and permutation: {image.shape}') 
+        #print(f'segmentation: {seg.shape}')
         summary(self.model, (1, 1, 3,512,512))
         x = self.model(image)
         
@@ -700,11 +700,11 @@ class StyleSPADE3DGenerator(BaseNetwork):
         x = x.view(x.size(0), -1)
 
         x = self.fc_img(x)
-        print(f'x shape after fc_img: {x.shape}')
+        #print(f'x shape after fc_img: {x.shape}')
         x = self.fc_img2(x)
 
-        print(f'x shape after fc_img2 : {x.shape}')
-        x = x.view(1, 1024, depth, 8, 8)  # reshaping to have depth dimension again
+        #print(f'x shape after fc_img2 : {x.shape}')
+        x = x.view(1, 64*nf, depth, 8, 8)  # reshaping to have depth dimension again
   
 
 
@@ -713,25 +713,25 @@ class StyleSPADE3DGenerator(BaseNetwork):
         print(f'x after head_0: {x.shape}')
 
         x = self.G_middle_0(x, seg, input_dist)
-        print(f'x after G_middle_0: {x.shape}')
+        #print(f'x after G_middle_0: {x.shape}')
 
 
         x = self.up(x)
-        print(f'x after up: {x.shape}')
+        #print(f'x after up: {x.shape}')
         x = self.up_0(x, seg, input_dist)
-        print(f'x after up_0: {x.shape}')
+        #print(f'x after up_0: {x.shape}')
         x = self.up(x)
-        print(f'x after up: {x.shape}')
+        ##print(f'x after up: {x.shape}')
         x = self.up_1(x, seg, input_dist)
-        print(f'x after up_1: {x.shape}')
+        #print(f'x after up_1: {x.shape}')
         x = self.up(x)
-        print(f'x after up: {x.shape}')
+        ##print(f'x after up: {x.shape}')
         x = self.up_2(x, seg, input_dist)
-        print(f'x after up_2: {x.shape}')
+        #print(f'x after up_2: {x.shape}')
         x = self.up(x)
-        print(f'x after up: {x.shape}')
+        #print(f'x after up: {x.shape}')
         x = self.up_3(x, seg, input_dist)
-        print(f'x after up_3: {x.shape}')
+        #print(f'x after up_3: {x.shape}')
 
         if self.opt.num_upsampling_layers == 'most':
             x = self.up(x)
@@ -744,6 +744,6 @@ class StyleSPADE3DGenerator(BaseNetwork):
 
         x = self.conv_img(F.leaky_relu(x, 2e-1))
         
-        print(f'#############################')
-        print(f'end of forward pass:')
+        ##print(f'#############################')
+        #print(f'end of forward pass:')
         return x

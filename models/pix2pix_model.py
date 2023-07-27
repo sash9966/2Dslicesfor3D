@@ -72,7 +72,7 @@ class Pix2PixModel(torch.nn.Module):
             return mu, logvar
         elif mode == 'inference':
             with torch.no_grad():
-                print(f'using generate_fake')
+                #print(f'using generate_fake')
                 fake_image, _ , _ = self.generate_fake(input_semantics, real_image, input_dist)
             return fake_image
         else:
@@ -112,7 +112,7 @@ class Pix2PixModel(torch.nn.Module):
         netE = networks.define_E(opt) if opt.use_vae else None
 
         if not opt.isTrain or opt.continue_train:
-            print(f'Train is False or continue train is True')
+            #print(f'Train is False or continue train is True')
             netG = util.load_network(netG, 'G', opt.which_epoch, opt)
             if opt.isTrain:
                 netD = util.load_network(netD, 'D', opt.which_epoch, opt)
@@ -194,7 +194,7 @@ class Pix2PixModel(torch.nn.Module):
         nc = self.opt.label_nc + 1 if self.opt.contain_dontcare_label \
             else self.opt.label_nc
         
-        print(f'label_map size: {label_map.size()}')
+        #print(f'label_map size: {label_map.size()}')
         if(self.opt.voxel_size == 0):
             bs, _, h, w, = label_map.size()
             input_label = self.FloatTensor(bs, nc, h, w).zero_()
@@ -378,23 +378,28 @@ class Pix2PixModel(torch.nn.Module):
     def discriminate(self, input_semantics, fake_image, real_image):
         #check out size and shape of the images
        
-        
-        real_image = real_image.permute(0, 3, 1, 2)
-        input_semantics = input_semantics.permute(0, 1,4, 2, 3)
+        if(self.opt.voxel_size > 0):
+            real_image = real_image.permute(0, 3, 1, 2)
+            real_image = real_image.unsqueeze(1)
+            input_semantics = input_semantics.permute(0, 1,4, 2, 3)
 
-        print(f'input_semantics shape: {input_semantics.shape}')
-        print(f'fake_image shape: {fake_image.shape}')
-        print(f'real_image shape: {real_image.shape}')
+        #print(f'input_semantics shape: {input_semantics.shape}')
+        #print(f'fake_image shape: {fake_image.shape}')
+        #print(f'real_image shape: {real_image.shape}')
 
         # Fake has dim: [batch_size, channel, depth, height, width] no need for batch size
-        fake_concat = torch.cat([input_semantics, fake_image], dim=2)
-        real_concat = torch.cat([input_semantics, real_image], dim=2)
-
+        fake_concat = torch.cat([input_semantics, fake_image], dim=1)
+        real_concat = torch.cat([input_semantics, real_image], dim=1)
+        #print(f'fake_concat shape: {fake_concat.shape}')
+        #print(f'real_concat shape: {real_concat.shape}')
+        
         # In Batch Normalization, the fake and real images are
         # recommended to be in the same batch to avoid disparate
         # statistics in fake and real images.
         # So both fake and real images are fed to D all at once.
         fake_and_real = torch.cat([fake_concat, real_concat], dim=0)
+
+        #print(f'fake_and_real shape: {fake_and_real.shape}')
 
         if self.amp:
             with autocast():

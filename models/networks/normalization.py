@@ -71,7 +71,7 @@ class SPADE3D(nn.Module):
     def __init__(self, config_text, norm_nc, label_nc):
         super().__init__()
 
-        print(f'spade3d is called')
+        #print(f'spade3d is called')
         assert config_text.startswith('spade')
         parsed = re.search('spade(\D+)(\d)x\d', config_text)
         param_free_norm_type = str(parsed.group(1))
@@ -167,16 +167,16 @@ class SPADE(nn.Module):
         #print(f' x shape: {x.shape}')
         normalized = self.param_free_norm(x)
 
-        print(f' segmap shape before permute: {segmap.shape}')
+        #print(f' segmap shape before permute: {segmap.shape}')
         # Part 2. produce scaling and bias conditioned on semantic map
 
 
         #permutate for interpolation readin: mini-batch x channels x [optional depth] x [optional height] x width
         segmap = segmap.permute(0, 1, 4, 2, 3)
-        print(f' segmap shape after permute: {segmap.shape}')
+        #print(f' segmap shape after permute: {segmap.shape}')
         x_expanded = x.unsqueeze(2).repeat(1, 1, segmap.size(2), 1, 1)
 
-        print(f'shape of x: {x.shape}') 
+        #print(f'shape of x: {x.shape}') 
 
         segmap = F.interpolate(segmap, size=x_expanded.size()[2:], mode='nearest')
         actv = self.mlp_shared(segmap)

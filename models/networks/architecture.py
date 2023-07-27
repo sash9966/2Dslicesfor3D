@@ -170,12 +170,25 @@ class VGG19(torch.nn.Module):
                 param.requires_grad = False
 
     def forward(self, X):
-        if X.shape[1] == 1 : # sina if number of channels is less than 3:
-            X = X.repeat(1, 3, 1, 1)
-        h_relu1 = self.slice1(X)
-        h_relu2 = self.slice2(h_relu1)
-        h_relu3 = self.slice3(h_relu2)
-        h_relu4 = self.slice4(h_relu3)
-        h_relu5 = self.slice5(h_relu4)
-        out = [h_relu1, h_relu2, h_relu3, h_relu4, h_relu5]
-        return out
+        print(f'X: {X.shape}')
+        if (len(X.shape)== 4):
+            X = X.unsqueeze(0)
+            X = X.permute(0,1,4,2,3)
+        h_relu_sums = [0, 0, 0, 0, 0]  # to store sum of losses for each h_relu
+        for z in range(X.shape[2]):  # loop over the z-axis (depth dimension)
+            X_slice = X[:, :, z, :, :]
+            if X_slice.shape[1] == 1:  # if number of channels is less than 3:
+                X_slice = X_slice.repeat(1, 3, 1, 1)
+            h_relu1 = self.slice1(X_slice)
+            h_relu2 = self.slice2(h_relu1)
+            h_relu3 = self.slice3(h_relu2)
+            h_relu4 = self.slice4(h_relu3)
+            h_relu5 = self.slice5(h_relu4)
+            h_relu_sums[0] += h_relu1.sum()
+            h_relu_sums[1] += h_relu2.sum()
+            h_relu_sums[2] += h_relu3.sum()
+            h_relu_sums[3] += h_relu4.sum()
+            h_relu_sums[4] += h_relu5.sum()
+
+        h_relu_tensors = [torch.tensor(h_relu_sum) for h_relu_sum in h_relu_sums]
+        return h_relu_tensors   # return the output for each slice

@@ -92,7 +92,7 @@ class SegmentationPair2D(object):
 
         if self.gt_handle is not None:
             if not np.allclose(input_shape, gt_shape):
-                print(f'filename is: {self.gt_filename}')
+                #print(f'filename is: {self.gt_filename}')
                 raise RuntimeError('Input and ground truth with different dimensions.')
 
         if self.canonical:
@@ -150,7 +150,7 @@ class SegmentationPair2D(object):
         #print(f'shape of the data image:{input_dataobj.shape}')
         #print(f'shape of the data mask:{gt_dataobj.shape}')
 
-        print(f'input_dataobj shape: {input_dataobj.shape}')
+        #print(f'input_dataobj shape: {input_dataobj.shape}')
         if slice_axis not in [0, 1, 2]:
             raise RuntimeError("Invalid axis, must be between 0 and 2.")
         
