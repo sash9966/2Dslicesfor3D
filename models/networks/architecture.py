@@ -30,10 +30,15 @@ class SPADEResnetBlock(nn.Module):
         if (opt.norm_mode == 'spade3d'): 
             self.conv_0 = nn.Conv3d(fin, fmiddle, kernel_size=3, padding=1)
             self.conv_1 = nn.Conv3d(fmiddle, fout, kernel_size=3, padding=1)
-            self.conv_s = nn.Conv3d(fin+add_channels, fout, kernel_size=1, bias=False)
-        else:
+            ##Why needed?
+            if self.learned_shortcut:
+                self.conv_s = nn.Conv3d(fin+add_channels, fout, kernel_size=1, bias=False)
+
+        elif (opt.norm_mode == 'spade'):
             self.conv_0 = nn.Conv2d(fin+add_channels, fmiddle, kernel_size=3, padding=1)
             self.conv_1 = nn.Conv2d(fmiddle+add_channels, fout, kernel_size=3, padding=1)
+            if self.learned_shortcut:
+                self.conv_s = nn.Conv2d(fin+add_channels, fout, kernel_size=1, bias=False)
             
 
 
@@ -60,7 +65,8 @@ class SPADEResnetBlock(nn.Module):
         elif opt.norm_mode == 'spade3d':
             self.norm_0 = SPADE3D(spade_config_str, fin, opt.semantic_nc)
             self.norm_1 = SPADE3D(spade_config_str, fmiddle, opt.semantic_nc)
-            self.norm_s = SPADE3D(spade_config_str, fin, opt.semantic_nc)
+            if self.learned_shortcut:
+                self.norm_s = SPADE3D(spade_config_str, fin, opt.semantic_nc)
         else:
             raise ValueError('%s is not a defined normalization method' % opt.norm_mode)
 
@@ -69,6 +75,7 @@ class SPADEResnetBlock(nn.Module):
     def forward(self, x, seg, input_dist=None):
         x_s = self.shortcut(x, seg, input_dist)
         print(f'x: {x.shape}, seg: {seg.shape}, input_dist: {input_dist.shape}')
+        print(f'x_s: {x_s.shape}')
 
         #get info on the parameters of the network
         dx = self.conv_0(self.actvn(self.norm_0(x, seg, input_dist)))
@@ -81,8 +88,10 @@ class SPADEResnetBlock(nn.Module):
         return out
 
     def shortcut(self, x, seg, input_dist=None):
-
+        print(f'shortcut is calledx: {x.shape}, seg: {seg.shape}')
+        
         if self.learned_shortcut:
+            print(f'learned_shortcut is called')
             x_s = self.conv_s(self.norm_s(x, seg, input_dist))
         else:
             x_s = x

@@ -454,7 +454,7 @@ class StyleSPADEGenerator(BaseNetwork):
         self.G_middle_0 = SPADEResnetBlock(in_fea * nf, in_fea * nf, opt)
         self.G_middle_1 = SPADEResnetBlock(in_fea * nf, in_fea * nf, opt)
 
-        self.up_0 = SPADEResnetBlock(in_fea * nf, 8 * nf, opt)
+        self.up_0 = SPADEResnetBlock(16 * nf, 8 * nf, opt)
         self.up_1 = SPADEResnetBlock(8 * nf, 4 * nf, opt)
         self.up_2 = SPADEResnetBlock(4 * nf, 2 * nf, opt)
         self.up_3 = SPADEResnetBlock(2 * nf, 1 * nf, opt)
@@ -651,10 +651,10 @@ class StyleSPADE3DGenerator(BaseNetwork):
 
         self.up = nn.Upsample(scale_factor=(1, 2, 2), mode='trilinear')
 
-        self.up_0 = SPADEResnetBlock(64 * nf, 32 * nf, opt)
-        self.up_1 = SPADEResnetBlock(32 * nf, 16 * nf, opt)
-        self.up_2 = SPADEResnetBlock(16 * nf, 8 * nf, opt)
-        self.up_3 = SPADEResnetBlock(4 * nf, 2 * nf, opt)
+        self.up_0 = SPADEResnetBlock(16*4 * nf, 8*4 * nf, opt)
+        self.up_1 = SPADEResnetBlock(8*4 * nf, 4*4 * nf, opt)
+        self.up_2 = SPADEResnetBlock(4*4 * nf, 2*4 * nf, opt)
+        self.up_3 = SPADEResnetBlock(2*4 * nf, 4 * nf, opt)
 
         final_nc = nf
 
@@ -665,8 +665,8 @@ class StyleSPADE3DGenerator(BaseNetwork):
         
         if self.opt.num_upsampling_layers == 'most512':
             self.up_4 = SPADEResnetBlock(4*nf, nf*2, opt)
-            self.up_5 = SPADEResnetBlock(nf * 2,  nf, opt)
-            final_nc = nf // 4
+            self.up_5 = SPADEResnetBlock(nf * 2,  nf//2, opt)
+            final_nc = nf // 2
 
 
         self.conv_img = nn.Sequential(
@@ -710,13 +710,14 @@ class StyleSPADE3DGenerator(BaseNetwork):
 
 
         x = self.head_0(x, seg, input_dist)
+        print(f'x after head_0: {x.shape}')
 
         x = self.G_middle_0(x, seg, input_dist)
+        print(f'x after G_middle_0: {x.shape}')
+
 
         x = self.up(x)
         print(f'x after up: {x.shape}')
-        print(f'input_dist.shape: {input_dist.shape}')
-        print(f'seg.shape: {seg.shape}')
         x = self.up_0(x, seg, input_dist)
         print(f'x after up_0: {x.shape}')
         x = self.up(x)
