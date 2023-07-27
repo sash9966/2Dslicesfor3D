@@ -275,10 +275,7 @@ class Pix2PixModel(torch.nn.Module):
 
         fake_image, KLD_loss, L1_loss = self.generate_fake(
             input_semantics, real_image, input_dist, compute_kld_loss=self.opt.use_vae)
-        
-        print(f'fake_image shape in compute_generator_loss: {fake_image.shape}')  
-        print(f'real_image shape in compute_generator_loss {real_image.shape}')
-        print(f'input_semantics shape in compute_generator_loss: {input_semantics.shape}')
+
 
         if self.opt.use_vae:
             G_losses['KLD'] = KLD_loss
@@ -383,14 +380,15 @@ class Pix2PixModel(torch.nn.Module):
        
         
         real_image = real_image.permute(0, 3, 1, 2)
+        input_semantics = input_semantics.permute(0, 1,4, 2, 3)
 
         print(f'input_semantics shape: {input_semantics.shape}')
         print(f'fake_image shape: {fake_image.shape}')
         print(f'real_image shape: {real_image.shape}')
 
-
-        fake_concat = torch.cat([input_semantics, fake_image], dim=1)
-        real_concat = torch.cat([input_semantics, real_image], dim=1)
+        # Fake has dim: [batch_size, channel, depth, height, width] no need for batch size
+        fake_concat = torch.cat([input_semantics, fake_image], dim=2)
+        real_concat = torch.cat([input_semantics, real_image], dim=2)
 
         # In Batch Normalization, the fake and real images are
         # recommended to be in the same batch to avoid disparate
