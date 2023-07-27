@@ -341,7 +341,7 @@ class Pix2PixModel(torch.nn.Module):
         #check out size and shape of the images
 
 
-
+        print(f'fake image shape is {fake_image.shape} \n real image shape is {real_image.shape} \n, input semantics shape is {input_semantics.shape}')
         fake_concat = torch.cat([input_semantics, fake_image], dim=1)
         real_concat = torch.cat([input_semantics, real_image], dim=1)
 
