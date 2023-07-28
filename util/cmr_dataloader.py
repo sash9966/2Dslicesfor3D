@@ -149,6 +149,7 @@ class SegmentationPair2D(object):
                 gt_dataobj = self.gt_handle.dataobj
         #print(f'shape of the data image:{input_dataobj.shape}')
         #print(f'shape of the data mask:{gt_dataobj.shape}')
+        #print(f'index: {slice_index}')
 
         #print(f'input_dataobj shape: {input_dataobj.shape}')
         if slice_axis not in [0, 1, 2]:
@@ -199,8 +200,8 @@ class SegmentationPair2D(object):
             "gt_metadata": gt_meta_dict,
         }
         # print(f'testing in dataloader:')
-        # print(f'input shape: {dreturn["input"].shape}') 
-        # print(f'gt shape: {dreturn["gt"].shape}')
+        #print(f'input shape: {dreturn["input"].shape}') 
+        #print(f'gt shape: {dreturn["gt"].shape}')
 
 
         # #plot the two images with the plot function of matplot lib
@@ -248,6 +249,10 @@ class MRI2DSegmentationDataset(Dataset):
         for segpair in self.handlers:
             input_data_shape, _ = segpair.get_pair_shapes()
             for segpair_slice in range(input_data_shape[2]):
+
+                #TODO: pass voxel size as paramter?
+                if(segpair_slice %219 < 3):
+                    continue
 
                 # Check if slice pair should be used or not
                 if self.slice_filter_fn:

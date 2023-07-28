@@ -127,11 +127,12 @@ class Pix2PixModel(torch.nn.Module):
 
     def voxel_semantics(self,input_label, label_map):
         input_semantics_slices = []
-
-        for i in range(self.opt.voxel_size):
+        #print(f'input_label shape: {input_label.shape}')
+        for i in range(input_label.shape[-1]):
             # Get the slice
             # print(f'input_label shape: {input_label.shape}')
             # print(f'i: {i}')
+            
             input_label_slice = input_label[..., i]
             label_map_slice = label_map[..., i].unsqueeze(1)
 

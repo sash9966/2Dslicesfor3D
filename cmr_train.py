@@ -52,35 +52,13 @@ for epoch in iter_counter.training_epochs():
 
     
 
-    print(f'lenght of dataloader: {len(dataloader)}')
+
     for i, data_i in enumerate(dataloader, start=iter_counter.epoch_iter):
 
-        ## skip the last two images
-        if((i+1)%220==0 or (i+1)%219 == 0):
-            print(f'last two images, skip: {i}')
-            continue
-        #First initalisation
-
-        #look at data that's loaded:
-        # print(f'i: {i}')
-        #print(f' data_i: {data_i.keys()}')
-        # print the value of the key with 'image'
-
-        # data_i dict_keys(['label', 'image', 'instance', 'dist', 'path', 'gtname', 'index', 'segpair_slice'])
-        # print(f' data_i: {data_i["image"]}')
-        # print(f' image shape: {data_i["image"].shape}')
-        # print(f'gt name is: {data_i["gtname"]}')
-        # print(f'path is: {data_i["path"]}')
-
-        #Set initial path:
-
-        #When paths change, a new 3D volume is being generated
 
 
         iter_counter.record_one_iteration()
 
-        #print(f'type of the image, is it PIL or torch tensor: {type(data_i['label'])}') 
-        #print(f'data_i label type: {type(data_i)}')
 
         # Training
         # train generator
@@ -90,8 +68,6 @@ for epoch in iter_counter.training_epochs():
         # train discriminator
         trainer.run_discriminator_one_step(data_i)
 
-        #print(f'trainer contains which type of generated image: {type(trainer.get_latest_generated)}')
-        #print(f'trainer containes generated {trainer.get_latest_generated().shape}')
 
         # Visualizations
         if iter_counter.needs_printing():
@@ -101,63 +77,26 @@ for epoch in iter_counter.training_epochs():
             visualizer.plot_current_errors(losses, iter_counter.total_steps_so_far)
 
         if iter_counter.needs_displaying():
-            visuals = OrderedDict([('input_label', data_i['label']),
-                                   ('synthesized_image', trainer.get_latest_generated()),
-                                   ('real_image', data_i['image'])])
+            #show the 3D image
+            latest_image = trainer.get_latest_generated()
+            print(f'latest_image shape: {latest_image.shape}')
+            print(f'label shape: {data_i["label"].shape}')
+            print(f'real image shape: {data_i["image"].shape}')
+
+            for i in range(opt.voxel_size):
+
+                visuals = OrderedDict([('input_label', data_i['label'][:,:,:,i]),
+                                    ('synthesized_image', latest_image[:,:,i,:,:]),
+                                    ('real_image', data_i['image'][:,:,:,i])])
             visualizer.display_current_results(visuals, epoch, iter_counter.total_steps_so_far)
 
             #Save 3D stacked image
-
-
-        #stack the images togehter to create a 3D image of the generated images
 
 
 
         if iter_counter.needs_saving():
             print('saving the latest model (epoch %d, total_steps %d)' %
                   (epoch, iter_counter.total_steps_so_far))
-        
-
-        ##Failed 3D trial
-        #     trainer.save('latest')
-        # print(f'i : {i}')
-        
-        # if(i>0):
-        #     print(f'current path is: {path} and data_i path is:{data_i["path"][0]}' )
-        # if(i==0):
-        #     path = data_i['path'][0]
-        #     print(f'path : {path}')
-        #     print(f'path type: {type(path)}')
-        #     #Expected 3D
-        #     image3D_epoch = torch.empty(221,512,512)
-        #     print(f'initial done')
-        #     print(f'image3D_epoch: {image3D_epoch.shape}')
-        # elif((path != data_i['path'][0] ) and (iter_counter.needs_displaying) ):
-        #     #save old 3D stacked, should be 221 images stacked together
-        #     #Override for the new 3D stacked image
-        #     affine = np.eye(4)
-        #     image3D_epoch_np = image3D_epoch.detach().numpy()
-        #     img = nib.Nifti1Image(image3D_epoch_np, affine)
-
-        #     #get image nr. from path file name
-        #     path = data_i['path'][0]
-        #     print(f'path : {path}')
-        #     print(f'path type: {type(path)}')
-        #     imgNr= path[-17:-13]
-        #     print(f'number {imgNr}')
-        #     filename = "3Depoch{epoch}Image{imgNr}.nii.gz"
-        #     nib.save(img, os.path.join(opt.checkpoints_dir, opt.name,'web','images', filename))
-
-        #     # start new stacking for the next 3D image
-        #     image3D_epoch = torch.empty(221,512,512)
-        #     image3D_epoch[0,:,:] = trainer.get_latest_generated()[0,0,:,:]
-        #     path = data_i['path']
-        
-        # else:
-        #     print(f'image_3d_epoch shape= {image3D_epoch.shape}')
-        #     print(f'latest generated is: {trainer.get_latest_generated().shape}')
-
-        #     image3D_epoch[i%221,:,:] = trainer.get_latest_generated()[0,0,:,:]
 
 
 
@@ -171,6 +110,7 @@ for epoch in iter_counter.training_epochs():
         trainer.save(epoch)
     #check the shape of the stacked image
     #convert to numpy arry and save with nib
+    
     
 
 

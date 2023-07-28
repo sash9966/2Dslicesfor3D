@@ -74,24 +74,24 @@ class SPADEResnetBlock(nn.Module):
     # the semantic segmentation map as input
     def forward(self, x, seg, input_dist=None):
         x_s = self.shortcut(x, seg, input_dist)
-        print(f'x: {x.shape}, seg: {seg.shape}, input_dist: {input_dist.shape}')
-        print(f'x_s: {x_s.shape}')
+        #print(f'x: {x.shape}, seg: {seg.shape}, input_dist: {input_dist.shape}')
+        #print(f'x_s: {x_s.shape}')
 
         #get info on the parameters of the network
         dx = self.conv_0(self.actvn(self.norm_0(x, seg, input_dist)))
-        print(f'dx after conv_0: {dx.shape}')
+        #print(f'dx after conv_0: {dx.shape}')
         dx = self.conv_1(self.actvn(self.norm_1(dx, seg, input_dist)))
-        print(f'dx after_conv1: {dx.shape}')
+        #print(f'dx after_conv1: {dx.shape}')
 
         out = x_s + dx
 
         return out
 
     def shortcut(self, x, seg, input_dist=None):
-        print(f'shortcut is calledx: {x.shape}, seg: {seg.shape}')
+        #print(f'shortcut is calledx: {x.shape}, seg: {seg.shape}')
         
         if self.learned_shortcut:
-            print(f'learned_shortcut is called')
+            #print(f'learned_shortcut is called')
             x_s = self.conv_s(self.norm_s(x, seg, input_dist))
         else:
             x_s = x
@@ -136,9 +136,9 @@ class ResnetBlock3D(nn.Module):
 
     def forward(self, x):
 
-        print(f'x: {x.shape}')
+        #print(f'x: {x.shape}')
         y= self.conv_block(x)
-        print(f'y: {y.shape}')
+        #print(f'y: {y.shape}')
         return x + y
 
 
@@ -170,7 +170,7 @@ class VGG19(torch.nn.Module):
                 param.requires_grad = False
 
     def forward(self, X):
-        print(f'X: {X.shape}')
+        #print(f'X: {X.shape}')
         if (len(X.shape)== 4):
             X = X.unsqueeze(0)
             X = X.permute(0,1,4,2,3)

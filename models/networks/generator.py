@@ -693,7 +693,7 @@ class StyleSPADE3DGenerator(BaseNetwork):
         #print(f'depth: {depth}')
         #print(f' image after unsqueeze and permutation: {image.shape}') 
         #print(f'segmentation: {seg.shape}')
-        summary(self.model, (1, 1, 3,512,512))
+        #summary(self.model, (1, 1, 3,512,512))
         x = self.model(image)
         
         #self.opt.ngf = 16
@@ -710,7 +710,7 @@ class StyleSPADE3DGenerator(BaseNetwork):
 
 
         x = self.head_0(x, seg, input_dist)
-        print(f'x after head_0: {x.shape}')
+        #print(f'x after head_0: {x.shape}')
 
         x = self.G_middle_0(x, seg, input_dist)
         #print(f'x after G_middle_0: {x.shape}')
