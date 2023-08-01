@@ -89,11 +89,13 @@ class Visualizer():
                         pil_img = PIL.Image.fromarray(image_numpy)
                         #pil_img.show()
                         #save PIL image
+                        print(f'PIL image is saved')
                         pil_img.save(img_path)
                     elif(image_numpy.shape[1] == image_numpy.shape[2]):
                         #plt.imshow(image_numpy[0,:,:])
                         #plt.title('image, probably generated or full')
                         #plt.show()
+                        print(f' save image in  elif loop is called!')
                         util.save_image(image_numpy[0,:,:], img_path)
 
                     
