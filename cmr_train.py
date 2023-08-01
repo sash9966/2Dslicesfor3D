@@ -96,6 +96,14 @@ for epoch in iter_counter.training_epochs():
             visualizer.plot_current_errors(losses, iter_counter.total_steps_so_far)
 
         if iter_counter.needs_displaying():
+
+
+            #print shapes of the images being fed to visuals:
+            print(f' data_i[i] shape: {data_i["label"].shape}')
+            print(f' synthesized shape: {trainer.get_latest_generated().shape}')
+            print(f' data_i[image])]: {data_i["image"].shape}')
+
+
             visuals = OrderedDict([('input_label', data_i['label']),
                                    ('synthesized_image', trainer.get_latest_generated()),
                                    ('real_image', data_i['image'])])
