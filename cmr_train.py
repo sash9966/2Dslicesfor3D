@@ -13,8 +13,11 @@ from util.util import tensor2im, tensor2label
 import torch
 import nibabel as nib
 import numpy as np
-
-
+import SimpleITK as sitk
+import matplotlib.pyplot as plt
+from tqdm import tqdm
+from util import util
+ref_img = sitk.ReadImage('/home/sastocke/2Dslicesfor3D/data/images/ct_1001_image.nii.gz')[:,:,:3]
 # parse options
 opt = TrainOptions().parse()
 
@@ -25,9 +28,11 @@ if opt.crop_size == 256:
 else:
     opt.resnet_n_downsample = 4
     opt.resnet_n_blocks = 2
+    
 opt.use_vae = False
 
 print(f'3D testing!!')
+name_of_try = opt.name
 
 # print options to help debugging
 print(' '.join(sys.argv))
@@ -43,6 +48,9 @@ iter_counter = IterationCounter(opt, len(dataloader))
 
 # create tool for visualization
 visualizer = Visualizer(opt)
+torch.cuda.empty_cache()
+
+
 
     
 
@@ -53,7 +61,7 @@ for epoch in iter_counter.training_epochs():
     
 
 
-    for i, data_i in enumerate(dataloader, start=iter_counter.epoch_iter):
+    for i, data_i in enumerate(tqdm(dataloader, desc=f"Epoch {epoch}"), start=iter_counter.epoch_iter):
 
 
 
@@ -83,12 +91,32 @@ for epoch in iter_counter.training_epochs():
             print(f'label shape: {data_i["label"].shape}')
             print(f'real image shape: {data_i["image"].shape}')
 
-            for i in range(opt.voxel_size):
+            #plot the three images side by side
+            #convert to numpy array
+            latest_image_np = latest_image.detach().cpu().numpy()
+            real_image_np = (data_i['image']).detach().cpu().numpy()
+            label_np = (data_i['label']).detach().cpu().numpy()
 
+
+            #plot image
+            #get current path:
+            path = os.getcwd()            
+            plt.close('all')
+            for i in range(3):
                 visuals = OrderedDict([('input_label', data_i['label'][:,:,:,i]),
-                                    ('synthesized_image', latest_image[:,:,i,:,:]),
-                                    ('real_image', data_i['image'][:,:,:,i])])
-            visualizer.display_current_results(visuals, epoch, iter_counter.total_steps_so_far)
+                    ('synthesized_image', latest_image[:,:,i,:,:]),
+                    ('real_image', data_i['image'][:,:,:,i])])
+                visualizer.display_current_results(visuals, epoch, iter_counter.total_steps_so_far)
+                print(f'shape of latest image: {latest_image_np[0,0,i,:,:].shape}')
+                # util.save_image(latest_image_np[0,0,i,:,:], '/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/latestsynthetic_epoch{epoch}_{i}.png')
+                # util.save_image(real_image_np[0,:,:,i], '/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/real_epoch_{epoch}_{i}.png')
+                # util.save_image(label_np[0,:,:,i], '/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/label_epoch{epoch}_{i}.png')
+                # img = sitk.GetImageFromArray(latest_image_np[0,0,:,:,:])
+                # img.CopyInformation(ref_img)
+                # sitk.WriteImage(img, f'/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/latestsynthetic{epoch}.nii.gz')
+
+
+
 
             #Save 3D stacked image
 

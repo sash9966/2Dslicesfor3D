@@ -46,7 +46,6 @@ def get_nonspade_norm_layer(opt, norm_type='instance'):
             # Note: The below is placeholder code. 
             # TODO: Replace with your actual 3D synchronized batch normalization implementation.
                 norm_layer = nn.BatchNorm3d(get_out_channel(layer), affine=True)
-                print(f'3d synbach normlayer is called on layer: {layer}')
             elif subnorm_type == 'instance':
                 norm_layer = nn.InstanceNorm3d(get_out_channel(layer), affine=False)
             else:

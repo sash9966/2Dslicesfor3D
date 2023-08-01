@@ -69,12 +69,13 @@ class SegmentationPair2D(object):
     :param cache: if the data should be cached in memory or not.
     :param canonical: canonical reordering of the volume axes.
     """
-    def __init__(self, input_filename, gt_filename, cache=True,
+    def __init__(self, input_filename, gt_filename,voxel_size, cache=True,
                  canonical=False):
         self.input_filename = input_filename
         self.gt_filename = gt_filename
         self.canonical = canonical
         self.cache = cache
+        self.voxel_size = voxel_size
 
         self.input_handle = nib.load(self.input_filename)
 
@@ -154,10 +155,11 @@ class SegmentationPair2D(object):
         #print(f'input_dataobj shape: {input_dataobj.shape}')
         if slice_axis not in [0, 1, 2]:
             raise RuntimeError("Invalid axis, must be between 0 and 2.")
-        
+            
         
         if slice_axis == 2:
-            input_slice = np.asarray(input_dataobj[..., slice_index: slice_index +3],
+
+            input_slice = np.asarray(input_dataobj[..., slice_index: slice_index +self.voxel_size],
                                      dtype=np.float32)
         elif slice_axis == 1:
             input_slice = np.asarray(input_dataobj[:, slice_index, ...],
@@ -174,7 +176,7 @@ class SegmentationPair2D(object):
             gt_slice = None
         else:
             if slice_axis == 2:
-                gt_slice = np.asarray(gt_dataobj[..., slice_index: slice_index +3],
+                gt_slice = np.asarray(gt_dataobj[..., slice_index: slice_index +self.voxel_size],
                                       dtype=np.float32)
             elif slice_axis == 1:
                 gt_slice = np.asarray(gt_dataobj[:, slice_index, ...],
@@ -225,7 +227,7 @@ class MRI2DSegmentationDataset(Dataset):
     :param cache: if the data should be cached in memory or not.
     :param transform: transformations to apply.
     """
-    def __init__(self, filename_pairs, slice_axis=2, cache=True,
+    def __init__(self, filename_pairs,voxel_size, slice_axis=2, cache=True,
                  transform=None, slice_filter_fn=None, canonical=False):
         self.filename_pairs = filename_pairs
         self.handlers = []
@@ -233,6 +235,7 @@ class MRI2DSegmentationDataset(Dataset):
         self.transform = transform
         self.cache = cache
         self.slice_axis = slice_axis
+        self.voxel_size = voxel_size
         self.slice_filter_fn = slice_filter_fn
         self.canonical = canonical
 
@@ -241,7 +244,7 @@ class MRI2DSegmentationDataset(Dataset):
 
     def _load_filenames(self):
         for input_filename, gt_filename in self.filename_pairs:
-            segpair = SegmentationPair2D(input_filename, gt_filename,
+            segpair = SegmentationPair2D(input_filename, gt_filename, self.voxel_size,
                                          self.cache, self.canonical)
             self.handlers.append(segpair)
 
@@ -250,8 +253,10 @@ class MRI2DSegmentationDataset(Dataset):
             input_data_shape, _ = segpair.get_pair_shapes()
             for segpair_slice in range(input_data_shape[2]):
 
-                #TODO: pass voxel size as paramter?
-                if(segpair_slice %219 < 3):
+                #Skip slices that are at edge of 3D image, with a margin of voxel_size
+                #Would cause error, as the slice would be out of bounds
+                # TODO: possible to only skip slices at the end? -> not a lot of information at lower bound either but technically not needed to be skipped
+                if(segpair_slice %219 < self.voxel_size):
                     continue
 
                 # Check if slice pair should be used or not
@@ -397,12 +402,13 @@ class MRI3DSegmentationDataset(Dataset):
         self.transform = transform
         self.cache = cache
         self.canonical = canonical
+        self.voxel_size
 
         self._load_filenames()
 
     def _load_filenames(self):
         for input_filename, gt_filename in self.filename_pairs:
-            segpair = SegmentationPair2D(input_filename, gt_filename,
+            segpair = SegmentationPair2D(input_filename, gt_filename,self.voxel_size,
                                          self.cache, self.canonical)
             self.handlers.append(segpair)
 

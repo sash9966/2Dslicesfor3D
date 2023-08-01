@@ -24,7 +24,6 @@ class SPADEResnetBlock(nn.Module):
         # Attributes
         self.learned_shortcut = (fin != fout)
         fmiddle = min(fin, fout)
-        print(f'fin: {fin}, fout: {fout}, fmiddle: {fmiddle}')
         # create conv layers
         add_channels = 1 if (opt.norm_mode == 'clade' and not opt.no_instance) else 0
         if (opt.norm_mode == 'spade3d'): 

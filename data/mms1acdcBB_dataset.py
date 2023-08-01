@@ -66,8 +66,8 @@ class Mms1acdcBBDataset(BaseDataset):
 
         #pathologies = sorted(os.listdir(os.path.join(opt.acdc_dir)))
         
-        print(f'length of SA_image_list: {len(SA_image_list)}')
-        print(f'length of SA_mask_list: {len(SA_mask_list)}')
+        #print(f'length of SA_image_list: {len(SA_image_list)}')
+        #print(f'length of SA_mask_list: {len(SA_mask_list)}')
 
 
 
@@ -159,7 +159,7 @@ class Mms1acdcBBDataset(BaseDataset):
 
     def initialize(self, opt):
         self.opt = opt
-        print(f'filename pairs trying to be read from options: {self.opt}')
+        #print(f'filename pairs trying to be read from options: {self.opt}')
         self.filename_pairs, _, _  = self.get_paths(self.opt)
 
 
@@ -221,7 +221,9 @@ class Mms1acdcBBDataset(BaseDataset):
         #if(opt.phase == 'test'):
             #self.cmr_dataset(cmr.MRI2DSegmentationDataset(self.msk_list, transform = train_transforms, slice_axis=2, canonical = False))
 
-        self.cmr_dataset = cmr.MRI2DSegmentationDataset(self.filename_pairs, transform = train_transforms, slice_axis=2, canonical = False)
+        self.cmr_dataset = cmr.MRI2DSegmentationDataset(self.filename_pairs,voxel_size = opt.voxel_size, transform = train_transforms, slice_axis=2,  canonical = False)
+        print(f'opt voxel size: {opt.voxel_size}, type: {type(opt.voxel_size)}, ')
+
         
         
         size = len(self.cmr_dataset)

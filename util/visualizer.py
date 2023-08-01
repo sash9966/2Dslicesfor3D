@@ -49,6 +49,9 @@ class Visualizer():
 
     #|visuals|: dictionary of images to display or save
     def display_current_results(self, visuals, epoch, step):
+        print(f'displaying results:')
+        print(f'self.tf_log = {self.tf_log}')
+        print(f'use html: {self.use_html}')
 
         # convert tensors to numpy arrays
         visuals = self.convert_visuals_to_numpy(visuals)
@@ -95,12 +98,6 @@ class Visualizer():
                         #plt.title('image, probably generated or full')
                         #plt.show()
                         util.save_image(image_numpy[0,:,:], img_path)
-
-                    
-                    # if len(image_numpy.shape) >= 4:
-                    #     print(f' len is called!')
-                    #     image_numpy = image_numpy[0,0,:,:]      
-
                     
 
             # update website
