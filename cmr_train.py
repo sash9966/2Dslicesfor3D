@@ -103,11 +103,19 @@ for epoch in iter_counter.training_epochs():
             path = os.getcwd()            
             plt.close('all')
             for i in range(3):
-                visuals = OrderedDict([('input_label', data_i['label'][:,:,:,i]),
+                real_image = data_i['image'][:,:,:,i].unsqueeze(0)
+                input_label = data_i['label'][:,:,:,i].unsqueeze(0)
+                print(f'shape of input label unsqzuee: {data_i["label"][:,:,:,i].unsqueeze(0).shape}')
+                print(f'shape of latest_image:{latest_image[:,:,i,:,:].shape} ')
+                print(f' shape of real image: { data_i["image"][:,:,:,i].shape}')
+
+
+
+                visuals = OrderedDict([('input_label', input_label),
                     ('synthesized_image', latest_image[:,:,i,:,:]),
-                    ('real_image', data_i['image'][:,:,:,i])])
+                    ('real_image', real_image)])
                 visualizer.display_current_results(visuals, epoch, iter_counter.total_steps_so_far)
-                print(f'shape of latest image: {latest_image_np[0,0,i,:,:].shape}')
+                
                 # util.save_image(latest_image_np[0,0,i,:,:], '/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/latestsynthetic_epoch{epoch}_{i}.png')
                 # util.save_image(real_image_np[0,:,:,i], '/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/real_epoch_{epoch}_{i}.png')
                 # util.save_image(label_np[0,:,:,i], '/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/label_epoch{epoch}_{i}.png')
