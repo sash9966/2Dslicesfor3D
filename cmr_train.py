@@ -146,6 +146,7 @@ for epoch in iter_counter.training_epochs():
         if iter_counter.needs_saving():
             print('saving the latest model (epoch %d, total_steps %d)' %
                   (epoch, iter_counter.total_steps_so_far))
+            trainer.save('latest')
 
 
 

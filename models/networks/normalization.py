@@ -9,7 +9,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from models.networks.sync_batchnorm import SynchronizedBatchNorm2d
 import torch.nn.utils.spectral_norm as spectral_norm
-
+from SynchronizedBatchNormPyTorch.sync_batchnorm import SynchronizedBatchNorm3d
 
 # Returns a function that creates a normalization function
 # that does not condition on semantic map
@@ -45,7 +45,7 @@ def get_nonspade_norm_layer(opt, norm_type='instance'):
             elif subnorm_type == 'sync_batch':
             # Note: The below is placeholder code. 
             # TODO: Replace with your actual 3D synchronized batch normalization implementation.
-                norm_layer = nn.BatchNorm3d(get_out_channel(layer), affine=True)
+                norm_layer = SynchronizedBatchNorm3d(get_out_channel(layer), affine=True)
             elif subnorm_type == 'instance':
                 norm_layer = nn.InstanceNorm3d(get_out_channel(layer), affine=False)
             else:
