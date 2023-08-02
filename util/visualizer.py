@@ -90,19 +90,29 @@ class Visualizer():
                     if(image_numpy.shape[0] == image_numpy.shape[1]):
                         #show PIL image
                         pil_img = PIL.Image.fromarray(image_numpy)
-                        print(f'PIL image is:')
-                        print(f'numpy image shape when PIL saved: {image_numpy.shape}')
-                        pil_img.show()
+                        #pil_img.show()
                         #save PIL image
+                        print(f'PIL image is saved')
+                        print(f'numpy image shape when PIL saved: {image_numpy.shape}')
+                        print(f'image path: {img_path}')
                         pil_img.save(img_path)
                     elif(image_numpy.shape[1] == image_numpy.shape[2]):
-                        print(f'save image in elif loop is called:')
+                        #plt.imshow(image_numpy[0,:,:])
+                        #plt.title('image, probably generated or full')
+                        #plt.show()
+                        print(f' save image in  elif loop is called!')
                         print(f'numpy image shape: {image_numpy.shape}')
-                        # plt.imshow(image_numpy[0,:,:])
-                        # plt.title('image, probably generated or full')
-                        # plt.show()
-                        print(f'shape the way save image is loaded: {image_numpy[0,:,:].shape}')
+                        print(f'shape the way save_image is loaded: {image_numpy[0,:,:].shape}')
+                        print(f'image path: {img_path}')
                         util.save_image(image_numpy[0,:,:], img_path)
+
+                    
+                    # if len(image_numpy.shape) >= 4:
+                    #     print(f' len is called!')
+                    #     image_numpy = image_numpy[0,0,:,:]      
+
+                    print(f'end of display_current_results')
+                    print(f'#######################')
                     
 
             # update website

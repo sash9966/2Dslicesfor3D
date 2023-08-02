@@ -87,44 +87,58 @@ for epoch in iter_counter.training_epochs():
         if iter_counter.needs_displaying():
             #show the 3D image
             latest_image = trainer.get_latest_generated()
-            print(f'latest_image shape: {latest_image.shape}')
-            print(f'label shape: {data_i["label"].shape}')
-            print(f'real image shape: {data_i["image"].shape}')
+            # print(f'latest_image shape: {latest_image.shape}')
+            # print(f'label shape: {data_i["label"].shape}')
+            # print(f'real image shape: {data_i["image"].shape}')
 
             #plot the three images side by side
             #convert to numpy array
-            latest_image_np = latest_image.detach().cpu().numpy()
-            real_image_np = (data_i['image']).detach().cpu().numpy()
-            label_np = (data_i['label']).detach().cpu().numpy()
+            latest_image = latest_image.detach().cpu().numpy()
+            real_image = (data_i['image']).detach().cpu().numpy()
+            label = (data_i['label']).detach().cpu().numpy()
 
 
+            #plot the three images side by side
+
+
+
+            # print(f'shape of input label unsqzuee: {data_i["label"].shape}')
+            # print(f'shape of latest_image:{latest_image.shape} ')
+            # print(f' shape of real image: { data_i["image"].shape}')
             #plot image
             #get current path:
             path = os.getcwd()            
             plt.close('all')
-            real_image = data_i['image'][:,:,:,0].unsqueeze(0)
-            input_label = data_i['label'][:,:,:,0].unsqueeze(0)
-            print(f'shape of input label unsqzuee: {data_i["label"].shape}')
-            print(f'shape of latest_image:{latest_image.shape} ')
-            print(f' shape of real image: { data_i["image"].shape}')
+            fig, axs = plt.subplots(1, 3, figsize=(15, 5))
 
+            for j in range(3):
+                axs[0].imshow(label[0,:,:,j])
+                axs[0].axis('off')
+                axs[0].set_title('Input Label')
+                axs[1].imshow(latest_image[0,0,j,:,:],cmap='gray')
+                axs[1].axis('off')
+                axs[1].set_title('Synthesized Image')
+                axs[2].imshow(real_image[0,:,:,j],cmap='gray')
+                axs[2].axis('off')
+                axs[2].set_title('Real Image')
+                plt.savefig(f'/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/epoch{epoch}_{i}_plotdepth{j}.png')
 
+                # visuals = OrderedDict([('input_label', label[:,:,:,j]),
+                #     ('synthesized_image', latest_image[:,:,j,:,:]),
+                # #     ('real_image', real_image[:,:,:,j])])
 
-            visuals = OrderedDict([('input_label', input_label),
-                ('synthesized_image', latest_image[:,:,0,:,:]),
-                ('real_image', real_image)])
-            visualizer.display_current_results(visuals, epoch, iter_counter.total_steps_so_far)
+                # visualizer.display_current_results(visuals, epoch, iter_counter.total_steps_so_far)
                 
                 # util.save_image(latest_image_np[0,0,i,:,:], '/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/latestsynthetic_epoch{epoch}_{i}.png')
                 # util.save_image(real_image_np[0,:,:,i], '/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/real_epoch_{epoch}_{i}.png')
                 # util.save_image(label_np[0,:,:,i], '/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/label_epoch{epoch}_{i}.png')
-                # img = sitk.GetImageFromArray(latest_image_np[0,0,:,:,:])
-                # img.CopyInformation(ref_img)
-                # sitk.WriteImage(img, f'/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/latestsynthetic{epoch}.nii.gz')
+                
 
-
-
-
+                
+            
+            img = sitk.GetImageFromArray(latest_image[0,0,:,:,:])
+            img.CopyInformation(ref_img)
+            sitk.WriteImage(img, f'/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/latestsynthetic{epoch}.nii.gz')
             #Save 3D stacked image
 
 
