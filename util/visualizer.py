@@ -90,14 +90,18 @@ class Visualizer():
                     if(image_numpy.shape[0] == image_numpy.shape[1]):
                         #show PIL image
                         pil_img = PIL.Image.fromarray(image_numpy)
-                        print(f'pil image show:')
+                        print(f'PIL image is:')
+                        print(f'numpy image shape when PIL saved: {image_numpy.shape}')
                         pil_img.show()
                         #save PIL image
                         pil_img.save(img_path)
                     elif(image_numpy.shape[1] == image_numpy.shape[2]):
-                        plt.imshow(image_numpy[0,:,:])
-                        plt.title('image, probably generated or full')
-                        plt.show()
+                        print(f'save image in elif loop is called:')
+                        print(f'numpy image shape: {image_numpy.shape}')
+                        # plt.imshow(image_numpy[0,:,:])
+                        # plt.title('image, probably generated or full')
+                        # plt.show()
+                        print(f'shape the way save image is loaded: {image_numpy[0,:,:].shape}')
                         util.save_image(image_numpy[0,:,:], img_path)
                     
 

@@ -102,19 +102,18 @@ for epoch in iter_counter.training_epochs():
             #get current path:
             path = os.getcwd()            
             plt.close('all')
-            for i in range(3):
-                real_image = data_i['image'][:,:,:,i].unsqueeze(0)
-                input_label = data_i['label'][:,:,:,i].unsqueeze(0)
-                print(f'shape of input label unsqzuee: {data_i["label"][:,:,:,i].unsqueeze(0).shape}')
-                print(f'shape of latest_image:{latest_image[:,:,i,:,:].shape} ')
-                print(f' shape of real image: { data_i["image"][:,:,:,i].shape}')
+            real_image = data_i['image'][:,:,:,0].unsqueeze(0)
+            input_label = data_i['label'][:,:,:,0].unsqueeze(0)
+            print(f'shape of input label unsqzuee: {data_i["label"].shape}')
+            print(f'shape of latest_image:{latest_image.shape} ')
+            print(f' shape of real image: { data_i["image"].shape}')
 
 
 
-                visuals = OrderedDict([('input_label', input_label),
-                    ('synthesized_image', latest_image[:,:,i,:,:]),
-                    ('real_image', real_image)])
-                visualizer.display_current_results(visuals, epoch, iter_counter.total_steps_so_far)
+            visuals = OrderedDict([('input_label', input_label),
+                ('synthesized_image', latest_image[:,:,0,:,:]),
+                ('real_image', real_image)])
+            visualizer.display_current_results(visuals, epoch, iter_counter.total_steps_so_far)
                 
                 # util.save_image(latest_image_np[0,0,i,:,:], '/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/latestsynthetic_epoch{epoch}_{i}.png')
                 # util.save_image(real_image_np[0,:,:,i], '/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/real_epoch_{epoch}_{i}.png')
