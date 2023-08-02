@@ -49,8 +49,8 @@ class Visualizer():
 
     #|visuals|: dictionary of images to display or save
     def display_current_results(self, visuals, epoch, step):
-        print(f'#######################')   
-        print(f'display_current_results is called')
+        #print(f'#######################')   
+        #print(f'display_current_results is called')
 
         # convert tensors to numpy arrays
         visuals = self.convert_visuals_to_numpy(visuals)
@@ -91,18 +91,18 @@ class Visualizer():
                         pil_img = PIL.Image.fromarray(image_numpy)
                         #pil_img.show()
                         #save PIL image
-                        print(f'PIL image is saved')
-                        print(f'numpy image shape when PIL saved: {image_numpy.shape}')
-                        print(f'image path: {img_path}')
+                        #print(f'PIL image is saved')
+                        #print(f'numpy image shape when PIL saved: {image_numpy.shape}')
+                        #print(f'image path: {img_path}')
                         pil_img.save(img_path)
                     elif(image_numpy.shape[1] == image_numpy.shape[2]):
                         #plt.imshow(image_numpy[0,:,:])
                         #plt.title('image, probably generated or full')
                         #plt.show()
-                        print(f' save image in  elif loop is called!')
-                        print(f'numpy image shape: {image_numpy.shape}')
-                        print(f'shape the way save_image is loaded: {image_numpy[0,:,:].shape}')
-                        print(f'image path: {img_path}')
+                        # print(f' save image in  elif loop is called!')
+                        # print(f'numpy image shape: {image_numpy.shape}')
+                        # print(f'shape the way save_image is loaded: {image_numpy[0,:,:].shape}')
+                        # print(f'image path: {img_path}')
                         util.save_image(image_numpy[0,:,:], img_path)
 
                     
@@ -110,8 +110,8 @@ class Visualizer():
                     #     print(f' len is called!')
                     #     image_numpy = image_numpy[0,0,:,:]      
 
-                    print(f'end of display_current_results')
-                    print(f'#######################')   
+                    # print(f'end of display_current_results')
+                    # print(f'#######################')   
 
             # update website
             webpage = html.HTML(self.web_dir, 'Experiment name = %s' % self.name, refresh=5)

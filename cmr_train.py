@@ -13,6 +13,7 @@ from util.util import tensor2im, tensor2label
 import torch
 import nibabel as nib
 import numpy as np
+from tqdm import tqdm
 
 
 # parse options
@@ -46,13 +47,13 @@ visualizer = Visualizer(opt)
     
 
 for epoch in iter_counter.training_epochs():
-    print('epoch', epoch)
+    #print('epoch', epoch)
     iter_counter.record_epoch_start(epoch)
 
     
 
-    print(f'lenght of dataloader: {len(dataloader)}')
-    for i, data_i in enumerate(dataloader, start=iter_counter.epoch_iter):
+    #print(f'lenght of dataloader: {len(dataloader)}')
+    for i, data_i in enumerate(tqdm(dataloader, desc=f"Epoch {epoch}"), start=iter_counter.epoch_iter):
 
         #First initalisation
 
@@ -99,9 +100,9 @@ for epoch in iter_counter.training_epochs():
 
 
             #print shapes of the images being fed to visuals:
-            print(f' data_i[i] shape: {data_i["label"].shape}')
-            print(f' synthesized shape: {trainer.get_latest_generated().shape}')
-            print(f' data_i[image])]: {data_i["image"].shape}')
+            # print(f' data_i[i] shape: {data_i["label"].shape}')
+            # print(f' synthesized shape: {trainer.get_latest_generated().shape}')
+            # print(f' data_i[image])]: {data_i["image"].shape}')
 
 
             visuals = OrderedDict([('input_label', data_i['label']),
@@ -119,6 +120,7 @@ for epoch in iter_counter.training_epochs():
         if iter_counter.needs_saving():
             print('saving the latest model (epoch %d, total_steps %d)' %
                   (epoch, iter_counter.total_steps_so_far))
+            trainer.save('latest')
         
 
         ##Failed 3D trial

@@ -91,7 +91,7 @@ class SegmentationPair2D(object):
 
         if self.gt_handle is not None:
             if not np.allclose(input_shape, gt_shape):
-                print(f'filename is: {self.gt_filename}')
+                #print(f'filename is: {self.gt_filename}')
                 raise RuntimeError('Input and ground truth with different dimensions.')
 
         if self.canonical:

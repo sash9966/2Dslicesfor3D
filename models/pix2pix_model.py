@@ -214,9 +214,9 @@ class Pix2PixModel(torch.nn.Module):
         # print(f'label_map has size: {label_map.shape}')
 
 
-        print(f'working 2D!')
-        print(f' input label shape: {input_label.shape}')
-        print(f' label map shape: {label_map.shape}')
+        # print(f'working 2D!')
+        # print(f' input label shape: {input_label.shape}')
+        # print(f' label map shape: {label_map.shape}')
 
         input_semantics = input_label.scatter_(1, label_map.clamp(max=7), 1.0)
 
@@ -341,7 +341,7 @@ class Pix2PixModel(torch.nn.Module):
         #check out size and shape of the images
 
 
-        print(f'fake image shape is {fake_image.shape} \n real image shape is {real_image.shape} \n, input semantics shape is {input_semantics.shape}')
+        #print(f'fake image shape is {fake_image.shape} \n real image shape is {real_image.shape} \n, input semantics shape is {input_semantics.shape}')
         fake_concat = torch.cat([input_semantics, fake_image], dim=1)
         real_concat = torch.cat([input_semantics, real_image], dim=1)
 

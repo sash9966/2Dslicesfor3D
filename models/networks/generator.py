@@ -574,6 +574,6 @@ class StyleSPADEGenerator(BaseNetwork):
         x = self.conv_img(F.leaky_relu(x, 2e-1))
         # x = nn.Tanh(x)
 
-        print('end one forward pass')
+        #print('end one forward pass')
         #print(f'######################################')
         return x
