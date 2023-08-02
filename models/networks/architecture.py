@@ -59,14 +59,14 @@ class SPADEResnetBlock(nn.Module):
     # the semantic segmentation map as input
     def forward(self, x, seg, input_dist=None):
         x_s = self.shortcut(x, seg, input_dist)
-        print(f'In forward of SPADEResnetBlock: \n x: {x.shape}, seg: {seg.shape}, input_dist: {input_dist.shape}')
+        #print(f'In forward of SPADEResnetBlock: \n x: {x.shape}, seg: {seg.shape}, input_dist: {input_dist.shape}')
 
 
         #get info on the parameters of the network
         dx = self.conv_0(self.actvn(self.norm_0(x, seg, input_dist)))
-        print(f'dx after conv_0: {dx.shape}') 
+        #print(f'dx after conv_0: {dx.shape}') 
         dx = self.conv_1(self.actvn(self.norm_1(dx, seg, input_dist)))
-        print(f'dx after conv_1: {dx.shape}')
+        #print(f'dx after conv_1: {dx.shape}')
 
         out = x_s + dx
 
@@ -74,7 +74,7 @@ class SPADEResnetBlock(nn.Module):
 
     def shortcut(self, x, seg, input_dist=None):
 
-        print(f'shortcut is called: x: {x.shape}, seg: {seg.shape}, input_dist: {input_dist.shape}')
+        #print(f'shortcut is called: x: {x.shape}, seg: {seg.shape}, input_dist: {input_dist.shape}')
         if self.learned_shortcut:
             x_s = self.conv_s(self.norm_s(x, seg, input_dist))
         else:

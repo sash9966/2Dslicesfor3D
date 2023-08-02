@@ -457,7 +457,7 @@ class StyleSPADEGenerator(BaseNetwork):
         if self.opt.crop_size == 128:
             in_fea = 1 * 16
             
-        print(f'variables for linear FC layer: in_fea: {in_fea}, nf: {nf}')
+        #print(f'variables for linear FC layer: in_fea: {in_fea}, nf: {nf}')
         
         self.fc_img = nn.Linear(in_fea * nf * 16 * 16, in_fea * nf //4)
         self.fc_img2 = nn.Linear(in_fea * nf // 4, in_fea * nf * 8 * 8)
@@ -496,40 +496,40 @@ class StyleSPADEGenerator(BaseNetwork):
 
     def forward(self, input, image, input_dist=None):
 
-        print(f'######################################')
-        print(f' start forward pass in generator.py')
+        #print(f'######################################')
+        #print(f' start forward pass in generator.py')
         seg = input
         image = image
 
-        print(f'incoming image shape: {image.shape} and the seg shape {seg.shape}, ')
+        #print(f'incoming image shape: {image.shape} and the seg shape {seg.shape}, ')
         x = self.model(image)
-        print(f'x shape after self.model(image): {x.shape}')
+        #print(f'x shape after self.model(image): {x.shape}')
         
         x = x.view(x.size(0), -1)
-        print(f'x shape before fc_img, after view change: {x.shape}')
+        #print(f'x shape before fc_img, after view change: {x.shape}')
         x = self.fc_img(x)
-        print(f'x shape after fc_img: {x.shape}')
+        #print(f'x shape after fc_img: {x.shape}')
         x = self.fc_img2(x)
 
-        print(f'x shape after fc_img2: {x.shape}')
+        #print(f'x shape after fc_img2: {x.shape}')
     
         #Old try!!
         x = x.view(-1, 4*16 * self.opt.ngf , 8, 8)
         #hard coded:
         #x= x.view(1,-1,8,8)
-        print(f'After view and before head_0: {x.shape}')
+        #print(f'After view and before head_0: {x.shape}')
 
 
         x = self.head_0(x, seg, input_dist)
-        print(f'After head_0: {x.shape}')
         #print(f'After head_0: {x.shape}')
+        ##print(f'After head_0: {x.shape}')
 
         # if self.opt.num_upsampling_layers != 'fgit adew':
             
         #     x = self.up(x)
         x = self.G_middle_0(x, seg, input_dist)
-        print(f'After G_middle_0: {x.shape}')
         #print(f'After G_middle_0: {x.shape}')
+        ##print(f'After G_middle_0: {x.shape}')
 
 
         # if self.opt.num_upsampling_layers == 'more' or \
@@ -539,34 +539,34 @@ class StyleSPADEGenerator(BaseNetwork):
         # x = self.G_middle_1(x, seg, input_dist)
 
         x = self.up(x)
-        print(f'After up: {x.shape}')
+        #print(f'After up: {x.shape}')
         x = self.up_0(x, seg, input_dist)
-        print(f'After up_0: {x.shape}')
+        #print(f'After up_0: {x.shape}')
         x = self.up(x)
-        print(f'After up: {x.shape}')
+        #print(f'After up: {x.shape}')
         x = self.up_1(x, seg, input_dist)
-        print(f'After up_1: {x.shape}')
+        #print(f'After up_1: {x.shape}')
         x = self.up(x)
-        print(f'After up: {x.shape}')
+        #print(f'After up: {x.shape}')
         x = self.up_2(x, seg, input_dist)
-        print(f'After up_2: {x.shape}')
+        #print(f'After up_2: {x.shape}')
         x = self.up(x)
-        print(f'After up: {x.shape}')
+        #print(f'After up: {x.shape}')
         x = self.up_3(x, seg, input_dist)
-        print(f'After up_3: {x.shape}')
+        #print(f'After up_3: {x.shape}')
 
         if self.opt.num_upsampling_layers == 'most':
             x = self.up(x)
             x = self.up_4(x, seg, input_dist)
         if self.opt.num_upsampling_layers == 'most512':
             x = self.up(x)
-            print(f'After up: {x.shape}')
+            #print(f'After up: {x.shape}')
             x = self.up_4(x, seg, input_dist)
-            print(f'After up_4: {x.shape}')
+            #print(f'After up_4: {x.shape}')
             x = self.up(x)
-            print(f'After up: {x.shape}')
+            #print(f'After up: {x.shape}')
             x = self.up_5(x, seg, input_dist)
-            print(f'After up_5: {x.shape}')
+            #print(f'After up_5: {x.shape}')
 
  
 
@@ -575,5 +575,5 @@ class StyleSPADEGenerator(BaseNetwork):
         # x = nn.Tanh(x)
 
         print('end one forward pass')
-        print(f'######################################')
+        #print(f'######################################')
         return x
