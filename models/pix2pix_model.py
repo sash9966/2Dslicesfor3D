@@ -8,7 +8,7 @@ import models.networks as networks
 import util.util as util
 import random
 import matplotlib
-
+import cv2
 matplotlib.use('Agg')
 
 import matplotlib.pyplot as plt
@@ -58,6 +58,7 @@ class Pix2PixModel(torch.nn.Module):
     # routines based on |mode|.
     def forward(self, data, mode):
         input_semantics, real_image, input_dist = self.preprocess_input(data)
+
         
         if mode == 'generator':
             g_loss, generated = self.compute_generator_loss(
@@ -125,6 +126,7 @@ class Pix2PixModel(torch.nn.Module):
     # |data|: dictionary of the input data
 
     def preprocess_input(self, data):
+
         # move to GPU and change data types
 
         data['label'] = data['label'].long()
@@ -140,9 +142,13 @@ class Pix2PixModel(torch.nn.Module):
                 data['image'] = data['image'].cpu()
                 data['dist'] = data['dist'].cpu()
 
-        
+    
+
         # create one-hot label map
         label_map = data['label']
+        
+
+
 
         # #understand what label_map does:
         # print(f'type of label_map: {type(label_map)}')
@@ -158,9 +164,12 @@ class Pix2PixModel(torch.nn.Module):
         # print(f'data contains, via keys parameter: {data.keys()}')
 
 
-
-
-        bs, _, h, w = label_map.size()
+        #plot the image of the label map
+        if(len(label_map.shape) ==4): 
+            bs, _, h, w = label_map.size()
+        if(len(label_map.shape) ==3):
+            label_map.unsqueeze_(0)
+            bs, _,h, w = label_map.size()
 
         nc = self.opt.label_nc + 1 if self.opt.contain_dontcare_label \
             else self.opt.label_nc
@@ -218,7 +227,7 @@ class Pix2PixModel(torch.nn.Module):
         # print(f' input label shape: {input_label.shape}')
         # print(f' label map shape: {label_map.shape}')
 
-        input_semantics = input_label.scatter_(1, label_map.clamp(max=7), 1.0)
+        input_semantics = input_label.scatter_(1, label_map, 1.0)
 
  
 

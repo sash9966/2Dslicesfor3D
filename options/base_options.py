@@ -20,7 +20,7 @@ class BaseOptions():
 
     def initialize(self, parser):
         # experiment specifics
-        parser.add_argument('--name', type=str, default='comparison!!!', help='name of the experiment. It decides where to store samples and models')
+        parser.add_argument('--name', type=str, default='Checkifreverseworks!!!', help='name of the experiment. It decides where to store samples and models')
 
         parser.add_argument('--gpu_ids', type=str, default='2', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
         parser.add_argument('--checkpoints_dir', type=str, default='./checkpoints', help='models are saved here')
@@ -81,7 +81,7 @@ class BaseOptions():
         # for instance-wise features
         parser.add_argument('--no_instance', action='store_true',default=True, help='if specified, do *not* add instance map as input')
         parser.add_argument('--nef', type=int, default=32, help='# of encoder filters in the first conv layer')
-        parser.add_argument('--use_vae', action='store_true', help='enable training with an image encoder.')
+        parser.add_argument('--use_vae', action='store_false', help='enable training with an image encoder.')
         parser.add_argument('--use_noise', action='store_true', help='enable training with an image encoder.')
 
         # for training and test

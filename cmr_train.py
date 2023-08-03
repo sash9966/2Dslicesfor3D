@@ -14,11 +14,12 @@ import torch
 import nibabel as nib
 import numpy as np
 from tqdm import tqdm
+import matplotlib.pyplot as plt
 
 
 # parse options
 opt = TrainOptions().parse()
-
+name_of_try = opt.name
 #BUG: Unsure if for larger crop size this should be changed, seems to work without!
 if opt.crop_size == 256:
      opt.resnet_n_downsample = 5
@@ -86,8 +87,6 @@ for epoch in iter_counter.training_epochs():
         # train discriminator
         trainer.run_discriminator_one_step(data_i)
 
-        #print(f'trainer contains which type of generated image: {type(trainer.get_latest_generated)}')
-        #print(f'trainer containes generated {trainer.get_latest_generated().shape}')
 
         # Visualizations
         if iter_counter.needs_printing():
@@ -103,12 +102,28 @@ for epoch in iter_counter.training_epochs():
             # print(f' data_i[i] shape: {data_i["label"].shape}')
             # print(f' synthesized shape: {trainer.get_latest_generated().shape}')
             # print(f' data_i[image])]: {data_i["image"].shape}')
+            synthetic=  trainer.get_latest_generated()
 
 
             visuals = OrderedDict([('input_label', data_i['label']),
-                                   ('synthesized_image', trainer.get_latest_generated()),
+                                   ('synthesized_image', synthetic),
                                    ('real_image', data_i['image'])])
             visualizer.display_current_results(visuals, epoch, iter_counter.total_steps_so_far)
+
+
+
+            fig, axs = plt.subplots(1, 3, figsize=(15, 5))
+            axs[0].imshow(data_i['label'].detach().cpu()[0,0,:,:])
+            axs[0].axis('off')
+            axs[0].set_title('Input Label')
+            axs[1].imshow(synthetic.detach().cpu()[0,0,:,:],cmap='gray')
+            axs[1].axis('off')
+            axs[1].set_title('Synthesized Image')
+            axs[2].imshow(data_i['image'].detach().cpu()[0,0,:,:],cmap='gray')
+            axs[2].axis('off')
+            axs[2].set_title('Real Image')
+            plt.savefig(f'/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/epoch{epoch}_{i}_plotdepth.png')
+            fig.clf()
 
             #Save 3D stacked image
 

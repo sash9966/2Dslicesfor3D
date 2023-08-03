@@ -13,6 +13,7 @@ import torch
 #from torch._six import string_classes, inclasses
 string_classes = str
 int_classes = int
+import matplotlib.pyplot as plt
 
 from PIL import Image
 
@@ -327,13 +328,22 @@ class MRI2DSegmentationDataset(Dataset):
         # Consistency with torchvision, returning PIL Image
         # Using the "Float mode" of PIL, the only mode
         # supporting unbounded float32 values
+
+
+        #Test without transformation!!
         input_img = Image.fromarray(pair_slice["input"], mode='F')
+
+
+
 
         # Handle unlabeled data
         if pair_slice["gt"] is None:
             gt_img = None
         else:
             gt_img = Image.fromarray(pair_slice["gt"], mode='F')
+
+
+            
 
         data_dict = {
             'input': input_img,
@@ -349,6 +359,9 @@ class MRI2DSegmentationDataset(Dataset):
 
         if self.transform is not None:
             data_dict = self.transform(data_dict)
+
+        #plot and save the plot of the input and gt
+
 
         return data_dict
 
