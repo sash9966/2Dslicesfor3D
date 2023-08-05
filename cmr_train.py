@@ -101,10 +101,6 @@ for epoch in iter_counter.training_epochs():
             #plot the three images side by side
 
 
-
-            # print(f'shape of input label unsqzuee: {data_i["label"].shape}')
-            # print(f'shape of latest_image:{latest_image.shape} ')
-            # print(f' shape of real image: { data_i["image"].shape}')
             #plot image
             #get current path:
             path = os.getcwd()            
@@ -112,13 +108,13 @@ for epoch in iter_counter.training_epochs():
             fig, axs = plt.subplots(1, 3, figsize=(15, 5))
 
             for j in range(3):
-                axs[0].imshow(label[0,:,:,j])
+                axs[0].imshow(label[0,j,:,:])
                 axs[0].axis('off')
                 axs[0].set_title('Input Label')
                 axs[1].imshow(latest_image[0,0,j,:,:],cmap='gray')
                 axs[1].axis('off')
                 axs[1].set_title('Synthesized Image')
-                axs[2].imshow(real_image[0,:,:,j],cmap='gray')
+                axs[2].imshow(real_image[0,j,:,:],cmap='gray')
                 axs[2].axis('off')
                 axs[2].set_title('Real Image')
                 plt.savefig(f'/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/epoch{epoch}_{i}_plotdepth{j}.png')

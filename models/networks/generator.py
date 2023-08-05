@@ -688,8 +688,9 @@ class StyleSPADE3DGenerator(BaseNetwork):
         #print(f'segmentaiton shape: {seg.shape}')
         image = image.unsqueeze(1)
         
-        seg = seg.permute(0, 1, 4, 2,3 ) # This reorders the dimensions to (Batch, Channel, Depth, Height, Width)
-        image = image.permute(0, 1, 4, 2, 3) # This reorders the dimensions to (Batch, Channel, Depth, Height, Width
+        #print(f'shapes image: {image.shape}, seg: {seg.shape}')
+        # seg = seg.permute(0, 1, 4, 2,3 ) # This reorders the dimensions to (Batch, Channel, Depth, Height, Width)
+        # image = image.permute(0, 1, 4, 2, 3) # This reorders the dimensions to (Batch, Channel, Depth, Height, Width
         depth= seg.shape[2]
         #print(f'depth: {depth}')
         #print(f' image after unsqueeze and permutation: {image.shape}') 

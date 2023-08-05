@@ -380,10 +380,14 @@ class MRI2DSegmentationDataset(Dataset):
             'segpair_slice':segpair_slice,
         }
 
-        # if self.transform is not None:
-        #     data_dict = self.transform(data_dict)
+        #normalize data -> 0-2000 is ourintensitry range.
+
+        if self.transform is not None:
+            data_dict = self.transform(data_dict)
 
         return data_dict
+
+        
 
 
 class MRI3DSegmentationDataset(Dataset):
@@ -394,7 +398,7 @@ class MRI3DSegmentationDataset(Dataset):
     :param cache: if the data should be cached in memory or not.
     :param transform: transformations to apply.
     """
-    def __init__(self, filename_pairs, cache=True,
+    def __init__(self, filename_pairs, voxel_size,cache=True,
                  transform=None, canonical=False):
         self.filename_pairs = filename_pairs
         self.handlers = []
@@ -402,7 +406,7 @@ class MRI3DSegmentationDataset(Dataset):
         self.transform = transform
         self.cache = cache
         self.canonical = canonical
-        self.voxel_size
+        self.voxel_size = voxel_size
 
         self._load_filenames()
 

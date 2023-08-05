@@ -172,7 +172,6 @@ class VGG19(torch.nn.Module):
         #print(f'X: {X.shape}')
         if (len(X.shape)== 4):
             X = X.unsqueeze(0)
-            X = X.permute(0,1,4,2,3)
         h_relu_sums = [0, 0, 0, 0, 0]  # to store sum of losses for each h_relu
         for z in range(X.shape[2]):  # loop over the z-axis (depth dimension)
             X_slice = X[:, :, z, :, :]

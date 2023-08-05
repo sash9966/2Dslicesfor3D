@@ -172,10 +172,10 @@ class Mms1acdcBBDataset(BaseDataset):
                 
                 # cmr_tran.RandomRotation(degrees=90),
                 # cmr_tran.RandomRotation(p=0.5),
-                cmr_tran.RandomRotation90(p=0.7),
+                #cmr_tran.RandomRotation90(p=0.7),
                 
                 cmr_tran.ToTensor(),
-                cmr_tran.NormalizeMinMaxpercentile(range=(-1,1), percentiles=(1,99)),
+                cmr_tran.NormalizeMinMaxpercentile3D(range=(-1,1), percentiles=(1,99)),
                 # cmr_tran.NormalizeLabel(),
                 # cmr_tran.NormalizeMinMaxRange(range=(-1,1)),
                 
@@ -221,7 +221,8 @@ class Mms1acdcBBDataset(BaseDataset):
         #if(opt.phase == 'test'):
             #self.cmr_dataset(cmr.MRI2DSegmentationDataset(self.msk_list, transform = train_transforms, slice_axis=2, canonical = False))
 
-        self.cmr_dataset = cmr.MRI2DSegmentationDataset(self.filename_pairs,voxel_size = opt.voxel_size, transform = train_transforms, slice_axis=2,  canonical = False)
+        #self.cmr_dataset = cmr.MRI2DSegmentationDataset(self.filename_pairs,voxel_size = opt.voxel_size, transform = train_transforms, slice_axis=2,  canonical = False)
+        self.cmr_dataset = cmr.MRI2DSegmentationDataset(self.filename_pairs,voxel_size = opt.voxel_size, transform = train_transforms,  canonical = False)
         print(f'opt voxel size: {opt.voxel_size}, type: {type(opt.voxel_size)}, ')
 
         

@@ -268,6 +268,39 @@ class NormalizeMinMaxpercentile(MTTransform):
         sample.update(rdict)
         return sample
 
+class NormalizeMinMaxpercentile3D(MTTransform):
+    """Normalize a 3D tensor image (containing multiple 2D slices) with percentiles.
+
+    :param range: min and max output values.
+    :param percentiles: lower and upper percentile to clip the data.
+    """
+    def __init__(self, range = (-1, 1), percentiles=(1,99)):
+        self.out_min, self.out_max = range
+        self.percentiles = percentiles
+
+    def __call__(self, sample):
+        input_data = sample['input'].clone().float().numpy()
+
+
+        # Applying the cutoff and normalization to each 2D slice individually
+        for i in range(input_data.shape[0]):
+            slice_data = input_data[i]
+            cutoff = np.percentile(slice_data, self.percentiles)
+            np.clip(slice_data, *cutoff, out=slice_data)
+            in_min = slice_data.min()
+            in_max = slice_data.max()
+            slice_data -= in_min
+            slice_data /= (in_max - in_min)
+            slice_data *= (self.out_max - self.out_min)
+            slice_data += self.out_min
+            input_data[i] = slice_data
+
+        rdict = {
+            'input':  torch.as_tensor(input_data),
+        }
+        sample.update(rdict)
+        return sample
+
 # class PercentileBasedRescaling(MTTransform):
 
 #     def __init__(self, out_min_max = (0, 1), percentiles=(5,95), masking_method=None, p=1.0, labeled=False):
