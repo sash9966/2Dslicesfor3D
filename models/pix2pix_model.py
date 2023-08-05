@@ -378,15 +378,10 @@ class Pix2PixModel(torch.nn.Module):
 
     def discriminate(self, input_semantics, fake_image, real_image):
         #check out size and shape of the images
-       
-        if(self.opt.voxel_size > 0):
-            real_image = real_image.permute(0, 3, 1, 2)
-            real_image = real_image.unsqueeze(1)
-            input_semantics = input_semantics.permute(0, 1,4, 2, 3)
 
-        #print(f'input_semantics shape: {input_semantics.shape}')
-        #print(f'fake_image shape: {fake_image.shape}')
-        #print(f'real_image shape: {real_image.shape}')
+        if(self.opt.voxel_size > 0):
+            real_image = real_image.unsqueeze(0)
+
 
         # Fake has dim: [batch_size, channel, depth, height, width] no need for batch size
         fake_concat = torch.cat([input_semantics, fake_image], dim=1)
