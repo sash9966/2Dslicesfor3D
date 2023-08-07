@@ -55,6 +55,12 @@ for epoch in iter_counter.training_epochs():
 
     #print(f'lenght of dataloader: {len(dataloader)}')
     for i, data_i in enumerate(tqdm(dataloader, desc=f"Epoch {epoch}"), start=iter_counter.epoch_iter):
+        
+
+        #random int for 0-batchSize-1
+
+
+
 
         #First initalisation
 
@@ -73,7 +79,6 @@ for epoch in iter_counter.training_epochs():
 
         #When paths change, a new 3D volume is being generated
 
-
         iter_counter.record_one_iteration()
 
         #print(f'type of the image, is it PIL or torch tensor: {type(data_i['label'])}') 
@@ -86,6 +91,7 @@ for epoch in iter_counter.training_epochs():
 
         # train discriminator
         trainer.run_discriminator_one_step(data_i)
+
 
 
         # Visualizations
@@ -110,16 +116,28 @@ for epoch in iter_counter.training_epochs():
                                    ('real_image', data_i['image'])])
             visualizer.display_current_results(visuals, epoch, iter_counter.total_steps_so_far)
 
+            if (opt.batchSize >1):
+                rand= np.random.randint(0, opt.batchSize-1)
+            else:
+                rand=0
+            print(f'shape of synthetic: {synthetic.shape}')
+            print(f'shape of data_i: {data_i["image"].shape}')
+            print(f'shape of label: {data_i["label"].shape}')
+            print(f'rand int is: {rand}')
+            
+            #Print the unique values of the syntehtic iamge:
+            print(f'unique values of synthetic: {np.unique(synthetic.detach().cpu()[rand,0,:,:])}')
 
 
             fig, axs = plt.subplots(1, 3, figsize=(15, 5))
-            axs[0].imshow(data_i['label'].detach().cpu()[0,0,:,:])
+
+            axs[0].imshow(data_i['label'].detach().cpu()[rand,0,:,:])
             axs[0].axis('off')
             axs[0].set_title('Input Label')
-            axs[1].imshow(synthetic.detach().cpu()[0,0,:,:],cmap='gray')
+            axs[1].imshow(synthetic.detach().cpu()[rand,0,:,:],cmap='gray')
             axs[1].axis('off')
             axs[1].set_title('Synthesized Image')
-            axs[2].imshow(data_i['image'].detach().cpu()[0,0,:,:],cmap='gray')
+            axs[2].imshow(data_i['image'].detach().cpu()[rand,0,:,:],cmap='gray')
             axs[2].axis('off')
             axs[2].set_title('Real Image')
             plt.savefig(f'/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/epoch{epoch}_{i}_plotdepth.png')

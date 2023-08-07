@@ -258,9 +258,14 @@ class NormalizeMinMaxpercentile(MTTransform):
         in_min = input_data.min()
         in_max = input_data.max()
         input_data-=in_min
-        input_data/=(in_max-in_min)
-        input_data*=(self.out_max-self.out_min)
-        input_data+=self.out_min
+       # Check if the denominator is zero (i.e., in_max == in_min)
+        if in_max - in_min == 0:
+            # handle this case accordingly; e.g., set all values to self.out_min
+            input_data[:] = self.out_min
+        else:
+            input_data /= (in_max - in_min)
+            input_data *= (self.out_max - self.out_min)
+            input_data += self.out_min
 
         rdict = {
             'input':  torch.as_tensor(input_data),

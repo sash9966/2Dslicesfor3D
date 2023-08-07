@@ -95,7 +95,13 @@ class Visualizer():
                         #print(f'numpy image shape when PIL saved: {image_numpy.shape}')
                         #print(f'image path: {img_path}')
                         pil_img.save(img_path)
-                    elif(image_numpy.shape[1] == image_numpy.shape[2]):
+                    try:
+                        if(image_numpy.shape[1] == image_numpy.shape[2]):
+                        
+                            util.save_image(image_numpy[0,:,:], img_path)
+                    except:
+                        print(f'numpy shape recognized: {image_numpy.shape}. Image not saved')
+
                         #plt.imshow(image_numpy[0,:,:])
                         #plt.title('image, probably generated or full')
                         #plt.show()
@@ -103,7 +109,7 @@ class Visualizer():
                         # print(f'numpy image shape: {image_numpy.shape}')
                         # print(f'shape the way save_image is loaded: {image_numpy[0,:,:].shape}')
                         # print(f'image path: {img_path}')
-                        util.save_image(image_numpy[0,:,:], img_path)
+                        
 
                     
                     # if len(image_numpy.shape) >= 4:
