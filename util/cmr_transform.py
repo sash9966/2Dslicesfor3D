@@ -290,9 +290,14 @@ class NormalizeMinMaxpercentile3D(MTTransform):
             in_min = slice_data.min()
             in_max = slice_data.max()
             slice_data -= in_min
-            slice_data /= (in_max - in_min)
-            slice_data *= (self.out_max - self.out_min)
-            slice_data += self.out_min
+        # Check if the denominator is zero (i.e., in_max == in_min)
+            if in_max - in_min == 0:
+                # handle this case accordingly; e.g., set all values to self.out_min
+                slice_data[:] = self.out_min
+            else:
+                slice_data /= (in_max - in_min)
+                slice_data *= (self.out_max - self.out_min)
+                slice_data += self.out_min
             input_data[i] = slice_data
 
         rdict = {

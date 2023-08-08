@@ -383,11 +383,16 @@ class Pix2PixModel(torch.nn.Module):
             real_image = real_image.unsqueeze(0)
 
 
+        print(f'input_semantics shape: {input_semantics.shape}')
+        print(f'fake_image shape: {fake_image.shape}')
+
+        
         # Fake has dim: [batch_size, channel, depth, height, width] no need for batch size
         fake_concat = torch.cat([input_semantics, fake_image], dim=1)
         real_concat = torch.cat([input_semantics, real_image], dim=1)
-        #print(f'fake_concat shape: {fake_concat.shape}')
-        #print(f'real_concat shape: {real_concat.shape}')
+        print(f'fake_concat shape: {fake_concat.shape}')
+        print(f'real_concat shape: {real_concat.shape}')
+        
         
         # In Batch Normalization, the fake and real images are
         # recommended to be in the same batch to avoid disparate
