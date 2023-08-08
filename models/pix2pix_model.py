@@ -382,16 +382,13 @@ class Pix2PixModel(torch.nn.Module):
         if(self.opt.voxel_size > 0):
             real_image = real_image.unsqueeze(0)
 
-
-        print(f'input_semantics shape: {input_semantics.shape}')
-        print(f'fake_image shape: {fake_image.shape}')
-
-        
+        ##BUG: for some reason cat threw dimension error even though shapes were the same. Fix with reshaping..
+        input_semantics = input_semantics.view(self.opt.batchSize, 8, 3, 512, 512)
+        fake_image = fake_image.view(self.opt.batchSize, 1, 3, 512, 512)
+        real_image = real_image.view(self.opt.batchSize, 1, 3, 512, 512)
         # Fake has dim: [batch_size, channel, depth, height, width] no need for batch size
         fake_concat = torch.cat([input_semantics, fake_image], dim=1)
         real_concat = torch.cat([input_semantics, real_image], dim=1)
-        print(f'fake_concat shape: {fake_concat.shape}')
-        print(f'real_concat shape: {real_concat.shape}')
         
         
         # In Batch Normalization, the fake and real images are
@@ -400,7 +397,6 @@ class Pix2PixModel(torch.nn.Module):
         # So both fake and real images are fed to D all at once.
         fake_and_real = torch.cat([fake_concat, real_concat], dim=0)
 
-        #print(f'fake_and_real shape: {fake_and_real.shape}')
 
         if self.amp:
             with autocast():

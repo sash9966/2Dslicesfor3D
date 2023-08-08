@@ -20,7 +20,7 @@ class BaseOptions():
 
     def initialize(self, parser):
         # experiment specifics
-        parser.add_argument('--name', type=str, default='3DWorking', help='name of the experiment. It decides where to store samples and models')
+        parser.add_argument('--name', type=str, default='3DWorkingBatchSize8', help='name of the experiment. It decides where to store samples and models')
 
         parser.add_argument('--voxel_size', type=int, default=3, help='three dimentinoal voxel size, 0 for just 2D slices, 1 or more for additional slices')
 
@@ -33,15 +33,15 @@ class BaseOptions():
         parser.add_argument('--phase', type=str, default='train', help='train, val, test, etc')
 
         # input/output sizes
-        parser.add_argument('--batchSize', type=int, default=1, help='input batch size')
+        parser.add_argument('--batchSize', type=int, default=8, help='input batch size')
         parser.add_argument('--preprocess_mode', type=str, default='scale_width_and_crop', help='scaling and cropping of images at load time.', choices=("resize_and_crop", "crop", "scale_width", "scale_width_and_crop", "scale_shortside", "scale_shortside_and_crop", "fixed", "none"))
         parser.add_argument('--load_size', type=int, default=1024, help='Scale images to this size. The final image will be cropped to --crop_size.')
         parser.add_argument('--crop_size', type=int, default=512, help='Crop to the width of crop_size (after initially scaling the images to load_size.)')
         parser.add_argument('--aspect_ratio', type=float, default=1.0, help='The ratio width/height. The final height of the load image will be crop_size/aspect_ratio')
         parser.add_argument('--input_nc', type=int, default=8, help='# of input label classes without unknown class. If you have unknown class as class label, specify --contain_dopntcare_label.')
-        ##
+        
+        #
         parser.add_argument('--rec_loss', type=str, default='CE', help='recontrcution loss for VAE: choose between BCE  MSE L1 L1F Dice')
-
         parser.add_argument('--label_nc', type=int, default=8, help='# of input label classes without unknown class. If you have unknown class as class label, specify --contain_dopntcare_label.')
         parser.add_argument('--semantic_nc', type=int, default=8, help='# of input label classes without unknown class. If you have unknown class as class label, specify --contain_dopntcare_label.')
 
@@ -61,7 +61,6 @@ class BaseOptions():
 
         # for displays
         parser.add_argument('--display_winsize', type=int, default=400, help='display window size')
-
         # for generator
         parser.add_argument('--netG', type=str, default='stylespade3d', help='selects model to use for netG (pix2pixhd | spade | stylespade | stylespade3d )')
         ## ngf default 16, lowering to 4 for faster loading..
@@ -75,10 +74,8 @@ class BaseOptions():
         # for style generator
         parser.add_argument('--resnet_n_downsample', type=int, default=4, help='number of downsampling layers in netG')
         parser.add_argument('--resnet_n_blocks', type=int, default=2, help='number of residual blocks in the global generator network')
-        parser.add_argument('--resnet_kernel_size', type=int, default=3,
-                            help='kernel size of the resnet block')
-        parser.add_argument('--resnet_initial_kernel_size', type=int, default=7,
-                            help='kernel size of the first convolution')
+        parser.add_argument('--resnet_kernel_size', type=int, default=3,help='kernel size of the resnet block')
+        parser.add_argument('--resnet_initial_kernel_size', type=int, default=7, help='kernel size of the first convolution')
 
         # for instance-wise features
         parser.add_argument('--no_instance', action='store_true',default=True, help='if specified, do *not* add instance map as input')
