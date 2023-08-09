@@ -40,6 +40,7 @@ class Mms1acdcBBDataset(BaseDataset):
         parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/data/alltrainingdata/data/images" ,
                             help='path to the directory that contains photo images')
         
+        
         # parser.add_argument('--label_dir_B', type=str, required=False, default = "/Users/saschastocker/Desktop/Data/StyleTransfer/segmentationTestFullResolution",
         #                     help='path to the directory that contains label images')
         
