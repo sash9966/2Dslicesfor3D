@@ -117,7 +117,7 @@ for epoch in iter_counter.training_epochs():
                 axs[2].imshow(real_image[0,j,:,:],cmap='gray')
                 axs[2].axis('off')
                 axs[2].set_title('Real Image')
-                plt.savefig(f'/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/epoch{epoch}_{i}_plotdepth{j}.png')
+                plt.savefig(f'/scratch/users/sastocke/results/{name_of_try}epoch{epoch}_{i}_plotdepth{j}.png')
 
                 # visuals = OrderedDict([('input_label', label[:,:,:,j]),
                 #     ('synthesized_image', latest_image[:,:,j,:,:]),
@@ -134,7 +134,7 @@ for epoch in iter_counter.training_epochs():
             
             img = sitk.GetImageFromArray(latest_image[0,0,:,:,:])
             img.CopyInformation(ref_img)
-            sitk.WriteImage(img, f'/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/latestsynthetic{epoch}.nii.gz')
+            sitk.WriteImage(img, f'/scratch/users/sastocke/results/{name_of_try}/web/images/latestsynthetic{epoch}.nii.gz')
             #Save 3D stacked image
 
 
