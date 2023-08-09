@@ -12,14 +12,18 @@ import nibabel as nib
 import re
 import SimpleITK as sitk
 
-ref_img = sitk.ReadImage('/home/sastocke/2Dslicesfor3D/data/testimages/ct_1129_image.nii.gz')
+ref_img = sitk.ReadImage('/home/sastocke/data/testimages/ct_1129_image.nii.gz')
 
 
 
 opt = TestOptions().parse()
+opt.label_dir = '/home/sastocke/data/testmasks'
+opt.image_dir = '/home/sastocke/data/testimages'
+
 
 dataloader = data.create_dataloader(opt)
 
+print(f'vae use is: opt.use_vae: {opt.use_vae}')
 model = Pix2PixModel(opt)
 model.eval()
 
@@ -82,7 +86,7 @@ for i, data_i in enumerate(dataloader):
         imgNr= int(re.search(r"\d{4}", path).group())
 
 
-        filename = f"3DImage{imgNr}SameImageDiffMasks{i}trySimpleITK.nii.gz"
+        filename = f"3DImage{imgNr}SameImageDiffMasks{i}testingagain.nii.gz"
 
         sitk.WriteImage(img, os.path.join(opt.checkpoints_dir, opt.name,'web','images', filename))
         #nib.save(img,filename= '/home/sastocke/2Dslicesfor3D/'+filename)
