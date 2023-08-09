@@ -12,7 +12,7 @@ import nibabel as nib
 import re
 import SimpleITK as sitk
 
-ref_img = sitk.ReadImage('/home/sastocke/2Dslicesfor3D/data/testimages/ct_1129_image.nii.gz')
+ref_img = sitk.ReadImage('/home/sastocke/data/alltrainingdata/data/images/ct_1001_image.nii.gz')
 
 
 
