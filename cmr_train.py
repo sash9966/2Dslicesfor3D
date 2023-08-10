@@ -49,7 +49,11 @@ iter_counter = IterationCounter(opt, len(dataloader))
 # create tool for visualization
 visualizer = Visualizer(opt)
 torch.cuda.empty_cache()
-
+#
+# On Sherlock:
+#check if the os directory starts with
+if(opt.checkpoints_dir.startswith('/home/users/sastocke')):
+    opt.use_html = False
 
 
     
