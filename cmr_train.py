@@ -138,7 +138,7 @@ for epoch in iter_counter.training_epochs():
             
             img = sitk.GetImageFromArray(latest_image[0,0,:,:,:])
             img.CopyInformation(ref_img)
-            sitk.WriteImage(img, f'/scratch/users/sastocke/results/{name_of_try}/web/images/latestsynthetic{epoch}.nii.gz')
+            sitk.WriteImage(img, f'/scratch/users/sastocke/results/{name_of_try}latestsynthetic{epoch}.nii.gz')
             #Save 3D stacked image
 
 
