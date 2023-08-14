@@ -54,6 +54,7 @@ torch.cuda.empty_cache()
 #check if the os directory starts with
 if(opt.checkpoints_dir.startswith('/home/users/sastocke')):
     opt.use_html = False
+    opt.checkpoints_dir = '/scratch/users/sastocke/results'
 
 
     
