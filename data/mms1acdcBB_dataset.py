@@ -38,9 +38,13 @@ class Mms1acdcBBDataset(BaseDataset):
         #                     help='path to the directory that contains label images')
         # parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/2Dslicesfor3D/data/images" ,
         #                     help='path to the directory that contains photo images')
-        parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/data/alltrainingdata/data/segmentation",
+        # parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/data/alltrainingdata/data/segmentation",
+        #                     help='path to the directory that contains label images')
+        # parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/data/alltrainingdata/data/images" ,
+        #                     help='path to the directory that contains photo images')
+        parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/data/SynthesizedTest",
                             help='path to the directory that contains label images')
-        parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/data/alltrainingdata/data/images" ,
+        parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/data/testimages" ,
                             help='path to the directory that contains photo images')
         
         # parser.add_argument('--label_dir_B', type=str, required=False, default = "/Users/saschastocker/Desktop/Data/StyleTransfer/segmentationTestFullResolution",
@@ -61,8 +65,14 @@ class Mms1acdcBBDataset(BaseDataset):
         To prepare and get the list of files
         """
 
-        SA_image_list = sorted(os.listdir(os.path.join(opt.image_dir)))
         SA_mask_list = sorted(os.listdir(os.path.join(opt.label_dir)))
+
+        if(opt.phase == 'test'):
+            #For test we will generate images with different mask but paired with one patient image for the background.
+            single_image = os.listdir(os.path.join(opt.image_dir))[0]
+            SA_image_list = [single_image] * len(SA_mask_list)
+        else:
+            SA_image_list = sorted(os.listdir(os.path.join(opt.image_dir)))
 
         # SA_image_list_B = sorted(os.listdir(os.path.join(opt.image_dir_B)))
         # SA_mask_list_B = sorted(os.listdir(os.path.join(opt.label_dir_B)))

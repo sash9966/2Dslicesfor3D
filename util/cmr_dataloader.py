@@ -89,6 +89,9 @@ class SegmentationPair2D(object):
 
         # Sanity check for dimensions, should be the same
         input_shape, gt_shape = self.get_pair_shapes()
+        print(f'shape of the data image:{input_shape}')
+        print(f'shape of the data mask:{gt_shape}')
+        
 
         if self.gt_handle is not None:
             if not np.allclose(input_shape, gt_shape):

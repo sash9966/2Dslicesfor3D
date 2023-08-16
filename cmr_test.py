@@ -17,7 +17,7 @@ ref_img = sitk.ReadImage('/home/sastocke/data/testimages/ct_1129_image.nii.gz')
 
 
 opt = TestOptions().parse()
-opt.label_dir = '/home/sastocke/data/testmasks'
+opt.label_dir = '/home/sastocke/data/SynthesizedTest'
 opt.image_dir = '/home/sastocke/data/testimages'
 
 
@@ -49,19 +49,17 @@ for i, data_i in enumerate(dataloader):
 
     generated = model(data_i, mode='inference')
     
-    img_path = data_i['path']
-    
     
     if(i==0):
         print(f'inital')
-        path = data_i['path'][0]
+        path = data_i['gtname'][0]
         #Expected 3D
         image3D_epoch = torch.empty(512,512,221)
 
 
 
 
-    elif(path != data_i['path'][0] or (len(dataloader)-1 )== i):
+    elif(path != data_i['gtname'][0] or (len(dataloader)-1 )== i):
         #save old 3D stacked, should be 221 images stacked together
         #Override for the new 3D stacked image
         print(f'new image')
@@ -80,7 +78,7 @@ for i, data_i in enumerate(dataloader):
 
 
         #get image nr. from path file name
-        path = data_i['path'][0]
+
 
 
         imgNr= int(re.search(r"\d{4}", path).group())
@@ -92,6 +90,7 @@ for i, data_i in enumerate(dataloader):
         #nib.save(img,filename= '/home/sastocke/2Dslicesfor3D/'+filename)
 
         # start new stacking for the next 3D image
+        path = data_i['gtname'][0]
         image3D_epoch = torch.empty(512,512,221)
         generated = model(data_i, mode='inference')
         image3D_epoch[:,:,0] = generated[0,0,:,:]
@@ -101,7 +100,7 @@ for i, data_i in enumerate(dataloader):
         image3D_epoch[:,:,i%221] = generated[0,0,:,:]
     
     print(f'path: {path}')
-    print(f'path of the data_i: {data_i["path"][0]}')
+    print(f'path of the data_i: {data_i["gtname"][0]}')
 
 
 
