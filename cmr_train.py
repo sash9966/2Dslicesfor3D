@@ -155,7 +155,7 @@ for epoch in iter_counter.training_epochs():
     iter_counter.record_epoch_end()
     if epoch % opt.save_epoch_freq == 0 or \
        epoch == iter_counter.total_epochs:
-        print('saving the model at the end of epoch %d, iters %d' %
+        print('saving the model at the end of epoch %d, iters %d' 
               (epoch, iter_counter.total_steps_so_far))
         trainer.save('latest')
         trainer.save(epoch)
