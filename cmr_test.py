@@ -15,8 +15,12 @@ import SimpleITK as sitk
 ref_img = sitk.ReadImage('/home/sastocke/data/alltrainingdata/data/images/ct_1001_image.nii.gz')
 
 
-
 opt = TestOptions().parse()
+opt.use_vae = False
+
+#voxel size
+vs = opt.voxel_size
+depth= 221
 
 dataloader = data.create_dataloader(opt)
 
@@ -36,33 +40,31 @@ webpage = html.HTML(web_dir,
 
 # test
 for i, data_i in enumerate(dataloader):
-
-
-    #print(f'i: {i}')
-
-    if i * opt.batchSize >= opt.how_many:
-        break
+    if(i%vs != 0):
+        continue
 
     generated = model(data_i, mode='inference')
+    generated = generated.permute(0,1,4,3,2)
     
     img_path = data_i['path']
+
     
     
     if(i==0):
         print(f'inital')
-        path = data_i['path'][0]
+        path = data_i['gtname'][0]
         #Expected 3D
         image3D_epoch = torch.empty(512,512,221)
+        image3D_epoch[:,:,0:vs] = generated[0,0,:,:,:]
+
+        
 
 
 
 
-    elif(path != data_i['path'][0] or (len(dataloader)-1 )== i):
+    elif(path != data_i['gtname'][0]):
         #save old 3D stacked, should be 221 images stacked together
         #Override for the new 3D stacked image
-        print(f'new image')
-        if((len(dataloader)-1 )== i):
-            print(f'last image')
         # affine = np.array([[1, 0, 0, 0],
         #            [0, 1, 0, 0],
         #            [0, 0, 1, 0],
@@ -76,28 +78,46 @@ for i, data_i in enumerate(dataloader):
 
 
         #get image nr. from path file name
-        path = data_i['path'][0]
+        path = data_i['gtname'][0]
 
 
         imgNr= int(re.search(r"\d{4}", path).group())
 
 
-        filename = f"3DImage{imgNr}SameImageDiffMasks{i}trySimpleITK.nii.gz"
+        filename = f"3DImage{imgNr}Synthetic{i}.nii.gz"
 
         sitk.WriteImage(img, os.path.join(opt.checkpoints_dir, opt.name,'web','images', filename))
+        print(f'saved image: {filename}')
         #nib.save(img,filename= '/home/sastocke/2Dslicesfor3D/'+filename)
 
         # start new stacking for the next 3D image
         image3D_epoch = torch.empty(512,512,221)
-        generated = model(data_i, mode='inference')
-        image3D_epoch[:,:,0] = generated[0,0,:,:]
+
+        image3D_epoch[:,:,0:vs] = generated[0,0,:,:,:]
     elif(True):
-        print(f'adding')
         #Add to the stack of 3D
-        image3D_epoch[:,:,i%221] = generated[0,0,:,:]
+
+        #Start and end index of the current slice
+        start_idx = i%depth
+        end_idx = start_idx+vs
+
+        #Edge case for the last slice when 221%voxel_size != 0
+        if(end_idx > depth):
+            end_idx = depth
+
+        print(f'end_idx: {end_idx}, start_idx: {start_idx}')
+        print(f'generated shape: {generated.shape}')
+        print(f'i: {i}')
+        print(f'len(dataloader): {len(dataloader)}')
+        stack_slice = generated[0,0,:,:,:end_idx-start_idx]
+        image3D_epoch[:,:,start_idx:end_idx] = stack_slice
+        print(f'path: {path}')
+
+#Save last image
+sitk.WriteImage(img, os.path.join(opt.checkpoints_dir, opt.name,'web','images', filename))
+
+print(f'done')
     
-    print(f'path: {path}')
-    print(f'path of the data_i: {data_i["path"][0]}')
 
 
 

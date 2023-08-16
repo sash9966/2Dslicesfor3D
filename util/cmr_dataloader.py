@@ -251,13 +251,14 @@ class MRI2DSegmentationDataset(Dataset):
     def _prepare_indexes(self):
         for segpair in self.handlers:
             input_data_shape, _ = segpair.get_pair_shapes()
-            for segpair_slice in range(input_data_shape[2]):
+            depth= input_data_shape[2]
+            for segpair_slice in range(input_data_shape[2]):   
+                start_idx = segpair_slice%depth
+                end_idx = start_idx + self.voxel_size
 
-                #Skip slices that are at edge of 3D image, with a margin of voxel_size
-                #Would cause error, as the slice would be out of bounds
-                # TODO: possible to only skip slices at the end? -> not a lot of information at lower bound either but technically not needed to be skipped
-                if(segpair_slice %219 < self.voxel_size):
-                    continue
+                if end_idx > depth:
+                    #edge case, just take the last slice possible - avoiding different dimension for convolutions later
+                    segpair_slice = depth - self.voxel_size
 
                 # Check if slice pair should be used or not
                 if self.slice_filter_fn:

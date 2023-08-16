@@ -17,7 +17,7 @@ import SimpleITK as sitk
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 from util import util
-ref_img = sitk.ReadImage('/scratch/users/sastocke/data/data/images/ct_1001_image.nii.gz')[:,:,:3]
+ref_img = sitk.ReadImage('/home/sastocke/data/alltrainingdata/data/images/ct_1001_image.nii.gz')[:,:,:3]
 # parse options
 opt = TrainOptions().parse()
 
@@ -117,7 +117,7 @@ for epoch in iter_counter.training_epochs():
                 axs[2].imshow(real_image[0,j,:,:],cmap='gray')
                 axs[2].axis('off')
                 axs[2].set_title('Real Image')
-                plt.savefig(f'/scratch/users/sastocke/results/{name_of_try}epoch{epoch}_{i}_plotdepth{j}.png')
+                plt.savefig(f'/home/sastocke/2Dslicesfor3D/{name_of_try}epoch{epoch}_{i}_plotdepth{j}.png')
 
                 # visuals = OrderedDict([('input_label', label[:,:,:,j]),
                 #     ('synthesized_image', latest_image[:,:,j,:,:]),
@@ -134,7 +134,7 @@ for epoch in iter_counter.training_epochs():
             
             img = sitk.GetImageFromArray(latest_image[0,0,:,:,:])
             img.CopyInformation(ref_img)
-            sitk.WriteImage(img, f'/scratch/users/sastocke/results/{name_of_try}/web/images/latestsynthetic{epoch}.nii.gz')
+            sitk.WriteImage(img, f'/home/sastocke/2Dslicesfor3D/{name_of_try}/web/images/latestsynthetic{epoch}.nii.gz')
             #Save 3D stacked image
 
 
