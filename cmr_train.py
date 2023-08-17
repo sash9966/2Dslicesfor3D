@@ -17,6 +17,8 @@ import SimpleITK as sitk
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 from util import util
+import gc
+
 ref_img = sitk.ReadImage('/scratch/users/sastocke/data/data/images/ct_1001_image.nii.gz')[:,:,:3]
 # parse options
 opt = TrainOptions().parse()
@@ -64,7 +66,7 @@ for epoch in iter_counter.training_epochs():
     iter_counter.record_epoch_start(epoch)
 
     
-
+    
 
     for i, data_i in enumerate(tqdm(dataloader, desc=f"Epoch {epoch}"), start=iter_counter.epoch_iter):
 
@@ -123,6 +125,8 @@ for epoch in iter_counter.training_epochs():
                 axs[2].axis('off')
                 axs[2].set_title('Real Image')
                 plt.savefig(f'/scratch/users/sastocke/results/{name_of_try}epoch{epoch}_{i}_plotdepth{j}.png')
+            
+            plt.close('all')
 
                 # visuals = OrderedDict([('input_label', label[:,:,:,j]),
                 #     ('synthesized_image', latest_image[:,:,j,:,:]),
@@ -148,6 +152,12 @@ for epoch in iter_counter.training_epochs():
             print('saving the latest model (epoch %d, total_steps %d)' %
                   (epoch, iter_counter.total_steps_so_far))
             trainer.save('latest')
+    
+    del latest_image, real_image,label
+    gc.collect()
+    
+
+
 
 
 
