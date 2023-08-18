@@ -681,6 +681,7 @@ class StyleSPADE3DGenerator(BaseNetwork):
         image = image
         nf = self.opt.ngf
         depth = input.shape[2]
+        bs = self.opt.batchSize
         print(f'depth: {depth}')
 
 
@@ -705,10 +706,10 @@ class StyleSPADE3DGenerator(BaseNetwork):
         x = self.fc_img2(x)
 
         #print(f'x shape after fc_img2 : {x.shape}')
-        x = x.view(-1, 64,depth, 8, 8)  # reshaping to have depth dimension again
+        x = x.view(bs, -1,depth, 16, 16)  # reshaping to have depth dimension again
   
 
-
+        print(f'x before head_0: {x.shape}')
 
         x = self.head_0(x, seg, input_dist)
         #print(f'x after head_0: {x.shape}')
