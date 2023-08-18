@@ -159,7 +159,7 @@ class SegmentationPair2D(object):
         
         if slice_axis == 2:
 
-            input_slice = np.asarray(input_dataobj[..., slice_index: slice_index +self.voxel_size],
+            input_slice = np.asarray(input_dataobj[..., slice_index : slice_index+self.voxel_size],
                                      dtype=np.float32)
         elif slice_axis == 1:
             input_slice = np.asarray(input_dataobj[:, slice_index, ...],
@@ -176,7 +176,7 @@ class SegmentationPair2D(object):
             gt_slice = None
         else:
             if slice_axis == 2:
-                gt_slice = np.asarray(gt_dataobj[..., slice_index: slice_index +self.voxel_size],
+                gt_slice = np.asarray(gt_dataobj[...,  slice_index : slice_index+self.voxel_size],
                                       dtype=np.float32)
             elif slice_axis == 1:
                 gt_slice = np.asarray(gt_dataobj[:, slice_index, ...],

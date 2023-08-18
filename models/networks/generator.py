@@ -587,6 +587,7 @@ class StyleSPADE3DGenerator(BaseNetwork):
         self.voxel_size = opt.voxel_size
         self.opt = opt
         nf = opt.ngf
+
         norm_layer_style = get_nonspade_norm_layer(opt, 'spectralsync_batch')
         if self.opt.crop_size == 256:
             in_fea = 2 * 16
@@ -604,18 +605,19 @@ class StyleSPADE3DGenerator(BaseNetwork):
 
         #Padding needs different values for 3D
         in_kernel = opt.resnet_initial_kernel_size
+        kernel_size_3d = [3,3,3]
         model += [nn.ReflectionPad3d((in_kernel//2, in_kernel//2, in_kernel//2, in_kernel//2, in_kernel//4, in_kernel//4)),
 
                   norm_layer_style(nn.Conv3d(self.opt.output_nc, opt.ngf,
-                                       kernel_size=[in_kernel//3,in_kernel,in_kernel],
+                                       kernel_size=[in_kernel,in_kernel,in_kernel],
                                        padding=0)),
                   activation]
 
         # downsample
         mult = 1
         for i in range(opt.resnet_n_downsample):
-            kernel_size_3d = [1,3,3]
-            stride_3d = [2,2,2] if i == 0 else [1,2,2]
+            if (i < 3): stride_3d = [1,2,2]
+            else: stride_3d = [2,2,2] 
             model += [norm_layer_style(nn.Conv3d(opt.ngf * mult, opt.ngf * mult * 2,
                                            kernel_size_3d, stride_3d, padding=1)),
                       activation]
@@ -623,11 +625,7 @@ class StyleSPADE3DGenerator(BaseNetwork):
 
         # resnet blocks, first one takes 3D information
         for i in range(opt.resnet_n_blocks-1):
-            #print(f'adding resnet block {i}')
-            if (i == 0):
-                kernel_size_3d = [3,3,3]
-            else:
-                kernel_size_3d = [1,3,3]
+            if(i>3): kernel_size_3d = [1,3,3]
             model += [ResnetBlock3D(opt.ngf * mult,  # use 3D version of ResnetBlock
                                   norm_layer=norm_layer_style,
                                   activation=activation,
@@ -637,8 +635,8 @@ class StyleSPADE3DGenerator(BaseNetwork):
 
 
         #Hardcoded, not sure if 3= depth?
-        self.fc_img = nn.Linear((in_fea * nf  *3*3 *16*16 ), (in_fea * nf //4 ))
-        self.fc_img2 = nn.Linear(in_fea * nf // 4,in_fea*nf*8*8*3 )  # output features = batch_size * channels * depth * height * width
+        self.fc_img = nn.Linear((in_fea * nf  *16*16 *3), (in_fea*nf//4 ))
+        self.fc_img2 = nn.Linear(in_fea * nf // 4,in_fea*nf*8*8*221 )  # output features = batch_size * channels * depth * height * width
 
         self.fc = nn.Conv3d(self.opt.semantic_nc, in_fea * nf, 3, padding=1)
 
@@ -651,7 +649,7 @@ class StyleSPADE3DGenerator(BaseNetwork):
 
         self.up = nn.Upsample(scale_factor=(1, 2, 2), mode='trilinear')
 
-        self.up_0 = SPADEResnetBlock(16*4 * nf, 8*4 * nf, opt)
+        self.up_0 = SPADEResnetBlock(32 * nf, 8*4 * nf, opt)
         self.up_1 = SPADEResnetBlock(8*4 * nf, 4*4 * nf, opt)
         self.up_2 = SPADEResnetBlock(4*4 * nf, 2*4 * nf, opt)
         self.up_3 = SPADEResnetBlock(2*4 * nf, 4 * nf, opt)
@@ -660,7 +658,7 @@ class StyleSPADE3DGenerator(BaseNetwork):
 
         #Increase upsampling if you want the fake images to be generated in higher resolution -> 512
         if self.opt.num_upsampling_layers == 'most':
-            self.up_4 = SPADEResnetBlock(2 * nf, nf, opt)
+            self.up_4 = SPADEResnetBlock(4 * nf, nf, opt)
             final_nc = nf // 2
         
         if self.opt.num_upsampling_layers == 'most512':
@@ -682,6 +680,8 @@ class StyleSPADE3DGenerator(BaseNetwork):
         seg = input
         image = image
         nf = self.opt.ngf
+        depth = input.shape[2]
+        print(f'depth: {depth}')
 
 
         #print(f' image shape: {image.shape}')
@@ -691,7 +691,6 @@ class StyleSPADE3DGenerator(BaseNetwork):
         #print(f'shapes image: {image.shape}, seg: {seg.shape}')
         # seg = seg.permute(0, 1, 4, 2,3 ) # This reorders the dimensions to (Batch, Channel, Depth, Height, Width)
         # image = image.permute(0, 1, 4, 2, 3) # This reorders the dimensions to (Batch, Channel, Depth, Height, Width
-        depth= seg.shape[2]
         #print(f'depth: {depth}')
         #print(f' image after unsqueeze and permutation: {image.shape}') 
         #print(f'segmentation: {seg.shape}')
@@ -706,7 +705,7 @@ class StyleSPADE3DGenerator(BaseNetwork):
         x = self.fc_img2(x)
 
         #print(f'x shape after fc_img2 : {x.shape}')
-        x = x.view(-1, 64*nf, depth, 8, 8)  # reshaping to have depth dimension again
+        x = x.view(-1, 64,depth, 8, 8)  # reshaping to have depth dimension again
   
 
 
@@ -717,23 +716,23 @@ class StyleSPADE3DGenerator(BaseNetwork):
         x = self.G_middle_0(x, seg, input_dist)
         #print(f'x after G_middle_0: {x.shape}')
 
-
+        print(f'nf : {nf}')
         x = self.up(x)
-        #print(f'x after up: {x.shape}')
+        print(f'x after up: {x.shape}')
         x = self.up_0(x, seg, input_dist)
-        #print(f'x after up_0: {x.shape}')
+        print(f'x after up_0: {x.shape}')
         x = self.up(x)
-        ##print(f'x after up: {x.shape}')
+        print(f'x after up: {x.shape}')
         x = self.up_1(x, seg, input_dist)
-        #print(f'x after up_1: {x.shape}')
+        print(f'x after up_1: {x.shape}')
         x = self.up(x)
-        ##print(f'x after up: {x.shape}')
+        print(f'x after up: {x.shape}')
         x = self.up_2(x, seg, input_dist)
-        #print(f'x after up_2: {x.shape}')
+        print(f'x after up_2: {x.shape}')
         x = self.up(x)
-        #print(f'x after up: {x.shape}')
+        print(f'x after up: {x.shape}')
         x = self.up_3(x, seg, input_dist)
-        #print(f'x after up_3: {x.shape}')
+        print(f'x after up_3: {x.shape}')
 
         if self.opt.num_upsampling_layers == 'most':
             x = self.up(x)
