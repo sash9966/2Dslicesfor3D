@@ -341,7 +341,7 @@ class Pix2PixModel(torch.nn.Module):
         KLD_loss = None
         L1_loss = None
         if self.opt.use_vae:
-            #rint(f'using VAE')
+            print(f'using VAE')
             z, mu, logvar, xout = self.encode_z(real_image)
             if compute_kld_loss:
                 KLD_loss = self.KLDLoss(mu, logvar) * self.opt.lambda_kld
@@ -353,7 +353,7 @@ class Pix2PixModel(torch.nn.Module):
         if self.opt.netG== 'stylespade' or self.opt.netG== 'stylespade3d':
             
             #Why do we need the real image too?... for interference there should be only the semeantics..
-            #Test
+            #Test -> need real image as a "style guide" according to paper
             fake_image = self.netG(input_semantics, real_image, input_dist=input_dist)
             #fake_image = self.netG(input_semantics, real_image, input_dist=input_dist)
 
