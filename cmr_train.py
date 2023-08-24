@@ -45,7 +45,7 @@ iter_counter = IterationCounter(opt, len(dataloader))
 # create tool for visualization
 visualizer = Visualizer(opt)
 
-    
+torch.autograd.set_detect_anomaly(True)
 
 for epoch in iter_counter.training_epochs():
     #print('epoch', epoch)
@@ -56,10 +56,11 @@ for epoch in iter_counter.training_epochs():
     #print(f'lenght of dataloader: {len(dataloader)}')
     for i, data_i in enumerate(tqdm(dataloader, desc=f"Epoch {epoch}"), start=iter_counter.epoch_iter):
         
-
+        latest=None 
         #random int for 0-batchSize-1
-
-
+        if(epoch > 10 and i%220 ==0):
+            #if it's the beginnig forward the first slice of the background image
+            latest = trainer.get_latest_generated().detach()
 
 
         #First initalisation
@@ -69,15 +70,6 @@ for epoch in iter_counter.training_epochs():
         #print(f' data_i: {data_i.keys()}')
         # print the value of the key with 'image'
 
-        # data_i dict_keys(['label', 'image', 'instance', 'dist', 'path', 'gtname', 'index', 'segpair_slice'])
-        # print(f' data_i: {data_i["image"]}')
-        # print(f' image shape: {data_i["image"].shape}')
-        # print(f'gt name is: {data_i["gtname"]}')
-        # print(f'path is: {data_i["path"]}')
-
-        #Set initial path:
-
-        #When paths change, a new 3D volume is being generated
 
         iter_counter.record_one_iteration()
 
@@ -87,10 +79,10 @@ for epoch in iter_counter.training_epochs():
         # Training
         # train generator
         if i % opt.D_steps_per_G == 0:
-            trainer.run_generator_one_step(data_i)
+            trainer.run_generator_one_step(data_i, latest)
 
         # train discriminator
-        trainer.run_discriminator_one_step(data_i)
+        trainer.run_discriminator_one_step(data_i, latest)
 
 
 

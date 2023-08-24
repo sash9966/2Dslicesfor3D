@@ -430,23 +430,6 @@ class StyleSPADEGenerator(BaseNetwork):
 
         self.model = nn.Sequential(*model)
 
-        # self.sw, self.sh = self.compute_latent_vector_size(opt)
-
-        # if self.opt.use_vae:
-        #     # In case of VAE, we will sample from random z vector
-            
-        #     # self.fc = nn.Linear(opt.z_dim, 16 * nf * self.sw * self.sh)
-        # #FIXME: 
-    
-        #     self.fc = nn.Conv2d(self.opt.encoder_nc, 16 * nf, 3, padding=1) # encoder_nc should be the numbe of the channels for the encoder output 512?
-        #     ### sina
-        # elif self.opt.use_noise:
-        #     self.fc = nn.Linear(opt.z_dim, 16 * nf * self.sw * self.sh)
-        #     ### sina
-        # else:
-        #     # Otherwise, we make the network deterministic by starting with
-        #     # downsampled segmentation map instead of random z
-
 
         if self.opt.crop_size == 256:
             in_fea = 2 * 16
@@ -467,7 +450,7 @@ class StyleSPADEGenerator(BaseNetwork):
 
         self.G_middle_0 = SPADEResnetBlock(in_fea * nf, in_fea * nf, opt)
         self.G_middle_1 = SPADEResnetBlock(in_fea * nf, in_fea * nf, opt)
-
+ 
         self.up_0 = SPADEResnetBlock(in_fea * nf, 8 * nf, opt)
         self.up_1 = SPADEResnetBlock(8 * nf, 4 * nf, opt)
         self.up_2 = SPADEResnetBlock(4 * nf, 2 * nf, opt)
@@ -494,27 +477,49 @@ class StyleSPADEGenerator(BaseNetwork):
         self.up = nn.Upsample(scale_factor=2)
 
 
-    def forward(self, input, image, input_dist=None):
+    def forward(self, input,image,latest_generated, input_dist=None):
+        
 
         #print(f'######################################')
         #print(f' start forward pass in generator.py')
         seg = input
         image = image
+        latest_generated = latest_generated
+        #latest = latest_generated
+        try:
+            print(f'image: {image.shape}')
+        except: print(f'image failed')
+        try: 
+            print(f'latest_generated: {latest_generated.shape}')
+        except: print(f'latest_generated failed')
 
         #print(f'incoming image shape: {image.shape} and the seg shape {seg.shape}, ')
         x = self.model(image)
         #print(f'x shape after self.model(image): {x.shape}')
         
+        #First case, if there
+        if(latest_generated !=None):
+            print(f'latest_generated: {latest_generated.shape}')
+            x2 = self.model(latest_generated)
+            print(f'latest generated after style model encoding: {x2.shape}')
+        #average the two style vectors
+        else:
+            x2 = x
         x = x.view(x.size(0), -1)
-        #print(f'x shape before fc_img, after view change: {x.shape}')
+        x2 = x2.view(x2.size(0), -1)
+        print(f'x shape before fc_img, after view change: {x.shape}')
         x = self.fc_img(x)
+        x2 = self.fc_img(x2)
         #print(f'x shape after fc_img: {x.shape}')
         x = self.fc_img2(x)
+        x2 = self.fc_img2(x2)
 
         #print(f'x shape after fc_img2: {x.shape}')
     
         #Old try!!
         x = x.view(-1, 4*16 * self.opt.ngf , 8, 8)
+        x2 = x2.view(-1, 4*16 * self.opt.ngf , 8, 8)
+        #x = (x + x2 ) /2.0
         #hard coded:
         #x= x.view(1,-1,8,8)
         #print(f'After view and before head_0: {x.shape}')
@@ -565,7 +570,11 @@ class StyleSPADEGenerator(BaseNetwork):
             #print(f'After up_4: {x.shape}')
             x = self.up(x)
             #print(f'After up: {x.shape}')
-            x = self.up_5(x, seg, input_dist)
+            if(latest_generated !=None):
+                seg[:,7:8,:,:]=latest_generated
+                x = self.up_5(x, seg, input_dist) 
+            else:
+                x = self.up_5(x, seg, input_dist)
             #print(f'After up_5: {x.shape}')
 
  

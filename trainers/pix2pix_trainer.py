@@ -41,23 +41,23 @@ class Pix2PixTrainer():
             self.scaler_G = GradScaler()
             self.scaler_D = GradScaler()
 
-    def run_generator_one_step(self, data):
+    def run_generator_one_step(self, data, latest):
         self.optimizer_G.zero_grad()
         if self.amp:
-            g_losses, generated = self.pix2pix_model(data, mode='generator')
+            g_losses, generated = self.pix2pix_model(data,latest, mode='generator')
             g_loss = sum(g_losses.values()).mean()
             self.scaler_G.scale(g_loss).backward()
             self.scaler_G.step(self.optimizer_G)
             self.scaler_G.update()
         else:
-            g_losses, generated = self.pix2pix_model(data, mode='generator')
+            g_losses, generated = self.pix2pix_model(data,latest, mode='generator')
             g_loss = sum(g_losses.values()).mean()
-            g_loss.backward()
+            g_loss.backward(retain_graph=True)
             self.optimizer_G.step()
         self.g_losses = g_losses
         self.generated = generated
 
-    def run_discriminator_one_step(self, data):
+    def run_discriminator_one_step(self, data,latest):
         self.optimizer_D.zero_grad()
         if self.amp:
             d_losses = self.pix2pix_model(data, mode='discriminator')
@@ -66,9 +66,9 @@ class Pix2PixTrainer():
             self.scaler_D.step(self.optimizer_D)
             self.scaler_D.update()
         else:
-            d_losses = self.pix2pix_model(data, mode='discriminator')
+            d_losses = self.pix2pix_model(data,latest, mode='discriminator')
             d_loss = sum(d_losses.values()).mean()
-            d_loss.backward()
+            d_loss.backward(retain_graph=True)
             self.optimizer_D.step()
         self.d_losses = d_losses
 

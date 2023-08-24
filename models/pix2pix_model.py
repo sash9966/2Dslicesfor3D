@@ -56,17 +56,17 @@ class Pix2PixModel(torch.nn.Module):
     # of deep networks. We used this approach since DataParallel module
     # can't parallelize custom functions, we branch to different
     # routines based on |mode|.
-    def forward(self, data, mode):
+    def forward(self, data,latest,mode):
         input_semantics, real_image, input_dist = self.preprocess_input(data)
 
         
         if mode == 'generator':
             g_loss, generated = self.compute_generator_loss(
-                input_semantics, real_image, input_dist)
+                input_semantics, real_image,latest, input_dist)
             return g_loss, generated
         elif mode == 'discriminator':
             d_loss = self.compute_discriminator_loss(
-                input_semantics, real_image, input_dist)
+                input_semantics, real_image,latest, input_dist)
             return d_loss
         elif mode == 'encode_only':
             z, mu, logvar, xout = self.encode_z(real_image)
@@ -243,11 +243,11 @@ class Pix2PixModel(torch.nn.Module):
 
         return input_semantics, data['image'], data['dist']
 
-    def compute_generator_loss(self, input_semantics, real_image, input_dist):
+    def compute_generator_loss(self, input_semantics, real_image,latest, input_dist):
         G_losses = {}
 
         fake_image, KLD_loss, L1_loss = self.generate_fake(
-            input_semantics, real_image, input_dist, compute_kld_loss=self.opt.use_vae)
+            input_semantics, real_image, latest,input_dist, compute_kld_loss=self.opt.use_vae)
         
 
         if self.opt.use_vae:
@@ -282,10 +282,10 @@ class Pix2PixModel(torch.nn.Module):
 
         return G_losses, fake_image
 
-    def compute_discriminator_loss(self, input_semantics, real_image, input_dist):
+    def compute_discriminator_loss(self, input_semantics, real_image,latest, input_dist):
         D_losses = {}
         with torch.no_grad():
-            fake_image, _ , _ = self.generate_fake(input_semantics, real_image, input_dist)
+            fake_image, _ , _ = self.generate_fake(input_semantics, real_image, latest, input_dist)
             fake_image = fake_image.detach()
             fake_image.requires_grad_()
 
@@ -308,7 +308,7 @@ class Pix2PixModel(torch.nn.Module):
         z = self.reparameterize(mu, logvar)
         return z, mu, logvar, xout
 
-    def generate_fake(self, input_semantics, real_image, input_dist, compute_kld_loss=False):
+    def generate_fake(self, input_semantics, real_image,latest, input_dist, compute_kld_loss=False):
         z = None
         KLD_loss = None
         L1_loss = None
@@ -326,7 +326,7 @@ class Pix2PixModel(torch.nn.Module):
             
             #Why do we need the real image too?... for interference there should be only the semeantics..
             #Test
-            fake_image = self.netG(input_semantics, real_image, input_dist=input_dist)
+            fake_image = self.netG(input_semantics, real_image, latest, input_dist=input_dist)
             #fake_image = self.netG(input_semantics, real_image, input_dist=input_dist)
 
 
@@ -350,8 +350,10 @@ class Pix2PixModel(torch.nn.Module):
         #check out size and shape of the images
 
 
-        #print(f'fake image shape is {fake_image.shape} \n real image shape is {real_image.shape} \n, input semantics shape is {input_semantics.shape}')
-        fake_concat = torch.cat([input_semantics, fake_image], dim=1)
+        print(f'fake image shape is {fake_image.shape} \n real image shape is {real_image.shape} \n, input semantics shape is {input_semantics.shape}')
+        
+        #TODO: could we use a rand. int to sometimes take the "last image" and sometimes the image from the guiding image?
+        fake_concat = torch.cat([input_semantics, fake_image[0:1,:,:,:]], dim=1)
         real_concat = torch.cat([input_semantics, real_image], dim=1)
 
         # In Batch Normalization, the fake and real images are
