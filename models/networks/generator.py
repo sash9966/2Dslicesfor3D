@@ -495,7 +495,7 @@ class StyleSPADEGenerator(BaseNetwork):
 
 
     def forward(self, input, image, input_dist=None):
-
+        # add RNN!
         #print(f'######################################')
         #print(f' start forward pass in generator.py')
         seg = input
