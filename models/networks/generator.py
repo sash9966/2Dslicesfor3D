@@ -396,6 +396,7 @@ class StyleSPADEGenerator(BaseNetwork):
         super().__init__()
         self.opt = opt
         nf = opt.ngf
+        self.alpha = nn.Parameter(torch.tensor(0.5))
         norm_layer_style = get_nonspade_norm_layer(opt, 'spectralsync_batch')
         # norm_layer_style = get_nonspade_norm_layer(opt, 'spectralinstance') dont use
         # norm_layer_style = get_nonspade_norm_layer(opt, opt.norm_E)
@@ -486,40 +487,35 @@ class StyleSPADEGenerator(BaseNetwork):
         image = image
         latest_generated = latest_generated
         #latest = latest_generated
-        try:
-            print(f'image: {image.shape}')
-        except: print(f'image failed')
-        try: 
-            print(f'latest_generated: {latest_generated.shape}')
-        except: print(f'latest_generated failed')
-
         #print(f'incoming image shape: {image.shape} and the seg shape {seg.shape}, ')
         x = self.model(image)
         #print(f'x shape after self.model(image): {x.shape}')
         
         #First case, if there
-        if(latest_generated !=None):
-            print(f'latest_generated: {latest_generated.shape}')
-            x2 = self.model(latest_generated)
-            print(f'latest generated after style model encoding: {x2.shape}')
+
         #average the two style vectors
-        else:
-            x2 = x
         x = x.view(x.size(0), -1)
-        x2 = x2.view(x2.size(0), -1)
-        print(f'x shape before fc_img, after view change: {x.shape}')
+       
+        #print(f'x shape before fc_img, after view change: {x.shape}')
         x = self.fc_img(x)
-        x2 = self.fc_img(x2)
+        
         #print(f'x shape after fc_img: {x.shape}')
         x = self.fc_img2(x)
-        x2 = self.fc_img2(x2)
+        
 
         #print(f'x shape after fc_img2: {x.shape}')
     
         #Old try!!
         x = x.view(-1, 4*16 * self.opt.ngf , 8, 8)
-        x2 = x2.view(-1, 4*16 * self.opt.ngf , 8, 8)
-        #x = (x + x2 ) /2.0
+        if(latest_generated !=None):
+            x2 = self.model(latest_generated)
+            x2 = x2.view(x2.size(0), -1)
+            x2 = self.fc_img(x2)
+            x2 = self.fc_img2(x2)
+            x2 = x2.view(-1, 4*16 * self.opt.ngf , 8, 8)
+        else:
+            x2 = x
+        x = self.alpha * x + (1 - self.alpha) * x2  
         #hard coded:
         #x= x.view(1,-1,8,8)
         #print(f'After view and before head_0: {x.shape}')
@@ -570,11 +566,7 @@ class StyleSPADEGenerator(BaseNetwork):
             #print(f'After up_4: {x.shape}')
             x = self.up(x)
             #print(f'After up: {x.shape}')
-            if(latest_generated !=None):
-                seg[:,7:8,:,:]=latest_generated
-                x = self.up_5(x, seg, input_dist) 
-            else:
-                x = self.up_5(x, seg, input_dist)
+            x = self.up_5(x, seg, input_dist)
             #print(f'After up_5: {x.shape}')
 
  

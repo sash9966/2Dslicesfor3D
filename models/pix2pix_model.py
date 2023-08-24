@@ -350,7 +350,7 @@ class Pix2PixModel(torch.nn.Module):
         #check out size and shape of the images
 
 
-        print(f'fake image shape is {fake_image.shape} \n real image shape is {real_image.shape} \n, input semantics shape is {input_semantics.shape}')
+        #print(f'fake image shape is {fake_image.shape} \n real image shape is {real_image.shape} \n, input semantics shape is {input_semantics.shape}')
         
         #TODO: could we use a rand. int to sometimes take the "last image" and sometimes the image from the guiding image?
         fake_concat = torch.cat([input_semantics, fake_image[0:1,:,:,:]], dim=1)
