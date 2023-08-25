@@ -396,6 +396,8 @@ class StyleSPADEGenerator(BaseNetwork):
         super().__init__()
         self.opt = opt
         nf = opt.ngf
+        self.h_0 = torch.zeros(1, self.opt.batchSize, 64)
+        self.c_0 = torch.zeros(1, self.opt.batchSize, 64)
         norm_layer_style = get_nonspade_norm_layer(opt, 'spectralsync_batch')
         # norm_layer_style = get_nonspade_norm_layer(opt, 'spectralinstance') dont use
         # norm_layer_style = get_nonspade_norm_layer(opt, opt.norm_E)
@@ -459,8 +461,13 @@ class StyleSPADEGenerator(BaseNetwork):
             
         #print(f'variables for linear FC layer: in_fea: {in_fea}, nf: {nf}')
         
+        #LSTM layer
+        #self.lstm = nn.LSTM(input_size=128*128*4, hidden_size=128*128*4, batch_first=True)
+
         self.fc_img = nn.Linear(in_fea * nf * 16 * 16, in_fea * nf //4)
         self.fc_img2 = nn.Linear(in_fea * nf // 4, in_fea * nf * 8 * 8)
+        #self.gru = nn.GRU(input_size=in_fea * nf * 16 * 16, hidden_size=in_fea * nf // 4, batch_first=True)
+        #self.gru2 = nn.GRU(input_size=in_fea * nf // 4, hidden_size=in_fea * nf * 8 * 8, batch_first=True)
         self.fc = nn.Conv2d(self.opt.semantic_nc, in_fea * nf, 3, padding=1)
 
         self.head_0 = SPADEResnetBlock(in_fea * nf, in_fea * nf, opt)
@@ -498,53 +505,62 @@ class StyleSPADEGenerator(BaseNetwork):
         # add RNN!
         #print(f'######################################')
         #print(f' start forward pass in generator.py')
+        nf = self.opt.ngf   
+
+        assert(input.shape[0] == image.shape[0] == self.opt.batchSize)
+        # bs = self.opt.batchSize
+        # nc = self.opt.output_nc
+
+        # h_0 = self.h_0.to(input.device)
+        # c_0 = self.c_0.to(input.device)
+
         seg = input
         image = image
 
-        #print(f'incoming image shape: {image.shape} and the seg shape {seg.shape}, ')
+        print(f'incoming image shape: {image.shape} and the seg shape {seg.shape}, ')
         x = self.model(image)
-        #print(f'x shape after self.model(image): {x.shape}')
+        print(f'x shape after self.model(image): {x.shape}')
         
         x = x.view(x.size(0), -1)
         #print(f'x shape before fc_img, after view change: {x.shape}')
-        x = self.fc_img(x)
+        x = self.fc(x)
         #print(f'x shape after fc_img: {x.shape}')
-        x = self.fc_img2(x)
+        x = self.fc2(x)
 
         #print(f'x shape after fc_img2: {x.shape}')
     
         #Old try!!
         x = x.view(-1, 4*16 * self.opt.ngf , 8, 8)
         #hard coded:
-        #x= x.view(1,-1,8,8)
-        #print(f'After view and before head_0: {x.shape}')
 
 
         x = self.head_0(x, seg, input_dist)
         #print(f'After head_0: {x.shape}')
-        ##print(f'After head_0: {x.shape}')
+        print(f'After head_0: {x.shape}')
 
-        # if self.opt.num_upsampling_layers != 'fgit adew':
-            
-        #     x = self.up(x)
         x = self.G_middle_0(x, seg, input_dist)
-        #print(f'After G_middle_0: {x.shape}')
-        ##print(f'After G_middle_0: {x.shape}')
-
-
-        # if self.opt.num_upsampling_layers == 'more' or \
-        #    self.opt.num_upsampling_layers == 'most':
-        #     x = self.up(x)
-
-        # x = self.G_middle_1(x, seg, input_dist)
+        print(f'After G_middle_0: {x.shape}')
 
         x = self.up(x)
-        #print(f'After up: {x.shape}')
+        print(f'After up: {x.shape}')
         x = self.up_0(x, seg, input_dist)
         #print(f'After up_0: {x.shape}')
         x = self.up(x)
-        #print(f'After up: {x.shape}')
+        print(f'After up: {x.shape}')
         x = self.up_1(x, seg, input_dist)
+        # print(f'After up_1: {x.shape}')
+        # x_lstm_in = x.view(bs, 64,-1) 
+        # print(f'shapeof x_lstm : {x_lstm_in.shape}') 
+        # # Reshape to (batch_size, seq_len, feature_size)
+        
+        #     # Forward through LSTM
+        # lstm_out, (h_n, c_n) = self.lstm(x_lstm_in, (h_0,c_0 ))
+        # print(f'shapeof lstm_out : {lstm_out.shape}')
+        # print(f'shapeof h_n : {h_n.shape}')
+        # print(f'shapeof c_n : {c_n.shape}')
+            
+        #     # Reshape LSTM output to match x's dimensions
+        # x_lstm_out = lstm_out.view(nf // 4, nf//8,256,256)
         #print(f'After up_1: {x.shape}')
         x = self.up(x)
         #print(f'After up: {x.shape}')
@@ -559,16 +575,20 @@ class StyleSPADEGenerator(BaseNetwork):
             x = self.up(x)
             x = self.up_4(x, seg, input_dist)
         if self.opt.num_upsampling_layers == 'most512':
+ 
             x = self.up(x)
             #print(f'After up: {x.shape}')
             x = self.up_4(x, seg, input_dist)
-            #print(f'After up_4: {x.shape}')
+           
+            
             x = self.up(x)
-            #print(f'After up: {x.shape}')
+            print(f'After up: {x.shape}')
             x = self.up_5(x, seg, input_dist)
-            #print(f'After up_5: {x.shape}')
+            print(f'After up_5: {x.shape}')
 
- 
+
+        #flatten the image, eg the last two dimensions
+
 
 
         x = self.conv_img(F.leaky_relu(x, 2e-1))
@@ -576,4 +596,8 @@ class StyleSPADEGenerator(BaseNetwork):
 
         #print('end one forward pass')
         #print(f'######################################')
+
+        self.h_0 = h_n.detach()
+        self.c_0 = c_n.detach()
+
         return x
