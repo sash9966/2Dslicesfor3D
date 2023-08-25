@@ -63,7 +63,7 @@ class BaseOptions():
         # for generator
         parser.add_argument('--netG', type=str, default='stylespade', help='selects model to use for netG (pix2pixhd | spade | stylespade)')
         ## 
-        parser.add_argument('--ngf', type=int, default=4, help='# of gen filters in first conv layer')
+        parser.add_argument('--ngf', type=int, default=16, help='# of gen filters in first conv layer')
         parser.add_argument('--init_type', type=str, default='xavier', help='network initialization [normal|xavier|kaiming|orthogonal]')
         parser.add_argument('--init_variance', type=float, default=0.02, help='variance of the initialization distribution')
         parser.add_argument('--z_dim', type=int, default=512, help="dimension of the latent z vector")
