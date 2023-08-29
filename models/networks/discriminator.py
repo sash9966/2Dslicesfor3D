@@ -79,6 +79,7 @@ class NLayerDiscriminator(BaseNetwork):
         return parser
 
     def __init__(self, opt):
+'
         super().__init__()
         self.opt = opt
 
