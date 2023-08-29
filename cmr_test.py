@@ -17,9 +17,9 @@ ref_img = sitk.ReadImage('/home/sastocke/data/testimages/ct_1129_image.nii.gz')
 
 
 opt = TestOptions().parse()
-opt.label_dir = '/home/sastocke/data/SynthesizedTest'
+opt.label_dir = '/home/sastocke/data/testmasks'
 opt.image_dir = '/home/sastocke/data/testimages'
-
+opt.batchSize = 1
 
 dataloader = data.create_dataloader(opt)
 
@@ -39,6 +39,7 @@ webpage = html.HTML(web_dir,
                     (opt.name, opt.phase, opt.which_epoch))
 
 # test
+latest_generated = None
 for i, data_i in enumerate(dataloader):
 
 
@@ -47,7 +48,7 @@ for i, data_i in enumerate(dataloader):
     if i * opt.batchSize >= opt.how_many:
         break
 
-    generated = model(data_i, mode='inference')
+    generated = model(data_i,latest_generated, mode='inference')
     
     
     if(i==0):
@@ -92,12 +93,13 @@ for i, data_i in enumerate(dataloader):
         # start new stacking for the next 3D image
         path = data_i['gtname'][0]
         image3D_epoch = torch.empty(512,512,221)
-        generated = model(data_i, mode='inference')
+        generated = model(data_i, None, mode='inference')
         image3D_epoch[:,:,0] = generated[0,0,:,:]
     elif(True):
         print(f'adding')
         #Add to the stack of 3D
         image3D_epoch[:,:,i%221] = generated[0,0,:,:]
+        latest_generated = generated[:1,:1,:,:]
     
     print(f'path: {path}')
     print(f'path of the data_i: {data_i["gtname"][0]}')

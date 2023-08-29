@@ -58,7 +58,7 @@ for epoch in iter_counter.training_epochs():
         
         latest=None 
         #random int for 0-batchSize-1
-        if(epoch > 10 and i%220 ==0):
+        if(epoch > 40 and i%220 ==0):
             #if it's the beginnig forward the first slice of the background image
             latest = trainer.get_latest_generated().detach()
 

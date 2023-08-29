@@ -73,7 +73,7 @@ class Pix2PixModel(torch.nn.Module):
             return mu, logvar
         elif mode == 'inference':
             with torch.no_grad():
-                fake_image, _ , _ = self.generate_fake(input_semantics, real_image, input_dist)
+                fake_image, _ , _ = self.generate_fake(input_semantics, real_image,latest, input_dist)
             return fake_image
         else:
             raise ValueError("|mode| is invalid")

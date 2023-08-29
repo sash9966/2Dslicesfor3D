@@ -17,7 +17,6 @@ import pickle
 class BaseOptions():
     def __init__(self):
         self.initialized = False
-
     def initialize(self, parser):
         # experiment specifics
         parser.add_argument('--name', type=str, default='fusetry', help='name of the experiment. It decides where to store samples and models')
