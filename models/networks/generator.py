@@ -62,6 +62,7 @@ class SPADEGenerator(BaseNetwork):
         self.up_3 = SPADEResnetBlock(2 * nf, 1 * nf, opt)
 
         final_nc = nf
+        print(f'opt.num_upsampling_layers: {opt.num_upsampling_layers}')
 
         if opt.num_upsampling_layers == 'most':
             self.up_4 = SPADEResnetBlock(1 * nf, nf // 2, opt)
@@ -459,7 +460,7 @@ class StyleSPADEGenerator(BaseNetwork):
             
         #print(f'variables for linear FC layer: in_fea: {in_fea}, nf: {nf}')
         
-        self.fc_img = nn.Linear(in_fea * nf * 16 * 16, in_fea * nf //4)
+        self.fc_img = nn.Linear(in_fea * nf * 64, in_fea * nf //4)
         self.fc_img2 = nn.Linear(in_fea * nf // 4, in_fea * nf * 8 * 8)
         self.fc = nn.Conv2d(self.opt.semantic_nc, in_fea * nf, 3, padding=1)
 
