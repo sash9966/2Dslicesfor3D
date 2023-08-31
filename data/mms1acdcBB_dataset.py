@@ -34,15 +34,13 @@ class Mms1acdcBBDataset(BaseDataset):
         parser.set_defaults(no_instance=True)
         parser.set_defaults(add_dist=False)
         
-        # parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/2Dslicesfor3D/data/masks",
+        parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/2Dslicesfor3D/data/masks",help='path to the directory that contains label images')
+        parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/2Dslicesfor3D/data/images" ,help='path to the directory that contains photo images')
+        # parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/data/alltrainingdata/data/segmentation",
         #                     help='path to the directory that contains label images')
-        # parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/2Dslicesfor3D/data/images" ,
+        # parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/data/alltrainingdata/data/images" ,
         #                     help='path to the directory that contains photo images')
-        parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/data/alltrainingdata/data/segmentation",
-                            help='path to the directory that contains label images')
-        parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/data/alltrainingdata/data/images" ,
-                            help='path to the directory that contains photo images')
-        # parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/data/SynthesizedTest",
+        # # parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/data/SynthesizedTest",
         #                     help='path to the directory that contains label images')
         # parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/data/testimages" ,
         #                     help='path to the directory that contains photo images')
@@ -181,7 +179,7 @@ class Mms1acdcBBDataset(BaseDataset):
         if opt.isTrain:
             train_transforms = Compose([
                 # cmr_tran.Resample(self.opt.target_res,self.opt.target_res), #1.33
-                # cmr_tran.CenterCrop2D((self.opt.crop_size,self.opt.crop_size)),
+                cmr_tran.CenterCrop2D((self.opt.crop_size,self.opt.crop_size)),
                 
                 # cmr_tran.RandomRotation(degrees=90),
                 # cmr_tran.RandomRotation(p=0.5),
