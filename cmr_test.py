@@ -19,17 +19,20 @@ ref_img = sitk.ReadImage('/home/sastocke/data/testimages/ct_1129_image.nii.gz')
 opt = TestOptions().parse()
 opt.label_dir = '/home/sastocke/data/SynthesizedTest'
 opt.image_dir = '/home/sastocke/data/testimages'
+name = opt.name
+
+#For generation, batchSize must be 1, create one slice at a time
+opt.batchSize = 1
 
 
 dataloader = data.create_dataloader(opt)
 
-print(f'vae use is: opt.use_vae: {opt.use_vae}')
 model = Pix2PixModel(opt)
 model.eval()
 
 visualizer = Visualizer(opt)
 
-# create a webpage that summarizes the all results
+# create a webpage that summarizes the all results  
 web_dir = os.path.join(opt.results_dir, opt.name,
                        '%s_%s' % (opt.phase, opt.which_epoch))
 
@@ -84,7 +87,7 @@ for i, data_i in enumerate(dataloader):
         imgNr= int(re.search(r"\d{4}", path).group())
 
 
-        filename = f"3DImage{imgNr}SameImageDiffMasks{i}testingagain.nii.gz"
+        filename = f"3DImage{name}{imgNr}{i}.nii.gz"
 
         sitk.WriteImage(img, os.path.join(opt.checkpoints_dir, opt.name,'web','images', filename))
         #nib.save(img,filename= '/home/sastocke/2Dslicesfor3D/'+filename)
