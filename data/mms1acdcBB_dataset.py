@@ -69,7 +69,7 @@ class Mms1acdcBBDataset(BaseDataset):
 
         if(opt.phase == 'test'):
             #For test we will generate images with different mask but paired with one patient image for the background.
-            single_image = os.listdir(os.path.join(opt.image_dir))[0]
+            single_image = opt.image_dir
             SA_image_list = [single_image] * len(SA_mask_list)
         else:
             SA_image_list = sorted(os.listdir(os.path.join(opt.image_dir)))
