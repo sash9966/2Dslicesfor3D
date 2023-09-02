@@ -12,13 +12,16 @@ import nibabel as nib
 import re
 import SimpleITK as sitk
 
-ref_img = sitk.ReadImage('/home/sastocke/data/testimages/ct_1129_image.nii.gz')
+ref_img = sitk.ReadImage('/scratch/users/sastocke/data/data/images/ct_1001_image.nii.gz')
 
 
 
 opt = TestOptions().parse()
-opt.label_dir = '/home/sastocke/data/SynthesizedTest'
-opt.image_dir = '/home/sastocke/data/testimages'
+
+#Generate image for these masks
+opt.label_dir = '/scratch/users/fwkong/SharedData/Synthesized'
+#Background image for generation!
+opt.image_dir = '/scratch/users/sastocke/data/data/images/ct_1001_image.nii.gz'
 name = opt.name
 
 #For generation, batchSize must be 1, create one slice at a time
@@ -87,9 +90,9 @@ for i, data_i in enumerate(dataloader):
         imgNr= int(re.search(r"\d{4}", path).group())
 
 
-        filename = f"3DImage{name}{imgNr}{i}.nii.gz"
+        filename = f"3DImage{name}{imgNr}.nii.gz"
 
-        sitk.WriteImage(img, os.path.join(opt.checkpoints_dir, opt.name,'web','images', filename))
+        sitk.WriteImage(img, os.path.join('/scratch/users/fwkong/SharedData/SaschaCreated/', filename))
         #nib.save(img,filename= '/home/sastocke/2Dslicesfor3D/'+filename)
 
         # start new stacking for the next 3D image
@@ -102,8 +105,6 @@ for i, data_i in enumerate(dataloader):
         #Add to the stack of 3D
         image3D_epoch[:,:,i%221] = generated[0,0,:,:]
     
-    print(f'path: {path}')
-    print(f'path of the data_i: {data_i["gtname"][0]}')
 
 
 
