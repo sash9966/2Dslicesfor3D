@@ -11,6 +11,7 @@ import numpy as np
 import nibabel as nib
 import re
 import SimpleITK as sitk
+import gc
 
 ref_img = sitk.ReadImage('/scratch/users/sastocke/data/data/images/ct_1001_image.nii.gz')
 
@@ -93,6 +94,8 @@ for i, data_i in enumerate(dataloader):
         filename = f"3DImage{name}{imgNr}.nii.gz"
 
         sitk.WriteImage(img, os.path.join('/scratch/users/fwkong/SharedData/SaschaCreated/', filename))
+        del img
+        gc.collect()
         #nib.save(img,filename= '/home/sastocke/2Dslicesfor3D/'+filename)
 
         # start new stacking for the next 3D image
