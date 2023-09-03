@@ -13,6 +13,7 @@ import re
 import SimpleITK as sitk
 import gc
 from util.util import save_as_resized_pickle
+import pickle
 
 ref_img = sitk.ReadImage('/scratch/users/sastocke/data/data/images/ct_1001_image.nii.gz')
 
@@ -37,8 +38,11 @@ model.eval()
 
 visualizer = Visualizer(opt)
 
+target_path = ' /scratch/users/fwkong/SharedData/imageCHDcleaned_all/whole_heart_processed/pytorch/ct_1001_image_0.pkl'
 #target image for compression to pkl data
-target = sitk.ReadImage('/scratch/users/fwkong/SharedData/imageCHDcleaned_all/whole_heart_processed/pytorch/ct_1001_image_0.pkl')
+with open(target_path, 'rb') as f:
+    target_np  =pickle.load(f)
+target = sitk.GetImageFromArray(target_np)
 # create a webpage that summarizes the all results  
 web_dir = os.path.join(opt.results_dir, opt.name,
                        '%s_%s' % (opt.phase, opt.which_epoch))
