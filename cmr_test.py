@@ -38,7 +38,7 @@ model.eval()
 
 visualizer = Visualizer(opt)
 
-target_path = ' /scratch/users/fwkong/SharedData/imageCHDcleaned_all/whole_heart_processed/pytorch/ct_1001_image_0.pkl'
+target_path = '/scratch/users/fwkong/SharedData/imageCHDcleaned_all/whole_heart_processed/pytorch/ct_1001_image_0.pkl'
 #target image for compression to pkl data
 with open(target_path, 'rb') as f:
     target_np  =pickle.load(f)
