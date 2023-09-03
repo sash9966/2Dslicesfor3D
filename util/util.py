@@ -582,8 +582,7 @@ def resample_image(source, target, order=1):
                              target.GetOrigin(),
                              target.GetSpacing(),
                              target.GetDirection(),
-                             0,
-                             source.GetPixelID())
+                             0,)
     return source
 
 def save_as_resized_pickle(tensor, pickle_file_path, target):
