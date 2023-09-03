@@ -5,7 +5,7 @@ Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses
 import matplotlib
 
 matplotlib.use('Agg')
-
+import SimpleITK as sitk
 from scipy.ndimage import zoom
 import pickle
 import re
@@ -570,7 +570,23 @@ def save_as_pickle(data, file_path):
     with open(file_path, 'wb') as f:
         pickle.dump(data, f)
 
-def save_as_resized_pickle(tensor, pickle_file_path):
+#Fanwei's code in CHD - datasets - create_sdfdataset.py
+def resample_image(source, target, order=1):
+    if order==1:
+        interp = sitk.sitkLinear
+    else:
+        interp = sitk.sitkNearestNeighbor
+    source = sitk.Resample(source, target.GetSize(),
+                             sitk.Transform(),
+                             interp,
+                             target.GetOrigin(),
+                             target.GetSpacing(),
+                             target.GetDirection(),
+                             0,
+                             source.GetPixelID())
+    return source
+
+def save_as_resized_pickle(tensor, pickle_file_path, target):
     """
     Resize the input tensor from 512x512x221 to 128x128x128 and save as a Pickle file. 
     """
@@ -583,8 +599,7 @@ def save_as_resized_pickle(tensor, pickle_file_path):
         return
 
     # Rescale to 128x128x128
-    resize_factor = (128/512, 128/512, 128/221)
-    resized_data = zoom(tensor_np, resize_factor, order=1)  # Using bilinear interpolation (order=1)
+    resized_data = resample_image(tensor_np, target, order=1)
 
     # Save as Pickle file
     save_as_pickle(resized_data, pickle_file_path)

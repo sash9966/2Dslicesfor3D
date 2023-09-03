@@ -37,6 +37,8 @@ model.eval()
 
 visualizer = Visualizer(opt)
 
+#target image for compression to pkl data
+target = sitk.ReadImage('/scratch/users/fwkong/SharedData/imageCHDcleaned_all/whole_heart_processed/pytorch/ct_1001_image_0.pkl')
 # create a webpage that summarizes the all results  
 web_dir = os.path.join(opt.results_dir, opt.name,
                        '%s_%s' % (opt.phase, opt.which_epoch))
@@ -98,7 +100,7 @@ for i, data_i in enumerate(dataloader):
         #sitk.WriteImage(img, os.path.join('/scratch/users/fwkong/SharedData/SaschaCreated/', filename))
 
         #resize and save as pickle file
-        save_as_resized_pickle(image3D_epoch, os.path.join('/scratch/users/fwkong/SharedData/SaschaCreated/', filename))
+        save_as_resized_pickle(image3D_epoch, os.path.join('/scratch/users/fwkong/SharedData/SaschaCreated/', filename), target)
         del img
         gc.collect()
         #nib.save(img,filename= '/home/sastocke/2Dslicesfor3D/'+filename)
