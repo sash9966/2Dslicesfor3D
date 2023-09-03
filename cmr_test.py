@@ -98,7 +98,10 @@ for i, data_i in enumerate(dataloader):
         imgNr= int(re.search(r"\d{4}", path).group())
 
 
-        filename = f"3DImage{name}{imgNr}.nii.gz"
+        #filename = f"3DImage{name}{imgNr}.nii.gz"
+
+        #PKL file
+        filename = f"3DImage{name}{imgNr}.pkl"
 
         #save as nii.gz file
         #sitk.WriteImage(img, os.path.join('/scratch/users/fwkong/SharedData/SaschaCreated/', filename))
