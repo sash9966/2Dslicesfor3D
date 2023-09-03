@@ -108,6 +108,7 @@ for i, data_i in enumerate(dataloader):
         image3D_epoch = torch.empty(512,512,221)
         generated = model(data_i, mode='inference')
         image3D_epoch[:,:,0] = generated[0,0,:,:]
+        print(f'new image added')
     elif(True):
         print(f'adding')
         #Add to the stack of 3D
