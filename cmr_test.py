@@ -5,13 +5,14 @@ import data
 from options.test_options import TestOptions
 from models.pix2pix_model import Pix2PixModel
 from util.visualizer import Visualizer
-from util import html
+from util import html 
 import torch
 import numpy as np
 import nibabel as nib
 import re
 import SimpleITK as sitk
 import gc
+from util.util import save_as_resized_pickle
 
 ref_img = sitk.ReadImage('/scratch/users/sastocke/data/data/images/ct_1001_image.nii.gz')
 
@@ -93,7 +94,11 @@ for i, data_i in enumerate(dataloader):
 
         filename = f"3DImage{name}{imgNr}.nii.gz"
 
-        sitk.WriteImage(img, os.path.join('/scratch/users/fwkong/SharedData/SaschaCreated/', filename))
+        #save as nii.gz file
+        #sitk.WriteImage(img, os.path.join('/scratch/users/fwkong/SharedData/SaschaCreated/', filename))
+
+        #resize and save as pickle file
+        save_as_resized_pickle(image3D_epoch, os.path.join('/scratch/users/fwkong/SharedData/SaschaCreated/', filename))
         del img
         gc.collect()
         #nib.save(img,filename= '/home/sastocke/2Dslicesfor3D/'+filename)

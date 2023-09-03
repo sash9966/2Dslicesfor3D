@@ -6,6 +6,8 @@ import matplotlib
 
 matplotlib.use('Agg')
 
+from scipy.ndimage import zoom
+import pickle
 import re
 import importlib
 import torch
@@ -557,3 +559,34 @@ def remove_all_but_the_largest_connected_component(image: np.ndarray, for_which_
                         else:
                             largest_removed[c] = max(largest_removed[c], object_sizes[object_id])
     return image, largest_removed, kept_size
+
+
+
+
+def save_as_pickle(data, file_path):
+    """
+    Save data as a Pickle file.
+    """
+    with open(file_path, 'wb') as f:
+        pickle.dump(data, f)
+
+def save_as_resized_pickle(tensor, pickle_file_path):
+    """
+    Resize the input tensor from 512x512x221 to 128x128x128 and save as a Pickle file. 
+    """
+    # Convert PyTorch tensor to NumPy array
+    tensor_np = tensor.detach().cpu().numpy()
+
+    # Check if the dimensions are 512x512x221
+    if tensor_np.shape != (512, 512, 221):
+        print(f"Unexpected dimensions: {tensor_np.shape}")
+        return
+
+    # Rescale to 128x128x128
+    resize_factor = (128/512, 128/512, 128/221)
+    resized_data = zoom(tensor_np, resize_factor, order=1)  # Using bilinear interpolation (order=1)
+
+    # Save as Pickle file
+    save_as_pickle(resized_data, pickle_file_path)
+
+    print(f"Resized data saved to {pickle_file_path}")
