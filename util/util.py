@@ -576,6 +576,7 @@ def resample_image(source, target, order=1):
         interp = sitk.sitkLinear
     else:
         interp = sitk.sitkNearestNeighbor
+    source =  sitk.GetImageFromArray(source)
     source = sitk.Resample(source, target.GetSize(),
                              sitk.Transform(),
                              interp,
@@ -598,16 +599,10 @@ def save_as_resized_pickle(tensor, pickle_file_path, target):
         print(f"Unexpected dimensions: {tensor_np.shape}")
         return
         # Save tensor_np as a pickle file
-    with open('tensor_np.pkl', 'wb') as f:
-        pickle.dump(tensor_np, f)
-    
-    # Load tensor_np back from the pickle file
-    with open('tensor_np.pkl', 'rb') as f:
-        loaded_tensor_np = pickle.load(f)
 
     #transform np to pkl type
     # Rescale to 128x128x128
-    resized_data = resample_image(loaded_tensor_np, target, order=1)
+    resized_data = resample_image(tensor_np, target, order=1)
 
     # Save as Pickle file
     save_as_pickle(resized_data, pickle_file_path)
