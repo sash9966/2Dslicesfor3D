@@ -108,7 +108,8 @@ for i, data_i in enumerate(dataloader):
 
         #resize and save as pickle file
         save_as_resized_pickle(image3D_epoch, os.path.join('/scratch/users/fwkong/SharedData/SaschaCreated/', filename), target)
-        del img
+        del image3D_epoch
+        
         gc.collect()
         #nib.save(img,filename= '/home/sastocke/2Dslicesfor3D/'+filename)
 
@@ -119,7 +120,7 @@ for i, data_i in enumerate(dataloader):
         image3D_epoch[:,:,0] = generated[0,0,:,:]
         print(f'new image added')
     elif(True):
-        print(f'adding')
+        print(f'adding, same path still, path:{path}')
         #Add to the stack of 3D
         image3D_epoch[:,:,i%221] = generated[0,0,:,:]
     
