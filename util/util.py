@@ -25,6 +25,7 @@ import matplotlib.pyplot as plt
 from torchvision.utils import make_grid , save_image
 from models.networks import vae_loss
 from util import util
+import gc
 def one_hot(
     labels: torch.Tensor,
     num_classes: int,
@@ -608,3 +609,7 @@ def save_as_resized_pickle(tensor, pickle_file_path, target):
     save_as_pickle(resized_data, pickle_file_path)
 
     print(f"Resized data saved to {pickle_file_path}")
+    del tensor_np
+    del resized_data
+    gc.collect()
+
