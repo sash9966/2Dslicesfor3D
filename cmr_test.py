@@ -111,14 +111,14 @@ for i, data_i in enumerate(dataloader):
         filename = f"3DImage{name}{rest_of_path_from_ct}.nii.gz"
 
         #save as nii.gz file
-        #sitk.WriteImage(img, os.path.join('/scratch/users/fwkong/SharedData/SaschaCreated/FullNifti', filename))
+        sitk.WriteImage(img, os.path.join('/scratch/users/fwkong/SharedData/SaschaCreated/FullNifti', filename))
         del image3D_epoch
         del generated
 
         #resize and save as pickle file
         #save_as_resized_pickle(image3D_epoch, os.path.join('/scratch/users/fwkong/SharedData/SaschaCreated/Try2', filename), target)
         
-        nib.save(img,os.path.join('/scratch/users/fwkong/SharedData/SaschaCreated/FullNifti', filename))
+        #nib.save(img,os.path.join('/scratch/users/fwkong/SharedData/SaschaCreated/FullNifti', filename))
 
         # start new stacking for the next 3D image
         path = data_i['gtname'][0]
