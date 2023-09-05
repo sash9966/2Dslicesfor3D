@@ -95,8 +95,10 @@ for i, data_i in enumerate(dataloader):
 
 
 
+        #Find image path number and versoin of the image
         imgNr= int(re.search(r"\d{4}", path).group())
-        version_match = re.search(r"r\d+", path)
+        version_match = re.search(r"r([01]?[0-9]|20)", path)
+        version = version_match.group() if version_match else ""
 
 
         #filename = f"3DImage{name}{imgNr}.nii.gz"
