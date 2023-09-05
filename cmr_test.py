@@ -96,15 +96,13 @@ for i, data_i in enumerate(dataloader):
 
 
         #Find image path number and versoin of the image
-        imgNr= int(re.search(r"\d{4}", path).group())
-        version_match = re.search(r"r([01]?[0-9]|20)", path)
-        version = version_match.group() if version_match else ""
+        imagepath = re.search(r'ct_(.*)', path)
 
 
         #filename = f"3DImage{name}{imgNr}.nii.gz"
 
         #PKL file
-        filename = f"3DImage{name}{imgNr}{version}.pkl"
+        filename = f"3DImage{name}{imagepath}.pkl"
 
         #save as nii.gz file
         #sitk.WriteImage(img, os.path.join('/scratch/users/fwkong/SharedData/SaschaCreated/', filename))
