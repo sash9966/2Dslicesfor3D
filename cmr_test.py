@@ -25,6 +25,9 @@ opt = TestOptions().parse()
 opt.label_dir = '/scratch/users/fwkong/SharedData/Synthesized'
 #Background image for generation!
 opt.image_dir = '/scratch/users/sastocke/data/data/images/ct_1001_image.nii.gz'
+#Output path to save the generated images
+output_path = '/scratch/users/fwkong/SharedData/SaschaCreated/fullnifti'
+target_path = '/scratch/users/fwkong/SharedData/imageCHDcleaned_all/whole_heart_processed/pytorch/ct_1001_image_0.pkl'
 name = opt.name
 
 #For generation, batchSize must be 1, create one slice at a time
@@ -38,7 +41,6 @@ model.eval()
 
 visualizer = Visualizer(opt)
 
-target_path = '/scratch/users/fwkong/SharedData/imageCHDcleaned_all/whole_heart_processed/pytorch/ct_1001_image_0.pkl'
 #target image for compression to pkl data
 with open(target_path, 'rb') as f:
     target_np  =pickle.load(f)
@@ -61,13 +63,17 @@ for i, data_i in enumerate(dataloader):
     if i * opt.batchSize >= opt.how_many:
         break
 
-    generated = model(data_i, mode='inference')
 
-    # if(i>0 and path.find("_r0") == -1):
-    #     continue
-    
+    if(i>0):
+        if os.path.exists(os.path.join(f'{output_path}', os.path.basename(f'{path}'))):
+
+            print(f'File exists in both directories, skipping {path}')
+            continue
+    else:
+        generated = model(data_i, mode='inference')        
     
     if(i==0):
+        generated = model(data_i, mode='inference')
         print(f'inital')
         path = data_i['gtname'][0]
         #Expected 3D
@@ -111,7 +117,7 @@ for i, data_i in enumerate(dataloader):
         filename = f"3DImage{name}{rest_of_path_from_ct}.nii.gz"
 
         #save as nii.gz file
-        sitk.WriteImage(img, os.path.join('/scratch/users/fwkong/SharedData/SaschaCreated/fullnifti', filename))
+        sitk.WriteImage(img, os.path.join(output_path, filename))
         del image3D_epoch
         del generated
 
