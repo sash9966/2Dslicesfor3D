@@ -65,6 +65,10 @@ for i, data_i in enumerate(dataloader):
     generated = model(data_i, mode='inference')   
 
     if(i>0):
+        print(f'output path: {output_path}')
+        print(f'os.path.basename of path: {os.path.basename(f"{path}")}')
+        print(f'joind: {os.path.join(f"{output_path}", os.path.basename(f"{path}"))}')
+        print(f'check if exists: {os.path.exists(os.path.join(f"{output_path}", os.path.basename(f"{path}")))}')
         if os.path.exists(os.path.join(f'{output_path}', os.path.basename(f'{path}'))):
 
             print(f'File exists in both directories, skipping {path}')
