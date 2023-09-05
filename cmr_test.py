@@ -69,7 +69,7 @@ for i, data_i in enumerate(dataloader):
         #print(f'os.path.basename of path: {os.path.basename(f"{path}")}')
         #print(f'joind: {os.path.join(f"{output_path}", os.path.basename(f"{path}"))}')
         #print(f'check if exists: {os.path.exists(os.path.join(f"{output_path}","3DImage{name}", os.path.basename(f"{path}")))}')
-        if os.path.exists(os.path.join(f'{output_path}', os.path.basename(f'{path}'))):
+        if os.path.exists(os.path.join(f'{output_path}',"3DImage{name}", os.path.basename(f'{path}'))):
 
             print(f'File exists in both directories, skipping {path}')
             del generated
