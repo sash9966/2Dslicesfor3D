@@ -96,13 +96,16 @@ for i, data_i in enumerate(dataloader):
 
 
         #Find image path number and versoin of the image
-        imagepath = re.search(r'ct_(.*)', path)
+        start_index = path.find("ct_")
+
+        if start_index != -1:
+            rest_of_path_from_ct = path[start_index:-7]
 
 
         #filename = f"3DImage{name}{imgNr}.nii.gz"
 
         #PKL file
-        filename = f"3DImage{name}{imagepath}.pkl"
+        filename = f"3DImage{name}{rest_of_path_from_ct}.pkl"
 
         #save as nii.gz file
         #sitk.WriteImage(img, os.path.join('/scratch/users/fwkong/SharedData/SaschaCreated/', filename))
