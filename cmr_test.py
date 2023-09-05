@@ -111,7 +111,7 @@ for i, data_i in enumerate(dataloader):
         #sitk.WriteImage(img, os.path.join('/scratch/users/fwkong/SharedData/SaschaCreated/', filename))
 
         #resize and save as pickle file
-        save_as_resized_pickle(image3D_epoch, os.path.join('/scratch/users/fwkong/SharedData/SaschaCreated/', filename), target)
+        save_as_resized_pickle(image3D_epoch, os.path.join('/scratch/users/fwkong/SharedData/SaschaCreated/Try2', filename), target)
         del image3D_epoch
         
         gc.collect()
