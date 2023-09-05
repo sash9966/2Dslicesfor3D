@@ -62,6 +62,9 @@ for i, data_i in enumerate(dataloader):
         break
 
     generated = model(data_i, mode='inference')
+
+    # if(i>0 and path.find("_r0") == -1):
+    #     continue
     
     
     if(i==0):
@@ -108,13 +111,11 @@ for i, data_i in enumerate(dataloader):
         filename = f"3DImage{name}{rest_of_path_from_ct}.pkl"
 
         #save as nii.gz file
-        #sitk.WriteImage(img, os.path.join('/scratch/users/fwkong/SharedData/SaschaCreated/', filename))
+        sitk.WriteImage(img, os.path.join('/scratch/users/fwkong/SharedData/SaschaCreated/FullNifti', filename))
 
         #resize and save as pickle file
-        save_as_resized_pickle(image3D_epoch, os.path.join('/scratch/users/fwkong/SharedData/SaschaCreated/Try2', filename), target)
-        del image3D_epoch
+        #save_as_resized_pickle(image3D_epoch, os.path.join('/scratch/users/fwkong/SharedData/SaschaCreated/Try2', filename), target)
         
-        gc.collect()
         #nib.save(img,filename= '/home/sastocke/2Dslicesfor3D/'+filename)
 
         # start new stacking for the next 3D image
@@ -127,6 +128,13 @@ for i, data_i in enumerate(dataloader):
         print(f'adding, same path still, path:{path}')
         #Add to the stack of 3D
         image3D_epoch[:,:,i%221] = generated[0,0,:,:]
+
+        del image3D_epoch
+        del generated
+        gc.collect()
+    
+
+
     
 
 
