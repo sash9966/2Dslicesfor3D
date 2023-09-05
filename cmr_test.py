@@ -104,7 +104,7 @@ for i, data_i in enumerate(dataloader):
         #filename = f"3DImage{name}{imgNr}.nii.gz"
 
         #PKL file
-        filename = f"3DImage{name}{imgNr}{version_match}.pkl"
+        filename = f"3DImage{name}{imgNr}{version}.pkl"
 
         #save as nii.gz file
         #sitk.WriteImage(img, os.path.join('/scratch/users/fwkong/SharedData/SaschaCreated/', filename))
