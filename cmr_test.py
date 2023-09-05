@@ -62,15 +62,15 @@ for i, data_i in enumerate(dataloader):
 
     if i * opt.batchSize >= opt.how_many:
         break
-
+    generated = model(data_i, mode='inference')   
 
     if(i>0):
         if os.path.exists(os.path.join(f'{output_path}', os.path.basename(f'{path}'))):
 
             print(f'File exists in both directories, skipping {path}')
+            del generated
             continue
-    else:
-        generated = model(data_i, mode='inference')        
+             
     
     if(i==0):
         generated = model(data_i, mode='inference')
