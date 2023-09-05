@@ -73,7 +73,7 @@ for i, data_i in enumerate(dataloader):
         
         if os.path.exists(os.path.join(f'{output_path}', f'3DImage{name}{filename}')):
 
-            print(f'File exists in both directories, skipping {path}')
+            #print(f'File exists in both directories, skipping {path}')
             del generated
             continue
              
