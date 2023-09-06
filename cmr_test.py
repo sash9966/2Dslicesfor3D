@@ -46,13 +46,13 @@ with open(target_path, 'rb') as f:
     target_np  =pickle.load(f)
 target = sitk.GetImageFromArray(target_np)
 # create a webpage that summarizes the all results  
-web_dir = os.path.join(opt.results_dir, opt.name,
-                       '%s_%s' % (opt.phase, opt.which_epoch))
+# web_dir = os.path.join(opt.results_dir, opt.name,
+#                        '%s_%s' % (opt.phase, opt.which_epoch))
 
 
-webpage = html.HTML(web_dir,
-                    'Experiment = %s, Phase = %s, Epoch = %s' %
-                    (opt.name, opt.phase, opt.which_epoch))
+# webpage = html.HTML(web_dir,
+#                     'Experiment = %s, Phase = %s, Epoch = %s' %
+#                     (opt.name, opt.phase, opt.which_epoch))
 
 # test
 for i, data_i in enumerate(dataloader):
@@ -125,8 +125,11 @@ for i, data_i in enumerate(dataloader):
 
         #save as nii.gz file
         sitk.WriteImage(img, os.path.join(output_path, filename))
+        generated.detach()
+        data_i.detach()
         del image3D_epoch
         del generated
+        del data_i
         torch.cuda.empty_cache()
 
         #resize and save as pickle file
@@ -145,7 +148,8 @@ for i, data_i in enumerate(dataloader):
         #Add to the stack of 3D
         image3D_epoch[:,:,i%221] = generated[0,0,:,:]
 
-        
+        generated.detach()
+        data_i.detach()
         del generated
         del data_i
         gc.collect()
