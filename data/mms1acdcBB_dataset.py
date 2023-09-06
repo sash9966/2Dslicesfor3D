@@ -41,9 +41,9 @@ class Mms1acdcBBDataset(BaseDataset):
         #                     help='path to the directory that contains photo images')
 
         #For testing
-        parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/data/testmasks",
+        parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/2Dslicesfor3D/data/masks",
                             help='path to the directory that contains label images')
-        parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/data/testimages" ,
+        parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/2Dslicesfor3D/data/images" ,
                             help='path to the directory that contains photo images')
         
         

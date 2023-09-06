@@ -66,15 +66,17 @@ for epoch in iter_counter.training_epochs():
 
 
         iter_counter.record_one_iteration()
-
+        latest = None
+        if(epoch>5 and i%221 != 0 ):
+            latest = trainer.get_latest_generated().detach()
 
         # Training
         # train generator
         if i % opt.D_steps_per_G == 0:
-            trainer.run_generator_one_step(data_i)
+            trainer.run_generator_one_step(data_i,latest)
 
         # train discriminator
-        trainer.run_discriminator_one_step(data_i)
+        trainer.run_discriminator_one_step(data_i,latest)
 
 
         # Visualizations
@@ -117,7 +119,7 @@ for epoch in iter_counter.training_epochs():
                 axs[2].imshow(real_image[0,j,:,:],cmap='gray')
                 axs[2].axis('off')
                 axs[2].set_title('Real Image')
-                plt.savefig(f'/home/sastocke/2Dslicesfor3D/{name_of_try}epoch{epoch}_{i}_plotdepth{j}.png')
+                plt.savefig(f'/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/{epoch}_{i}_plotdepth{j}.png')
 
                 # visuals = OrderedDict([('input_label', label[:,:,:,j]),
                 #     ('synthesized_image', latest_image[:,:,j,:,:]),
@@ -134,7 +136,7 @@ for epoch in iter_counter.training_epochs():
             
             img = sitk.GetImageFromArray(latest_image[0,0,:,:,:])
             img.CopyInformation(ref_img)
-            sitk.WriteImage(img, f'/home/sastocke/2Dslicesfor3D/{name_of_try}/web/images/latestsynthetic{epoch}.nii.gz')
+            sitk.WriteImage(img, f'/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/latestsynthetic{epoch}.nii.gz')
             #Save 3D stacked image
 
 

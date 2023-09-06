@@ -675,27 +675,25 @@ class StyleSPADE3DGenerator(BaseNetwork):
         )
 
 
-    def forward(self, input, image, input_dist=None):
+    def forward(self, input, image,latest, input_dist=None):
         #print(f'#############################')
         #print(f'start of one forward pass:')
         
         seg = input
         image = image
         nf = self.opt.ngf
-
+        latest = latest
+        depth= seg.shape[2]
 
         #print(f' image shape: {image.shape}')
         #print(f'segmentaiton shape: {seg.shape}')
         image = image.unsqueeze(1)
+        if latest != None:
+            fuse = torch.empty_like(image)
+            fuse[:,:,0:1,:,:] = latest[:,:,2:3,:,:]
+            fuse[:,:,1:3,:,:] = image[:,:,0:2,:,:]
+            image = fuse
         
-        #print(f'shapes image: {image.shape}, seg: {seg.shape}')
-        # seg = seg.permute(0, 1, 4, 2,3 ) # This reorders the dimensions to (Batch, Channel, Depth, Height, Width)
-        # image = image.permute(0, 1, 4, 2, 3) # This reorders the dimensions to (Batch, Channel, Depth, Height, Width
-        depth= seg.shape[2]
-        #print(f'depth: {depth}')
-        #print(f' image after unsqueeze and permutation: {image.shape}') 
-        #print(f'segmentation: {seg.shape}')
-        #summary(self.model, (1, 1, 3,512,512))
         x = self.model(image)
 
         
