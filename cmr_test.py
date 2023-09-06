@@ -147,6 +147,7 @@ for i, data_i in enumerate(dataloader):
         del generated
         del data_i
         gc.collect()
+        torch.cuda.empty_cache()
     
 
 
