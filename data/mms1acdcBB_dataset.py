@@ -66,106 +66,48 @@ class Mms1acdcBBDataset(BaseDataset):
         To prepare and get the list of files
         """
 
-        
-        SA_mask_list = sorted(os.listdir(os.path.join(opt.label_dir)))
+        #Loading direct paths for each image... reloading the model a lot of times but avoiding dataloader OOM
+        self.img_list = []
+        self.msk_list = []
+        self.filename_pairs = []
 
-        if(opt.phase == 'test'):
-            #For test we will generate images with different mask but paired with one patient image for the background.
-            single_image = os.listdir(os.path.join(opt.image_dir))[0]
-            SA_image_list = [single_image] * len(SA_mask_list)
-            print(f'length of SA_image_list: {len(SA_image_list)}')
-            print(f'length of SA_mask_list: {len(SA_mask_list)}')
-        else:
-            SA_image_list = sorted(os.listdir(os.path.join(opt.image_dir)))
-
-        # SA_image_list_B = sorted(os.listdir(os.path.join(opt.image_dir_B)))
-        # SA_mask_list_B = sorted(os.listdir(os.path.join(opt.label_dir_B)))
-
-        #pathologies = sorted(os.listdir(os.path.join(opt.acdc_dir)))
-        
-        #print(f'length of SA_image_list: {len(SA_image_list)}')
-        #print(f'length of SA_mask_list: {len(SA_mask_list)}')
+        self.img_list += opt.image_dir
+        self.msk_list += opt.label_dir
+        self.filename_pairs += [(opt.image_dir, opt.label_dir)]
 
 
+        # SA_mask_list = sorted(os.listdir(os.path.join(opt.label_dir)))
 
-        # assert len(SA_mask_list_B) == len(SA_image_list_B) 
-        if(opt.phase != 'test'):
-
-            assert len(SA_image_list) == len(SA_mask_list)
-
-
-        SA_filename_pairs = [] 
-        #SA_filename_pairs_B = []
-
-        # SA_filename_pairs_acdc = [] 
-        # SA_image_list_acdc_all = []
-        # SA_mask_list_acdc_all = []
-
-        ##Test: turn off pathologies -> none, switch to all for all pathologies
-        # what_pathology = 'none'
-        # if what_pathology == 'all':
-        #     for pathology in pathologies:
-        #         SA_image_list_acdc = sorted(os.listdir(os.path.join(opt.acdc_dir, pathology, 'Image')))
-        #         SA_mask_list_acdc = sorted(os.listdir(os.path.join(opt.acdc_dir, pathology, 'Label_c')))
-        #         SA_image_list_acdc_all += SA_image_list_acdc
-        #         SA_mask_list_acdc_all += SA_mask_list_acdc
-        #         for i in range(len(SA_image_list_acdc)):
-        #             SA_filename_pairs_acdc += [(os.path.join(opt.acdc_dir, pathology, 'Image',SA_image_list_acdc[i]), os.path.join(opt.acdc_dir, pathology, 'Label_c', SA_mask_list_acdc[i]))]
-
-
-
-        # for i in range(len(LA_image_list)):
-        #     LA_filename_pairs += [(os.path.join(opt.main_dir,str(LA_image_list[i].split('_')[0]),LA_image_list[i]), os.path.join(opt.main_dir,str(LA_image_list[i].split('_')[0]),LA_mask_list[i]) )]
-        #     if not opt.no_Short_axis:
-        #         SA_filename_pairs += [(os.path.join(opt.main_dir,str(SA_image_list[i].split('_')[0]),SA_image_list[i]), os.path.join(opt.main_dir,str(SA_image_list[i].split('_')[0]),SA_mask_list[i]) )]
-        # print('the size of the image list', len(SA_image_list))
-        for i in range(len(SA_image_list)):
-            SA_filename_pairs += [(os.path.join(opt.image_dir,SA_image_list[i]), os.path.join(opt.label_dir, SA_mask_list[i]))]
-
-        # for i in range(len(SA_image_list_B)):
-        #     SA_filename_pairs_B += [(os.path.join(opt.image_dir_B,SA_image_list_B[i]), os.path.join(opt.label_dir_B, SA_mask_list_B[i]))]
-
-        # for i in range(len(LA_image_list)):
-        #     LA_filename_pairs += [(os.path.join(opt.main_dir, 'Image',LA_image_list[i]), os.path.join(opt.main_dir, label, LA_mask_list[i]))]
-                
-
-        # imglist = []
-        # msklist = []
-        # filename_pairs = []
-        # if not opt.VAE_altered_anatomy: # use the VAE deformed version of the labels
-        #     # imglist = SA_image_list + SA_image_list_B
-        #     # msklist = SA_mask_list + SA_mask_list_B
-        #     #filename_pairs = SA_filename_pairs + SA_filename_pairs_B
-        #     filename_pairs = SA_filename_pairs 
-
-        # if not opt.selected_labels:
-        #     # imglist = SA_image_list + SA_image_list_B
-        #     # msklist = SA_mask_list + SA_mask_list_B
-        #     #filename_pairs = SA_filename_pairs + SA_filename_pairs_B
-        #     filename_pairs = SA_filename_pairs 
-        #     print(f'exected selected_labels')
+        # if(opt.phase == 'test'):
+        #     #For test we will generate images with different mask but paired with one patient image for the background.
+        #     single_image = os.listdir(os.path.join(opt.image_dir))[0]
+        #     SA_image_list = [single_image] * len(SA_mask_list)
+        #     print(f'length of SA_image_list: {len(SA_image_list)}')
+        #     print(f'length of SA_mask_list: {len(SA_mask_list)}')
         # else:
-            
-        #     imglist = SA_image_list 
-        #     msklist = SA_mask_list 
-        #     filename_pairs = SA_filename_pairs
-        #     self.filename_pairs = filename_pairs
-        #     self.img_list = imglist
-        #     self.msk_list = msklist
+        #     SA_image_list = sorted(os.listdir(os.path.join(opt.image_dir)))
 
 
-        # if opt.what_data == 'acdc':
-        #     self.img_list = SA_image_list_acdc_all
-        #     self.msk_list = SA_mask_list_acdc_all
-        #     self.filename_pairs = SA_filename_pairs_acdc
-        # else:
-        #     self.img_list = imglist + SA_image_list_acdc_all
-        #     self.msk_list = msklist + SA_mask_list_acdc_all
-        #     self.filename_pairs = filename_pairs + SA_filename_pairs_acdc
+        # if(opt.phase != 'test'):
+
+        #     assert len(SA_image_list) == len(SA_mask_list)
+
+
+        # SA_filename_pairs = [] 
+
+
+
+        # for i in range(len(SA_image_list)):
+        #     SA_filename_pairs += [(os.path.join(opt.image_dir,SA_image_list[i]), os.path.join(opt.label_dir, SA_mask_list[i]))]
+
+
+        #Single file name test:
+
+
         
-        self.img_list = SA_image_list
-        self.msk_list = SA_mask_list
-        self.filename_pairs = SA_filename_pairs
+        # self.img_list = SA_image_list
+        # self.msk_list = SA_mask_list
+        # self.filename_pairs = SA_filename_pairs
 
         #print the file names and their content
 
