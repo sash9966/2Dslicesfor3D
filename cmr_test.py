@@ -11,8 +11,9 @@ import numpy as np
 import nibabel as nib
 import re
 import SimpleITK as sitk
+"/home/users/sastocke/2Dslicesfor3D/util/util.py"
 
-ref_img = sitk.ReadImage('/home/sastocke/data/alltrainingdata/data/images/ct_1001_image.nii.gz')
+#ref_img = sitk.ReadImage('/home/users/sastocke/data/alltrainingdata/data/images/ct_1001_image.nii.gz')
 
 
 opt = TestOptions().parse()
