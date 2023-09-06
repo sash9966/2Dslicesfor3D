@@ -66,48 +66,38 @@ class Mms1acdcBBDataset(BaseDataset):
         To prepare and get the list of files
         """
 
-        #Loading direct paths for each image... reloading the model a lot of times but avoiding dataloader OOM
-        self.img_list = []
-        self.msk_list = []
-        self.filename_pairs = []
+        
+        SA_mask_list = sorted(os.listdir(os.path.join(opt.label_dir)))
 
-        self.img_list += opt.image_dir
-        self.msk_list += opt.label_dir
-        self.filename_pairs += [(opt.image_dir, opt.label_dir)]
-
-
-        # SA_mask_list = sorted(os.listdir(os.path.join(opt.label_dir)))
-
-        # if(opt.phase == 'test'):
-        #     #For test we will generate images with different mask but paired with one patient image for the background.
-        #     single_image = os.listdir(os.path.join(opt.image_dir))[0]
-        #     SA_image_list = [single_image] * len(SA_mask_list)
-        #     print(f'length of SA_image_list: {len(SA_image_list)}')
-        #     print(f'length of SA_mask_list: {len(SA_mask_list)}')
-        # else:
-        #     SA_image_list = sorted(os.listdir(os.path.join(opt.image_dir)))
+        if(opt.phase == 'test'):
+            #For test we will generate images with different mask but paired with one patient image for the background.
+            single_image = os.listdir(os.path.join(opt.image_dir))[0]
+            SA_image_list = [single_image] * len(SA_mask_list)
+            print(f'length of SA_image_list: {len(SA_image_list)}')
+            print(f'length of SA_mask_list: {len(SA_mask_list)}')
+        else:
+            SA_image_list = sorted(os.listdir(os.path.join(opt.image_dir)))
 
 
-        # if(opt.phase != 'test'):
+        if(opt.phase != 'test'):
 
-        #     assert len(SA_image_list) == len(SA_mask_list)
+            assert len(SA_image_list) == len(SA_mask_list)
 
 
-        # SA_filename_pairs = [] 
+        SA_filename_pairs = [] 
 
 
 
-        # for i in range(len(SA_image_list)):
-        #     SA_filename_pairs += [(os.path.join(opt.image_dir,SA_image_list[i]), os.path.join(opt.label_dir, SA_mask_list[i]))]
+        for i in range(len(SA_image_list)):
+            SA_filename_pairs += [(os.path.join(opt.image_dir,SA_image_list[i]), os.path.join(opt.label_dir, SA_mask_list[i]))]
 
 
-        #Single file name test:
-
+                
 
         
-        # self.img_list = SA_image_list
-        # self.msk_list = SA_mask_list
-        # self.filename_pairs = SA_filename_pairs
+        self.img_list = SA_image_list
+        self.msk_list = SA_mask_list
+        self.filename_pairs = SA_filename_pairs
 
         #print the file names and their content
 
