@@ -75,6 +75,7 @@ for i, data_i in enumerate(dataloader):
 
             #print(f'File exists in both directories, skipping {path}')
             del generated
+            torch.cuda.empty_cache()
             continue
              
     
@@ -126,6 +127,7 @@ for i, data_i in enumerate(dataloader):
         sitk.WriteImage(img, os.path.join(output_path, filename))
         del image3D_epoch
         del generated
+        torch.cuda.empty_cache()
 
         #resize and save as pickle file
         #save_as_resized_pickle(image3D_epoch, os.path.join('/scratch/users/fwkong/SharedData/SaschaCreated/Try2', filename), target)
@@ -147,7 +149,7 @@ for i, data_i in enumerate(dataloader):
         del generated
         del data_i
         gc.collect()
-        torch.cuda.empty_cache()
+        
     
 
 
