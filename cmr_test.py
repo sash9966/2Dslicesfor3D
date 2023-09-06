@@ -22,7 +22,7 @@ ref_img = sitk.ReadImage('/scratch/users/sastocke/data/data/images/ct_1001_image
 opt = TestOptions().parse()
 
 #Generate image for these masks
-opt.label_dir = '/scratch/users/fwkong/SharedData/Synthesized'
+#opt.label_dir = '/scratch/users/fwkong/SharedData/Synthesized'
 #Background image for generation!
 opt.image_dir = '/scratch/users/sastocke/data/data/images/ct_1001_image.nii.gz'
 #Output path to save the generated images
@@ -163,4 +163,3 @@ for i, data_i in enumerate(dataloader):
 
 
 
-webpage.save()
