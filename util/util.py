@@ -407,7 +407,7 @@ def find_class_in_module(target_cls_name, module):
     return cls
 
 
-def     save_network(net, label, epoch, opt):
+def save_network(net, label, epoch, opt):
     save_filename = '%s_net_%s.pth' % (epoch, label)
     save_path = os.path.join(opt.checkpoints_dir, save_filename)
     torch.save(net.cpu().state_dict(), save_path)
@@ -428,7 +428,7 @@ def load_network(net, label, epoch, opt):
 
 
 ###############################################################################
-# Code from 
+# Code from
 # https://github.com/ycszen/pytorch-seg/blob/master/transform.py
 # Modified so it complies with the Citscape label map colors
 ###############################################################################
