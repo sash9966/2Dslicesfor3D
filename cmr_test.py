@@ -74,6 +74,7 @@ for i, data_i in enumerate(dataloader):
             #print(f'File exists in both directories, skipping {path}')
             del generated
             torch.cuda.empty_cache()
+            print(f'skipping, path: {path} exists!')
             continue
              
     
