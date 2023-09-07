@@ -43,7 +43,7 @@ for i, data_i in enumerate(dataloader):
     if(i%vs != 0):
         continue
 
-    generated = model(data_i, mode='inference')
+    generated = model(data_i, None, mode='inference')
     generated = generated.permute(0,1,4,3,2)
     
     img_path = data_i['path']
