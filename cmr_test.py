@@ -128,7 +128,7 @@ for i, data_i in enumerate(dataloader):
 
         del image3D_epoch
         del generated
-        del data_i
+        #del data_i
         torch.cuda.empty_cache()
 
         #resize and save as pickle file
