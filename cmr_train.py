@@ -21,6 +21,10 @@ ref_img = sitk.ReadImage('/scratch/users/sastocke/data/data/images/ct_1001_image
 # parse options
 opt = TrainOptions().parse()
 
+#Trying to continue training on the old, pretrained model, and add the fuse information
+opt.continue_train = True
+
+
 #BUG: Unsure if for larger crop size this should be changed, seems to work without!
 if opt.crop_size == 256:
      opt.resnet_n_downsample = 5
@@ -50,8 +54,8 @@ iter_counter = IterationCounter(opt, len(dataloader))
 visualizer = Visualizer(opt)
 torch.cuda.empty_cache()
 
-if (os.path == '/home/users/sastocke/2Dslicesfor3D'):
-    opt.checkpoints_dir = '/scratch/users/sastocke/results/3dfusetry'
+# if (os.path == '/home/users/sastocke/2Dslicesfor3D'):
+#     opt.checkpoints_dir = '/scratch/users/sastocke/results/3dfusetry'
 
 
 print(f'path where saving will go is: {opt.checkpoints_dir}')
