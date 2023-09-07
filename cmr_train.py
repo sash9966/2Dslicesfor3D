@@ -53,7 +53,8 @@ torch.cuda.empty_cache()
 if (os.path == '/home/users/sastocke/2Dslicesfor3D'):
     opt.checkpoints_dir = '/scratch/users/sastocke/results/3dfusetry'
 
-    
+
+print(f'path where saving will go is: {opt.checkpoints_dir}')
 
 for epoch in iter_counter.training_epochs():
     print('epoch', epoch)
