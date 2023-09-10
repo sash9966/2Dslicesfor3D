@@ -73,7 +73,7 @@ for epoch in iter_counter.training_epochs():
 
         iter_counter.record_one_iteration()
         latest = None
-        if(epoch>5 and i%221 != 0 ):
+        if(epoch>10 and i%221 != 0 ):
             latest = trainer.get_latest_generated().detach()
 
         # Training
