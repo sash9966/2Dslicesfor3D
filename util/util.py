@@ -409,8 +409,8 @@ def find_class_in_module(target_cls_name, module):
 
 def save_network(net, label, epoch, opt):
     save_filename = '%s_net_%s.pth' % (epoch, label)
-    save_path = os.path.join(opt.checkpoints_dir, save_filename)
-    torch.save(net.cpu().state_dict(), save_path)
+    #save_path = os.path.join(opt.checkpoints_dir, save_filename)
+    torch.save(net.cpu().state_dict(), f'/scratch/users/sastocke/results/3dfusetry/{save_filename}')
     if len(opt.gpu_ids) and torch.cuda.is_available():
         net.cuda()
     else:
