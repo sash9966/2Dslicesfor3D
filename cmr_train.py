@@ -125,7 +125,7 @@ for epoch in iter_counter.training_epochs():
                 axs[2].imshow(real_image[0,j,:,:],cmap='gray')
                 axs[2].axis('off')
                 axs[2].set_title('Real Image')
-                plt.savefig(f'/scratch/users/sastocke/results/3dfusetry{name_of_try}{epoch}_{i}_plotdepth{j}.png')
+                plt.savefig(f'/scratch/users/sastocke/results/3dfusetry/{name_of_try}{epoch}_{i}_plotdepth{j}.png')
 
                 # visuals = OrderedDict([('input_label', label[:,:,:,j]),
                 #     ('synthesized_image', latest_image[:,:,j,:,:]),
