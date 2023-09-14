@@ -20,11 +20,11 @@ class BaseOptions():
 
     def initialize(self, parser):
         # experiment specifics
-        parser.add_argument('--name', type=str, default='3Dwithlastgeneratedtry', help='name of the experiment. It decides where to store samples and models')
+        parser.add_argument('--name', type=str, default='3Dwithlastgeneratedgeneration', help='name of the experiment. It decides where to store samples and models')
 
         parser.add_argument('--voxel_size', type=int, default=3, help='three dimentinoal voxel size, 0 for just 2D slices, 1 or more for additional slices')
 
-        parser.add_argument('--gpu_ids', type=str, default='2', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
+        parser.add_argument('--gpu_ids', type=str, default='1', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
         parser.add_argument('--checkpoints_dir', type=str, default='./checkpoints', help='models are saved here')
         parser.add_argument('--model', type=str, default='pix2pix', help='which model to use')
         parser.add_argument('--norm_G', type=str, default='spectralinstance', help='instance normalization or batch normalization')
@@ -33,7 +33,7 @@ class BaseOptions():
         parser.add_argument('--phase', type=str, default='train', help='train, val, test, etc')
 
         # input/output sizes
-        parser.add_argument('--batchSize', type=int, default=4, help='input batch size')
+        parser.add_argument('--batchSize', type=int, default=1, help='input batch size')
         parser.add_argument('--preprocess_mode', type=str, default='scale_width_and_crop', help='scaling and cropping of images at load time.', choices=("resize_and_crop", "crop", "scale_width", "scale_width_and_crop", "scale_shortside", "scale_shortside_and_crop", "fixed", "none"))
         parser.add_argument('--load_size', type=int, default=1024, help='Scale images to this size. The final image will be cropped to --crop_size.')
         parser.add_argument('--crop_size', type=int, default=512, help='Crop to the width of crop_size (after initially scaling the images to load_size.)')
@@ -64,7 +64,7 @@ class BaseOptions():
         # for generator
         parser.add_argument('--netG', type=str, default='stylespade3d', help='selects model to use for netG (pix2pixhd | spade | stylespade | stylespade3d )')
         ## ngf default 16, lowering to 4 for faster loading..
-        parser.add_argument('--ngf', type=int, default=2, help='# of gen filters in first conv layer')
+        parser.add_argument('--ngf', type=int, default=16, help='# of gen filters in first conv layer')
         parser.add_argument('--init_type', type=str, default='xavier', help='network initialization [normal|xavier|kaiming|orthogonal]')
         parser.add_argument('--init_variance', type=float, default=0.02, help='variance of the initialization distribution')
         parser.add_argument('--z_dim', type=int, default=512, help="dimension of the latent z vector")
