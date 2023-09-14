@@ -88,7 +88,7 @@ class BaseOptions():
         parser.add_argument('--train_eval', action='store_true', help='if specified, cal the fid for each epoch.')
         parser.add_argument('--eval_dims', type=int, default=2048, help='Dimensionality of Inception features to use.')
         parser.add_argument('--eval_epoch_freq', type=int, default=10, help='frequency of cal fid score at the end of epochs')
-        # parser.add_argument('--continue_train', action='store_true', help='continue training: load the latest model')
+        parser.add_argument('--continue_train', action='store_true', help='continue training: load the latest model')
         parser.add_argument('--target_res',type=float,default=1.52,help='Resolution to which the data should resampled e.g. 1.33 for A and B 1.52 for ACDC, 1.49 for C')
         parser.add_argument('--altered_anatomy', action='store_true', help='for LGE model evaluation if you use a different anatomy, set this flag for dataloader.')
         parser.add_argument('--VAE_altered_anatomy', action='store_true', help='for LGE model evaluation if you use a different anatomy, set this flag for dataloader.')

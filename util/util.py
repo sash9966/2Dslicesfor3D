@@ -420,9 +420,7 @@ def save_network(net, label, epoch, opt):
 
 def load_network(net, label, epoch, opt):
     save_filename = '%s_net_%s.pth' % (epoch, label)
-    save_dir = os.path.join(opt.checkpoints_dir)
-    save_path = os.path.join(save_dir, save_filename)
-    weights = torch.load(save_path)
+    weights = torch.load(f'/scratch/users/sastocke/results/3dfusetry/{save_filename}')
     net.load_state_dict(weights)
     return net
 
