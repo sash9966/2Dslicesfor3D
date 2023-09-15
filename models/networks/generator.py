@@ -643,7 +643,7 @@ class StyleSPADE3DGenerator(BaseNetwork):
 
         self.head_0 = SPADEResnetBlock(in_fea * nf//8  *3 , in_fea * nf//3, opt)
 
-        self.G_middle_0 = SPADEResnetBlock(85, in_fea * nf, opt)
+        self.G_middle_0 = SPADEResnetBlock(170, in_fea * nf, opt)
         self.G_middle_1 = SPADEResnetBlock(in_fea * nf, in_fea * nf, opt)
 
 

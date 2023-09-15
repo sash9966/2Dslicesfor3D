@@ -106,7 +106,10 @@ for epoch in iter_counter.training_epochs():
             plt.close('all')
             fig, axs = plt.subplots(1, 3, figsize=(15, 5))
 
-            for j in range(3):
+
+            #random number between 1-128
+            rand= np.random.randint(0,128)
+            for j in range(rand,rand+3):
                 axs[0].imshow(label[0,j,:,:])
                 axs[0].axis('off')
                 axs[0].set_title('Input Label')
@@ -116,7 +119,7 @@ for epoch in iter_counter.training_epochs():
                 axs[2].imshow(real_image[0,j,:,:],cmap='gray')
                 axs[2].axis('off')
                 axs[2].set_title('Real Image')
-                plt.savefig(f'/home/sastocke/2Dslicesfor3D/checkpoints/web/images/{name_of_try}/epoch{epoch}_{i}_plotdepth{j}.png')
+                plt.savefig(f'/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/epoch{epoch}_{i}_plotdepth{j}.png')
 
                 # visuals = OrderedDict([('input_label', label[:,:,:,j]),
                 #     ('synthesized_image', latest_image[:,:,j,:,:]),
