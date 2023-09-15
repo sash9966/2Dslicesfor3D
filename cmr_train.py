@@ -17,7 +17,7 @@ import SimpleITK as sitk
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 from util import util
-ref_img = sitk.ReadImage('/home/sastocke/data/alltrainingdata/data/images/ct_1001_image.nii.gz')[:,:,:3]
+ref_img = sitk.ReadImage('/home/sastocke/data/128resdata/image/ct_1001_image.nii.gz')
 # parse options
 opt = TrainOptions().parse()
 
@@ -48,7 +48,6 @@ iter_counter = IterationCounter(opt, len(dataloader))
 
 # create tool for visualization
 visualizer = Visualizer(opt)
-torch.cuda.empty_cache()
 
 
 
@@ -117,7 +116,7 @@ for epoch in iter_counter.training_epochs():
                 axs[2].imshow(real_image[0,j,:,:],cmap='gray')
                 axs[2].axis('off')
                 axs[2].set_title('Real Image')
-                plt.savefig(f'/home/sastocke/2Dslicesfor3D/{name_of_try}epoch{epoch}_{i}_plotdepth{j}.png')
+                plt.savefig(f'/home/sastocke/2Dslicesfor3D/checkpoints/web/images/{name_of_try}/epoch{epoch}_{i}_plotdepth{j}.png')
 
                 # visuals = OrderedDict([('input_label', label[:,:,:,j]),
                 #     ('synthesized_image', latest_image[:,:,j,:,:]),

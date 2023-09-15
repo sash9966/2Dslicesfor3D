@@ -130,20 +130,20 @@ class Pix2PixModel(torch.nn.Module):
         #print(f'input_label shape: {input_label.shape}')
         for i in range(input_label.shape[-1]):
             # Get the slice
-            # print(f'input_label shape: {input_label.shape}')
-            # print(f'i: {i}')
+            #print(f'input_label shape: {input_label.shape}')
+            #print(f'i: {i}')
             
             input_label_slice = input_label[..., i]
             label_map_slice = label_map[..., i].unsqueeze(1)
 
-            # print(f'input_label_slice shape: {input_label_slice.shape}')
-            # print(f'label_map_slice shape: {label_map_slice.shape}')
+            #print(f'input_label_slice shape: {input_label_slice.shape}')
+            #print(f'label_map_slice shape: {label_map_slice.shape}')
 
 
             # Perform the scatter operation on the slice
             input_semantics_slice = input_label_slice.scatter_(1, label_map_slice.clamp(max=7), 1.0)
             input_semantics_slice = input_semantics_slice.unsqueeze(-1)
-            # print(f'input_semantics_slice shape: {input_semantics_slice.shape}')
+            #print(f'input_semantics_slice shape: {input_semantics_slice.shape}')
 
             # Append to the list
             input_semantics_slices.append(input_semantics_slice)
@@ -154,6 +154,45 @@ class Pix2PixModel(torch.nn.Module):
         #print(f'input_semantics shape after voxel_cat: {input_semantics.shape} ')
 
         return input_semantics
+    
+
+
+    def voxel_semantics_3D(self,input_label, label_map):
+        # Initialize an empty list to store the processed 3D slices
+        input_semantics_volumes = []
+        torch.cuda.synchronize()
+
+
+        # Loop through the 3D volume
+        for i in range(input_label.shape[-1]):
+            # Get the 3D slice
+            #print(f'i: {i} ')
+            input_label_volume = input_label[..., i]
+            #print(f'input_label_volume shape: {input_label_volume.shape}')
+            label_map_volume = label_map[..., i].unsqueeze(1)
+            # print(f'label_map_volume shape: {label_map_volume.shape}')
+            # print(f'unique values in the tensor: {torch.unique(label_map_volume)}')
+            # print(torch.isnan(input_label_volume).any())
+            # print(torch.isinf(input_label_volume).any())
+            # print("Max index: ", label_map_volume.max())
+            # print("Min index: ", label_map_volume.min())
+            # print("Input label volume shape: ", input_label_volume.shape)
+            # print("Label map volume shape: ", label_map_volume.shape)
+            # Perform the scatter operation on the 3D slice
+            input_semantics_volume = input_label_volume.scatter_(1, label_map_volume.clamp(max=7), 1.0)
+            #print(f'input_semantics_volume shape after scatter: {input_semantics_volume.shape}')
+            # Add an extra dimension for concatenation
+            input_semantics_volume = input_semantics_volume.unsqueeze(-1)
+
+            # Append to the list
+            input_semantics_volumes.append(input_semantics_volume)
+
+        # Concatenate the list into a tensor
+        input_semantics = torch.cat(input_semantics_volumes, dim=-1)
+
+        return input_semantics
+
+
 
 
     def preprocess_input(self, data):
@@ -256,7 +295,10 @@ class Pix2PixModel(torch.nn.Module):
 
 
         if(self.opt.voxel_size >= 1):
-            input_semantics = self.voxel_semantics(input_label,label_map)
+            if(self.opt.is_3D):
+                input_semantics = self.voxel_semantics_3D(input_label,label_map)
+            else:
+                input_semantics = self.voxel_semantics(input_label,label_map)
         else:
             input_semantics = input_label.scatter_(1, label_map.clamp(max=7), 1.0)
         
@@ -378,17 +420,26 @@ class Pix2PixModel(torch.nn.Module):
 
     def discriminate(self, input_semantics, fake_image, real_image):
         #check out size and shape of the images
-
-        if(self.opt.voxel_size > 0):
+        vs = self.opt.voxel_size
+        size = self.opt.crop_size
+        
+        if(self.opt.voxel_size > 0 and not self.opt.is_3D):
             real_image = real_image.unsqueeze(0)
 
-        ##BUG: for some reason cat threw dimension error even though shapes were the same. Fix with reshaping..
-        input_semantics = input_semantics.view(self.opt.batchSize, 8, 3, 512, 512)
-        fake_image = fake_image.view(self.opt.batchSize, 1, 3, 512, 512)
-        real_image = real_image.view(self.opt.batchSize, 1, 3, 512, 512)
-        # Fake has dim: [batch_size, channel, depth, height, width] no need for batch size
-        fake_concat = torch.cat([input_semantics, fake_image], dim=1)
-        real_concat = torch.cat([input_semantics, real_image], dim=1)
+            ##BUG: for some reason cat threw dimension error even though shapes were the same. Fix with reshaping..
+            input_semantics = input_semantics.view(self.opt.batchSize, 8, vs, size, size)
+            fake_image = fake_image.view(self.opt.batchSize, 1, vs, size, size)
+            real_image = real_image.view(self.opt.batchSize, 1, vs, size, size)
+            # Fake has dim: [batch_size, channel, depth, height, width] no need for batch size
+            fake_concat = torch.cat([input_semantics, fake_image], dim=1)
+            real_concat = torch.cat([input_semantics, real_image], dim=1)
+        elif(self.opt.is_3D):
+            input_semantics = input_semantics.view(self.opt.batchSize, 8, size, size, size)
+            fake_image = fake_image.view(self.opt.batchSize, 1, size, size, size)
+            real_image = real_image.view(self.opt.batchSize, 1, size, size, size)
+
+            fake_concat = torch.cat([input_semantics, fake_image], dim=1)
+            real_concat = torch.cat([input_semantics, real_image], dim=1)
         
         
         # In Batch Normalization, the fake and real images are

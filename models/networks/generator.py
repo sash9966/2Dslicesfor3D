@@ -596,7 +596,7 @@ class StyleSPADE3DGenerator(BaseNetwork):
             self.opt.num_upsampling_layers = 'most512'
         if self.opt.crop_size == 128:
             in_fea = 1 * 16
-
+        #in_fea: {in_fea}')
         activation = nn.ReLU(False)
         model = []
 
@@ -614,8 +614,8 @@ class StyleSPADE3DGenerator(BaseNetwork):
         # downsample
         mult = 1
         for i in range(opt.resnet_n_downsample):
-            kernel_size_3d = [1,3,3]
-            stride_3d = [2,2,2] if i == 0 else [1,2,2]
+            kernel_size_3d = [3,3,3]
+            stride_3d = [2,2,2]
             model += [norm_layer_style(nn.Conv3d(opt.ngf * mult, opt.ngf * mult * 2,
                                            kernel_size_3d, stride_3d, padding=1)),
                       activation]
@@ -624,10 +624,8 @@ class StyleSPADE3DGenerator(BaseNetwork):
         # resnet blocks, first one takes 3D information
         for i in range(opt.resnet_n_blocks-1):
             #print(f'adding resnet block {i}')
-            if (i == 0):
-                kernel_size_3d = [3,3,3]
-            else:
-                kernel_size_3d = [1,3,3]
+            kernel_size_3d = [3,3,3]
+
             model += [ResnetBlock3D(opt.ngf * mult,  # use 3D version of ResnetBlock
                                   norm_layer=norm_layer_style,
                                   activation=activation,
@@ -637,24 +635,24 @@ class StyleSPADE3DGenerator(BaseNetwork):
 
 
         #Hardcoded, not sure if 3= depth?
-        self.fc_img = nn.Linear((in_fea * nf  *3*3 *16*16 ), (in_fea * nf //4 ))
+        self.fc_img = nn.Linear((in_fea * nf  *3*3 *4 * 16), (in_fea * nf //4 ))
         self.fc_img2 = nn.Linear(in_fea * nf // 4,in_fea*nf*8*8*3 )  # output features = batch_size * channels * depth * height * width
 
         self.fc = nn.Conv3d(self.opt.semantic_nc, in_fea * nf, 3, padding=1)
 
 
-        self.head_0 = SPADEResnetBlock(in_fea * nf, in_fea * nf, opt)
+        self.head_0 = SPADEResnetBlock(in_fea * nf//8  *3 , in_fea * nf//3, opt)
 
-        self.G_middle_0 = SPADEResnetBlock(in_fea * nf, in_fea * nf, opt)
+        self.G_middle_0 = SPADEResnetBlock(85, in_fea * nf, opt)
         self.G_middle_1 = SPADEResnetBlock(in_fea * nf, in_fea * nf, opt)
 
 
-        self.up = nn.Upsample(scale_factor=(1, 2, 2), mode='trilinear')
+        self.up = nn.Upsample(scale_factor=(2, 2, 2), mode='trilinear')
 
-        self.up_0 = SPADEResnetBlock(16*4 * nf, 8*4 * nf, opt)
-        self.up_1 = SPADEResnetBlock(8*4 * nf, 4*4 * nf, opt)
-        self.up_2 = SPADEResnetBlock(4*4 * nf, 2*4 * nf, opt)
-        self.up_3 = SPADEResnetBlock(2*4 * nf, 4 * nf, opt)
+        self.up_0 = SPADEResnetBlock(16 * nf, 8 * nf, opt)
+        self.up_1 = SPADEResnetBlock(8 * nf, 4 * nf, opt)
+        self.up_2 = SPADEResnetBlock(4 * nf, 2* nf, opt)
+        self.up_3 = SPADEResnetBlock(2 * nf,  nf, opt)
 
         final_nc = nf
 
@@ -682,35 +680,40 @@ class StyleSPADE3DGenerator(BaseNetwork):
         seg = input
         image = image
         nf = self.opt.ngf
+        bs = self.opt.batchSize
 
+        # print(f'nf : {nf}')
 
-        #print(f' image shape: {image.shape}')
-        #print(f'segmentaiton shape: {seg.shape}')
+        # print(f' image shape: {image.shape}')
+        # print(f'segmentaiton shape: {seg.shape}')
         image = image.unsqueeze(1)
         
         #print(f'shapes image: {image.shape}, seg: {seg.shape}')
         # seg = seg.permute(0, 1, 4, 2,3 ) # This reorders the dimensions to (Batch, Channel, Depth, Height, Width)
         # image = image.permute(0, 1, 4, 2, 3) # This reorders the dimensions to (Batch, Channel, Depth, Height, Width
         depth= seg.shape[2]
-        #print(f'depth: {depth}')
-        #print(f' image after unsqueeze and permutation: {image.shape}') 
-        #print(f'segmentation: {seg.shape}')
+        # print(f'depth: {depth}')
+        # print(f' image after unsqueeze and permutation: {image.shape}') 
+        # print(f'segmentation: {seg.shape}')
         #summary(self.model, (1, 1, 3,512,512))
         x = self.model(image)
+        # print(f'x shape after self.model(image): {x.shape}')
 
         
         #self.opt.ngf = 16
         x = x.view(x.size(0), -1)
         x = self.fc_img(x)
-        #print(f'x shape after fc_img: {x.shape}')
+        # print(f'x shape after fc_img: {x.shape}')
         x = self.fc_img2(x)
 
-        #print(f'x shape after fc_img2 : {x.shape}')
-        x = x.view(-1, 64*nf, depth, 8, 8)  # reshaping to have depth dimension again
+        # print(f'x shape after fc_img2 : {x.shape}')
+        x = x.view(bs, -1, 8, 8, 8)  # reshaping to have depth dimension again
   
 
 
-
+        # print(f'x shape after view: {x.shape}')
+        # print(f'seg shape: {seg.shape}')
+        # print(f'input_dist shape: {input_dist.shape}')
         x = self.head_0(x, seg, input_dist)
         #print(f'x after head_0: {x.shape}')
 

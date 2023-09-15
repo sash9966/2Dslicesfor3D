@@ -40,11 +40,15 @@ class Mms1acdcBBDataset(BaseDataset):
         # parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/data/alltrainingdata/data/images" ,
         #                     help='path to the directory that contains photo images')
 
-        #For testing
-        parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/data/testmasks",
+       #For testing
+        parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/data/128resdata/image/",
                             help='path to the directory that contains label images')
-        parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/data/testimages" ,
-                            help='path to the directory that contains photo images')
+        parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/data/128resdata/mask/" ,
+                             help='path to the directory that contains photo images')
+        # parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/2Dslicesfor3D/data/images/",
+        #                     help='path to the directory that contains label images')
+        # parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/2Dslicesfor3D/data/masks/" ,
+        #                     help='path to the directory that contains photo images')
         
         
         
@@ -73,8 +77,8 @@ class Mms1acdcBBDataset(BaseDataset):
             #For test we will generate images with different mask but paired with one patient image for the background.
             single_image = os.listdir(os.path.join(opt.image_dir))[0]
             SA_image_list = [single_image] * len(SA_mask_list)
-            print(f'length of SA_image_list: {len(SA_image_list)}')
-            print(f'length of SA_mask_list: {len(SA_mask_list)}')
+            #print(f'length of SA_image_list: {len(SA_image_list)}')
+            #print(f'length of SA_mask_list: {len(SA_mask_list)}')
         else:
             SA_image_list = sorted(os.listdir(os.path.join(opt.image_dir)))
 
@@ -239,7 +243,7 @@ class Mms1acdcBBDataset(BaseDataset):
             #self.cmr_dataset(cmr.MRI2DSegmentationDataset(self.msk_list, transform = train_transforms, slice_axis=2, canonical = False))
 
         #self.cmr_dataset = cmr.MRI2DSegmentationDataset(self.filename_pairs,voxel_size = opt.voxel_size, transform = train_transforms, slice_axis=2,  canonical = False)
-        self.cmr_dataset = cmr.MRI2DSegmentationDataset(self.filename_pairs,voxel_size = opt.voxel_size, transform = train_transforms,  canonical = False)
+        self.cmr_dataset = cmr.MRI3DSegmentationDataset(self.filename_pairs, transform = train_transforms,  canonical = False)
         print(f'opt voxel size: {opt.voxel_size}, type: {type(opt.voxel_size)}, ')
 
         
@@ -258,15 +262,30 @@ class Mms1acdcBBDataset(BaseDataset):
             instance_tensor = data_input["gt"] # the label map equals the instance map for this dataset
         if not self.opt.add_dist:
             dist_tensor = 0
-        input_dict = {'label': data_input['gt'],
-                      'image': data_input['input'],
-                      'instance': instance_tensor,
-                      'dist': dist_tensor,
-                      'path': data_input['filename'],
-                      'gtname': data_input['gtname'],
-                      'index': data_input['index'],
-                      'segpair_slice': data_input['segpair_slice'],
-                      }
+
+        #3D with full volumes
+        if self.opt.is_3D:
+                    input_dict = {'label': data_input['gt'],
+                    'image': data_input['input'],
+                    'instance': instance_tensor,
+                    'dist': dist_tensor,
+                    'path': data_input['filename'],
+                    'gtname': data_input['gtname'],
+                    'index': data_input['index'],
+
+                    }
+
+        #2D with slices
+        else:
+            input_dict = {'label': data_input['gt'],
+                        'image': data_input['input'],
+                        'instance': instance_tensor,
+                        'dist': dist_tensor,
+                        'path': data_input['filename'],
+                        'gtname': data_input['gtname'],
+                        'index': data_input['index'],
+                        'segpair_slice': data_input['segpair_slice'],
+                        }
 
         return input_dict
     

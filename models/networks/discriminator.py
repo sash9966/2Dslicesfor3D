@@ -87,7 +87,7 @@ class NLayerDiscriminator(BaseNetwork):
     def __init__(self, opt):
         super().__init__()
         self.opt = opt
-        print(f'options: {opt}')
+        #print(f'options: {opt}')
         kw = 4
         padw = int(np.ceil((kw - 1.0) / 2))
         nf = opt.ndf

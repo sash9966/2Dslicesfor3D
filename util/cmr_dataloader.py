@@ -148,9 +148,9 @@ class SegmentationPair2D(object):
                 gt_dataobj = None
             else:
                 gt_dataobj = self.gt_handle.dataobj
-        #print(f'shape of the data image:{input_dataobj.shape}')
-        #print(f'shape of the data mask:{gt_dataobj.shape}')
-        #print(f'index: {slice_index}')
+        print(f'shape of the data image:{input_dataobj.shape}')
+        print(f'shape of the data mask:{gt_dataobj.shape}')
+        print(f'index: {slice_index}')
 
         #print(f'input_dataobj shape: {input_dataobj.shape}')
         if slice_axis not in [0, 1, 2]:
@@ -161,6 +161,7 @@ class SegmentationPair2D(object):
 
             input_slice = np.asarray(input_dataobj[..., slice_index: slice_index +self.voxel_size],
                                      dtype=np.float32)
+            print(f'input_slice shape: {input_slice.shape}')
         elif slice_axis == 1:
             input_slice = np.asarray(input_dataobj[:, slice_index, ...],
                                      dtype=np.float32)
@@ -217,6 +218,75 @@ class SegmentationPair2D(object):
 
         return dreturn
 
+
+class SegmentationPair3D(object):
+    def __init__(self, input_filename, gt_filename, cache=True, canonical=False):
+        self.input_filename = input_filename
+        self.gt_filename = gt_filename
+        self.canonical = canonical
+        self.cache = cache
+
+        self.input_handle = nib.load(self.input_filename)
+
+        if self.gt_filename is None:
+            self.gt_handle = None
+        else:
+            self.gt_handle = nib.load(self.gt_filename)
+
+        if len(self.input_handle.shape) > 3:
+            raise RuntimeError("4-dimensional volumes not supported.")
+
+        input_shape, gt_shape = self.get_pair_shapes()
+
+        if self.gt_handle is not None:
+            if not np.allclose(input_shape, gt_shape):
+                raise RuntimeError('Input and ground truth with different dimensions.')
+
+        if self.canonical:
+            self.input_handle = nib.as_closest_canonical(self.input_handle)
+            if self.gt_handle is not None:
+                self.gt_handle = nib.as_closest_canonical(self.gt_handle)
+
+    def get_pair_shapes(self):
+        input_shape = self.input_handle.header.get_data_shape()
+        if self.gt_handle is None:
+            gt_shape = None
+        else:
+            gt_shape = self.gt_handle.header.get_data_shape()
+        return input_shape, gt_shape
+
+    def get_pair_data(self):
+        cache_mode = 'fill' if self.cache else 'unchanged'
+        input_data = self.input_handle.get_fdata(cache_mode, dtype=np.float32)
+        if self.gt_handle is None:
+            gt_data = None
+        else:
+            gt_data = self.gt_handle.get_fdata(cache_mode, dtype=np.float32)
+        return input_data, gt_data
+
+    def get_pair_volume(self):
+        input_data, gt_data = self.get_pair_data()
+
+        input_meta_dict = SampleMetadata({
+            "zooms": self.input_handle.header.get_zooms(),
+            "data_shape": self.input_handle.header.get_data_shape(),
+        })
+
+        if self.gt_handle is None:
+            gt_data = None
+            gt_meta_dict = None
+        else:
+            gt_meta_dict = SampleMetadata({
+                "zooms": self.gt_handle.header.get_zooms(),
+                "data_shape": self.gt_handle.header.get_data_shape(),
+            })
+
+        return {
+            "input": input_data,
+            "gt": gt_data,
+            "input_metadata": input_meta_dict,
+            "gt_metadata": gt_meta_dict,
+        }
 
 class MRI2DSegmentationDataset(Dataset):
     """This is a generic class for 2D (slice-wise) segmentation datasets.
@@ -392,55 +462,46 @@ class MRI2DSegmentationDataset(Dataset):
 
 
 class MRI3DSegmentationDataset(Dataset):
-    """This is a generic class for 3D segmentation datasets.
-
-    :param filename_pairs: a list of tuples in the format (input filename,
-                           ground truth filename).
-    :param cache: if the data should be cached in memory or not.
-    :param transform: transformations to apply.
-    """
-    def __init__(self, filename_pairs, voxel_size,cache=True,
-                 transform=None, canonical=False):
+    def __init__(self, filename_pairs, cache=True, transform=None, canonical=False):
         self.filename_pairs = filename_pairs
         self.handlers = []
-        self.indexes = []
         self.transform = transform
         self.cache = cache
         self.canonical = canonical
-        self.voxel_size = voxel_size
 
         self._load_filenames()
 
     def _load_filenames(self):
         for input_filename, gt_filename in self.filename_pairs:
-            segpair = SegmentationPair2D(input_filename, gt_filename,self.voxel_size,
-                                         self.cache, self.canonical)
+            segpair = SegmentationPair3D(input_filename, gt_filename, self.cache, self.canonical)
             self.handlers.append(segpair)
 
     def set_transform(self, transform):
-        """This method will replace the current transformation for the
-        dataset.
-
-        :param transform: the new transformation
-        """
         self.transform = transform
 
     def __len__(self):
-        """Return the dataset size."""
         return len(self.handlers)
 
     def __getitem__(self, index):
-        """Return the specific index pair volume (input, ground truth).
+        segpair = self.handlers[index]
+        pair_volume = segpair.get_pair_volume()
 
-        :param index: volume index.
-        """
-        input_img, gt_img = self.handlers[index].get_pair_data()
+        input_volume = pair_volume["input"]
+        gt_volume = pair_volume["gt"]
+
         data_dict = {
-            'input': input_img,
-            'gt': gt_img
+            'input': input_volume,
+            'gt': gt_volume,
+            'input_metadata': pair_volume['input_metadata'],
+            'gt_metadata': pair_volume['gt_metadata'],
+            'filename': segpair.input_filename,
+            'gtname': segpair.gt_filename,
+            'index': index,
         }
+
         if self.transform is not None:
             data_dict = self.transform(data_dict)
+
         return data_dict
 
 class MRI3DSubVolumeSegmentationDataset(MRI3DSegmentationDataset):

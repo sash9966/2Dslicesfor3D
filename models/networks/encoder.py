@@ -23,10 +23,10 @@ class ConvEncoder(BaseNetwork):
         pw = int(np.ceil((kw - 1.0) / 2))
         ndf = opt.ngf
         norm_layer = get_nonspade_norm_layer(opt, opt.norm_E)
-        print(f'ngf: {opt.ngf}')
-        print(f'output_nc: {opt.output_nc}')
-        print(f'pw: {pw}')
-        print(f'norm_layer: {norm_layer}')
+        #print(f'ngf: {opt.ngf}')
+        #print(f'output_nc: {opt.output_nc}')
+        #print(f'pw: {pw}')
+        #print(f'norm_layer: {norm_layer}')
 
         self.layer1 = norm_layer(nn.Conv2d(opt.output_nc, ndf, kw, stride=2, padding=pw))
         self.layer2 = norm_layer(nn.Conv2d(ndf * 1, ndf * 2, kw, stride=2, padding=pw))
