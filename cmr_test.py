@@ -26,7 +26,7 @@ opt = TestOptions().parse()
 #Background image for generation!
 opt.image_dir = '/scratch/users/sastocke/data/data/images/ct_1001_image.nii.gz'
 #Output path to save the generated images
-output_path = '/scratch/users/fwkong/SharedData/SaschaCreated/fullnifti'
+output_path = '/scratch/users/fwkong/SharedData/SaschaCreated/fullnifti2'
 target_path = '/scratch/users/fwkong/SharedData/imageCHDcleaned_all/whole_heart_processed/pytorch/ct_1001_image_0.pkl'
 name = opt.name
 
