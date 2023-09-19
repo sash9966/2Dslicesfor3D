@@ -123,14 +123,14 @@ class SegmentationPair2D(object):
         """Return the tuble (input, ground truth) with the data content in
         numpy array."""
         cache_mode = 'fill' if self.cache else 'unchanged'
-        input_data = sitk.GetArrayFromImage(self.input_handle).astype(np.float32)
+        input_data = self.input_handle
 
 
         # Handle unlabeled data
         if self.gt_handle is None:
             gt_data = None
         else:
-            gt_data = self.gt_handle.sitk.GetArrayFromImage(self.input_handle).astype(np.float32)
+            gt_data = self.input_handle
 
         return input_data, gt_data
 
