@@ -110,13 +110,12 @@ class SegmentationPair2D(object):
     def get_pair_shapes(self):
         """Return the tuple (input, ground truth) representing both the input
         and ground truth shapes."""
-        input_shape = self.input_handle.header.get_data_shape()
-
+        input_shape = self.input_handle.getSize()
         # Handle unlabeled data
         if self.gt_handle is None:
             gt_shape = None
         else:
-            gt_shape = self.gt_handle.header.get_data_shape()
+            gt_shape = self.gt_handle.getSize()
 
         return input_shape, gt_shape
 
