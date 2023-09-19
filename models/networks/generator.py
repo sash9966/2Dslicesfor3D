@@ -635,10 +635,10 @@ class StyleSPADE3DGenerator(BaseNetwork):
 
 
         #Hardcoded, not sure if 3= depth?
-        self.fc_img = nn.Linear((in_fea * nf  *3*3 *4 * 16), (in_fea * nf //4 ))
-        self.fc_img2 = nn.Linear(in_fea * nf // 4,in_fea*nf*8*8*3 )  # output features = batch_size * channels * depth * height * width
+        self.fc_img = nn.Linear((in_fea * nf  *3*3 *4 * 16), (in_fea * nf *2 ))
+        self.fc_img2 = nn.Linear(in_fea * nf * 2 ,in_fea*nf*8*8*3 )  # output features = batch_size * channels * depth * height * width
 
-        self.fc = nn.Conv3d(self.opt.semantic_nc, in_fea * nf, 3, padding=1)
+        self.fc = nn.Conv3d(self.opt.semantic_nc, in_fea * nf*2, 3, padding=1)
 
 
         self.head_0 = SPADEResnetBlock(in_fea * nf//8  *3 , in_fea * nf//3, opt)
