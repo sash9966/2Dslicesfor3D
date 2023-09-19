@@ -75,16 +75,14 @@ class SegmentationPair2D(object):
         self.gt_filename = gt_filename
         self.canonical = canonical
         self.cache = cache
-        temp_img = sitk.ReadImage(self.input_filename)
-        self.input_handle = sitk.GetArrayFromImage(temp_img).astype(np.float32)
+        self.input_handle = sitk.ReadImage(self.input_filename)
+
 
         # Unlabeled data (inference time)
         if self.gt_filename is None:
             self.gt_handle = None
         else:
-            temp_gt = sitk.ReadImage(self.gt_filename)
-            self.gt_handle = sitk.GetArrayFromImage(temp_gt).astype(np.float32)
-
+            self.gt_handle = sitk.ReadImage(self.gt_filename)
 
         if len(self.input_handle.shape) > 3:
             raise RuntimeError("4-dimensional volumes not supported.")
@@ -100,12 +98,12 @@ class SegmentationPair2D(object):
                 #print(f'filename is: {self.gt_filename}')
                 raise RuntimeError('Input and ground truth with different dimensions.')
 
-        # if self.canonical:
-        #     self.input_handle = nib.as_closest_canonical(self.input_handle)
+        if self.canonical:
+            self.input_handle = nib.as_closest_canonical(self.input_handle)
 
-        #     # Unlabeled data
-        #     if self.gt_handle is not None:
-        #         self.gt_handle = nib.as_closest_canonical(self.gt_handle)
+            # Unlabeled data
+            if self.gt_handle is not None:
+                self.gt_handle = nib.as_closest_canonical(self.gt_handle)
 
     def get_pair_shapes(self):
         """Return the tuple (input, ground truth) representing both the input
