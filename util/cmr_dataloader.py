@@ -75,24 +75,22 @@ class SegmentationPair2D(object):
         self.gt_filename = gt_filename
         self.canonical = canonical
         self.cache = cache
-        temp_img = sitk.ReadImage(self.input_filename)
-        self.input_handle = sitk.GetArrayFromImage(temp_img).astype(np.float32)
+
+        self.input_handle = nib.load(self.input_filename)
 
         # Unlabeled data (inference time)
         if self.gt_filename is None:
             self.gt_handle = None
         else:
-            temp_gt = sitk.ReadImage(self.gt_filename)
-            self.gt_handle = sitk.GetArrayFromImage(temp_gt).astype(np.float32)
-
+            self.gt_handle = nib.load(self.gt_filename)
 
         if len(self.input_handle.shape) > 3:
             raise RuntimeError("4-dimensional volumes not supported.")
 
         # Sanity check for dimensions, should be the same
         input_shape, gt_shape = self.get_pair_shapes()
-        #print(f'shape of the data image:{input_shape}')
-        #print(f'shape of the data mask:{gt_shape}')
+        print(f'shape of the data image:{input_shape}')
+        print(f'shape of the data mask:{gt_shape}')
         
 
         if self.gt_handle is not None:
@@ -100,22 +98,23 @@ class SegmentationPair2D(object):
                 #print(f'filename is: {self.gt_filename}')
                 raise RuntimeError('Input and ground truth with different dimensions.')
 
-        # if self.canonical:
-        #     self.input_handle = nib.as_closest_canonical(self.input_handle)
+        if self.canonical:
+            self.input_handle = nib.as_closest_canonical(self.input_handle)
 
-        #     # Unlabeled data
-        #     if self.gt_handle is not None:
-        #         self.gt_handle = nib.as_closest_canonical(self.gt_handle)
+            # Unlabeled data
+            if self.gt_handle is not None:
+                self.gt_handle = nib.as_closest_canonical(self.gt_handle)
 
     def get_pair_shapes(self):
         """Return the tuple (input, ground truth) representing both the input
         and ground truth shapes."""
-        input_shape = self.input_handle.shape
+        input_shape = self.input_handle.header.get_data_shape()
+
         # Handle unlabeled data
         if self.gt_handle is None:
             gt_shape = None
         else:
-            gt_shape = self.gt_handle.shape
+            gt_shape = self.gt_handle.header.get_data_shape()
 
         return input_shape, gt_shape
 
@@ -123,14 +122,13 @@ class SegmentationPair2D(object):
         """Return the tuble (input, ground truth) with the data content in
         numpy array."""
         cache_mode = 'fill' if self.cache else 'unchanged'
-        input_data = self.input_handle
-
+        input_data = self.input_handle.get_fdata(cache_mode, dtype=np.float32)
 
         # Handle unlabeled data
         if self.gt_handle is None:
             gt_data = None
         else:
-            gt_data = self.input_handle
+            gt_data = self.gt_handle.get_fdata(cache_mode, dtype=np.float32)
 
         return input_data, gt_data
 
@@ -200,7 +198,6 @@ class SegmentationPair2D(object):
         }
 
         return dreturn
-
 
 class MRI2DSegmentationDataset(Dataset):
     """This is a generic class for 2D (slice-wise) segmentation datasets.
