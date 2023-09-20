@@ -269,7 +269,7 @@ class NormalizeMinMaxpercentile(MTTransform):
         return sample
 
 class NormalizeMinMaxpercentile3D(MTTransform):
-    """Normalize a 3D tensor image (containing multiple 2D slices) with percentiles.
+    """Normalize a 3D tensor image with percentiles.
 
     :param range: min and max output values.
     :param percentiles: lower and upper percentile to clip the data.
@@ -281,24 +281,21 @@ class NormalizeMinMaxpercentile3D(MTTransform):
     def __call__(self, sample):
         input_data = sample['input'].clone().float().numpy()
 
+        # Applying the cutoff and normalization to the entire 3D voxel
+        cutoff = np.percentile(input_data, self.percentiles)
+        np.clip(input_data, *cutoff, out=input_data)
+        in_min = input_data.min()
+        in_max = input_data.max()
+        input_data -= in_min
 
-        # Applying the cutoff and normalization to each 2D slice individually
-        for i in range(input_data.shape[0]):
-            slice_data = input_data[i]
-            cutoff = np.percentile(slice_data, self.percentiles)
-            np.clip(slice_data, *cutoff, out=slice_data)
-            in_min = slice_data.min()
-            in_max = slice_data.max()
-            slice_data -= in_min
         # Check if the denominator is zero (i.e., in_max == in_min)
-            if in_max - in_min == 0:
-                # handle this case accordingly; e.g., set all values to self.out_min
-                slice_data[:] = self.out_min
-            else:
-                slice_data /= (in_max - in_min)
-                slice_data *= (self.out_max - self.out_min)
-                slice_data += self.out_min
-            input_data[i] = slice_data
+        if in_max - in_min == 0:
+            # handle this case accordingly; e.g., set all values to self.out_min
+            input_data[:] = self.out_min
+        else:
+            input_data /= (in_max - in_min)
+            input_data *= (self.out_max - self.out_min)
+            input_data += self.out_min
 
         rdict = {
             'input':  torch.as_tensor(input_data),
