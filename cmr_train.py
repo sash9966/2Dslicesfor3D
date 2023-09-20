@@ -88,10 +88,14 @@ for epoch in iter_counter.training_epochs():
         # train generator
 
         #print(f'len of dataloader: {len(dataloader.dataset)}')
-        rand_number = np.random.randint(0,len(dataloader.dataset)-1)
+        
         #print(f'rand_number: {rand_number}')
-        rand_data = dataloader.dataset.__getitem__(rand_number)
-        reference_img = rand_data['image'].unsqueeze(0)
+        reference_img = torch.empty(opt.batchSize,1,512,512)
+        for i in range(0,opt.batchSize-1):
+            rand_number = np.random.randint(0,len(dataloader.dataset)-1)
+
+            rand_data = dataloader.dataset.__getitem__(rand_number)
+            reference_img[i,:,:,:] = rand_data['image'].unsqueeze(0)
         #print(f'shape of image: {reference_img.shape}')
         #print(f' shape of image in data_i : {data_i["image"].shape}')
         # train generator
@@ -122,7 +126,7 @@ for epoch in iter_counter.training_epochs():
 
             visuals = OrderedDict([('input_label', data_i['label']),
                                    ('synthesized_image', synthetic),
-                                   ('real_image', data_i['image'])])
+                                   ('reference', reference_img),])
             visualizer.display_current_results(visuals, epoch, iter_counter.total_steps_so_far)
 
             if (opt.batchSize >1):
@@ -138,19 +142,31 @@ for epoch in iter_counter.training_epochs():
             print(f'unique values of synthetic: {np.unique(synthetic.detach().cpu()[rand,0,:,:])}')
 
 
-            fig, axs = plt.subplots(1, 3, figsize=(15, 5))
+            fig, axs = plt.subplots(1, 4, figsize=(20, 5))  # Changed from (2, 3) to (1, 4)
 
+            # Existing images
             axs[0].imshow(data_i['label'].detach().cpu()[rand,0,:,:])
             axs[0].axis('off')
             axs[0].set_title('Input Label')
+
             axs[1].imshow(synthetic.detach().cpu()[rand,0,:,:],cmap='gray')
             axs[1].axis('off')
             axs[1].set_title('Synthesized Image')
+
             axs[2].imshow(data_i['image'].detach().cpu()[rand,0,:,:],cmap='gray')
             axs[2].axis('off')
-            axs[2].set_title('Real Image')
+            axs[2].set_title('Real Image for Discriminator')
+
+            axs[3].imshow(reference_img, cmap='gray')  
+            axs[3].axis('off')
+            axs[3].set_title('Reference Image for Generator') 
+
+            # Save the figure
             plt.savefig(f'/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/epoch{epoch}_{i}_plotdepth.png')
+
+            # Clear the figure
             fig.clf()
+
 
             #Save 3D stacked image
 
