@@ -62,20 +62,6 @@ for i, data_i in enumerate(dataloader):
         break
     generated = model(data_i, mode='inference')   
 
-    if(i>0):
-        # print(f'output path: {output_path}')
-        # print(f'os.path.basename of path: {os.path.basename(f"{path}")}')
-        # print(f'joined: {os.path.join(f"{output_path}","3DImage{name}", os.path.basename(f"{path}"))}')
-        # print(f'check if exists: {os.path.exists(os.path.join(f"{output_path}","3DImage{name}", os.path.basename(f"{path}")))}')
-        filename = os.path.basename(f'{path}')
-        
-        if os.path.exists(os.path.join(f'{output_path}', f'3DImage{name}{filename}')):
-
-            #print(f'File exists in both directories, skipping {path}')
-            del generated
-            torch.cuda.empty_cache()
-            print(f'skipping, path: {path} exists!')
-            continue
              
     
     if(i==0):
