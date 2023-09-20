@@ -56,12 +56,13 @@ class Pix2PixModel(torch.nn.Module):
     # of deep networks. We used this approach since DataParallel module
     # can't parallelize custom functions, we branch to different
     # routines based on |mode|.
-    def forward(self, data, mode):
+    def forward(self, data, mode, reference_img=None):
         input_semantics, real_image, input_dist = self.preprocess_input(data)
         
+
         if mode == 'generator':
             g_loss, generated = self.compute_generator_loss(
-                input_semantics, real_image, input_dist)
+                input_semantics, reference_img, input_dist)
             return g_loss, generated
         elif mode == 'discriminator':
             d_loss = self.compute_discriminator_loss(
@@ -170,15 +171,7 @@ class Pix2PixModel(torch.nn.Module):
             input_label_volume = input_label[..., i]
             #print(f'input_label_volume shape: {input_label_volume.shape}')
             label_map_volume = label_map[..., i].unsqueeze(1)
-            # print(f'label_map_volume shape: {label_map_volume.shape}')
-            # print(f'unique values in the tensor: {torch.unique(label_map_volume)}')
-            # print(torch.isnan(input_label_volume).any())
-            # print(torch.isinf(input_label_volume).any())
-            # print("Max index: ", label_map_volume.max())
-            # print("Min index: ", label_map_volume.min())
-            # print("Input label volume shape: ", input_label_volume.shape)
-            # print("Label map volume shape: ", label_map_volume.shape)
-            # Perform the scatter operation on the 3D slice
+
             input_semantics_volume = input_label_volume.scatter_(1, label_map_volume.clamp(max=7), 1.0)
             #print(f'input_semantics_volume shape after scatter: {input_semantics_volume.shape}')
             # Add an extra dimension for concatenation
@@ -215,21 +208,6 @@ class Pix2PixModel(torch.nn.Module):
         # create one-hot label map
         label_map = data['label']
 
-        # #understand what label_map does:
-        # print(f'type of label_map: {type(label_map)}')
-        # print(f' get the tensor object inside the label map: {label_map}')
-        # print(f'label_map shape: {label_map.shape}')
-        # print(f'label map contains: {label_map.unique()}')
-
-
-        # #check out what the dist contains:
-        # print(f'dist contains: {data["dist"].unique()}')
-
-        # #check out what is in our data
-        # print(f'data contains, via keys parameter: {data.keys()}')
-
-
-
 
         nc = self.opt.label_nc + 1 if self.opt.contain_dontcare_label \
             else self.opt.label_nc
@@ -244,54 +222,6 @@ class Pix2PixModel(torch.nn.Module):
 
 
         
-
-        # print(f'########################')
-        # print(f'before input_semantics')
-        # print(f'input_label has size: {input_label.shape}')
-        # print(f'label_map has size: {label_map.shape}')
-        # print(f'b: {bs}, nc: {nc}, h: {h}, w: {w}')
-        #Plot what the label map and the input label looks like:
-
-        # fig, ax = plt.subplots(1,9)
-        # #name the axis it's plotted on
-        # fig, ax = plt.subplots(3, 3, figsize=(12, 12))  # Adjust the figure size as desired
-
-        # ax[0, 0].imshow(label_map[0, 0, :, :])
-        # ax[0, 0].set_title('label_map1')
-
-        # ax[0, 1].imshow(input_label[0, 1, :, :])
-        # ax[0, 1].set_title('label_map2')
-
-        # ax[0, 2].imshow(input_label[0, 2, :, :])
-        # ax[0, 2].set_title('label_map3')
-
-        # ax[1, 0].imshow(input_label[0, 3, :, :])
-        # ax[1, 0].set_title('label_map4')
-
-        # ax[1, 1].imshow(input_label[0, 4, :, :])
-        # ax[1, 1].set_title('label_map5')
-
-        # ax[1, 2].imshow(input_label[0, 5, :, :])
-        # ax[1, 2].set_title('label_map6')
-
-        # ax[2, 0].imshow(input_label[0, 6, :, :])
-        # ax[2, 0].set_title('label_map7')
-
-        # ax[2, 1].imshow(input_label[0, 7, :, :])
-        # ax[2, 1].set_title('label_map8')
-
-        # ax[2, 2].imshow(input_label[0, 0, :, :])
-        # ax[2, 2].set_title('input_label')
-
-        # plt.tight_layout()  # Adjust the spacing between subplots
-
-        # plt.show()
-
-        # print(f'input_label has size: {input_label.shape}')
-        # print(f'label_map has size: {label_map.shape}')
-
-        # print(f'input label shape: {input_label.shape}')
-        # print(f'label map shape: {label_map.shape}')
 
 
         if(self.opt.voxel_size >= 1):
