@@ -86,8 +86,17 @@ for epoch in iter_counter.training_epochs():
 
         # Training
         # train generator
+
+        #print(f'len of dataloader: {len(dataloader.dataset)}')
+        rand_number = np.random.randint(0,len(dataloader.dataset)-1)
+        #print(f'rand_number: {rand_number}')
+        rand_data = dataloader.dataset.__getitem__(rand_number)
+        reference_img = rand_data['image'].unsqueeze(0)
+        #print(f'shape of image: {reference_img.shape}')
+        #print(f' shape of image in data_i : {data_i["image"].shape}')
+        # train generator
         if i % opt.D_steps_per_G == 0:
-            trainer.run_generator_one_step(data_i)
+            trainer.run_generator_one_step(data_i, reference_img)
 
         # train discriminator
         trainer.run_discriminator_one_step(data_i)

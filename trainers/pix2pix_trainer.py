@@ -41,10 +41,10 @@ class Pix2PixTrainer():
             self.scaler_G = GradScaler()
             self.scaler_D = GradScaler()
 
-    def run_generator_one_step(self, data):
+    def run_generator_one_step(self, data,reference_img):
         self.optimizer_G.zero_grad()
         if self.amp:
-            g_losses, generated = self.pix2pix_model(data, mode='generator')
+            g_losses, generated = self.pix2pix_model(data, reference_img,mode='generator')
             g_loss = sum(g_losses.values()).mean()
             self.scaler_G.scale(g_loss).backward()
             self.scaler_G.step(self.optimizer_G)
