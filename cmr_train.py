@@ -157,7 +157,7 @@ for epoch in iter_counter.training_epochs():
             axs[2].axis('off')
             axs[2].set_title('Real Image for Discriminator')
 
-            axs[3].imshow(reference_img, cmap='gray')  
+            axs[3].imshow(reference_img[rand,0,:,:], cmap='gray')  
             axs[3].axis('off')
             axs[3].set_title('Reference Image for Generator') 
 
