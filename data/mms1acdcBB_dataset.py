@@ -214,7 +214,7 @@ class Mms1acdcBBDataset(BaseDataset):
                 # cmr_tran.RandomRotation(p=0.5),
                 
                 cmr_tran.ToTensor(),
-                cmr_tran.NormalizeMinMaxpercentile(range=(-1,1), percentiles=(1,99)),
+                cmr_tran.NormalizeMinMaxpercentile3D(range=(-1,1), percentiles=(1,99)),
                 # cmr_tran.NormalizeMinMaxRange(range=(-1,1)),
                 
 
