@@ -604,6 +604,7 @@ class StyleSPADE3DGenerator(BaseNetwork):
 
         #Padding needs different values for 3D
         in_kernel = opt.resnet_initial_kernel_size
+        print(f'in_kernel: {in_kernel}')
         model += [nn.ReflectionPad3d((in_kernel//2, in_kernel//2, in_kernel//2, in_kernel//2, in_kernel//4, in_kernel//4)),
 
                   norm_layer_style(nn.Conv3d(self.opt.output_nc, opt.ngf,
@@ -635,8 +636,8 @@ class StyleSPADE3DGenerator(BaseNetwork):
 
 
         #Hardcoded, not sure if 3= depth?
-        self.fc_img = nn.Linear((in_fea * nf  *3*3 *4 * 16), (in_fea * nf *2 ))
-        self.fc_img2 = nn.Linear(in_fea * nf * 2 ,in_fea*nf*8*8*3 )  # output features = batch_size * channels * depth * height * width
+        self.fc_img = nn.Linear((in_fea * nf  *27**2), (in_fea * nf *4 ))
+        self.fc_img2 = nn.Linear(in_fea * nf * 4 ,in_fea*nf*8*8*3 )  # output features = batch_size * channels * depth * height * width
 
         self.fc = nn.Conv3d(self.opt.semantic_nc, in_fea * nf*2, 3, padding=1)
 

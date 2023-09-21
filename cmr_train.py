@@ -108,7 +108,7 @@ for epoch in iter_counter.training_epochs():
             #get current path:
             path = os.getcwd()            
             plt.close('all')
-            fig, axs = plt.subplots(1, 3, figsize=(15, 5))
+            fig, axs = plt.subplots(1, 4, figsize=(15, 5))
 
 
             #random number between 1-128
@@ -122,7 +122,10 @@ for epoch in iter_counter.training_epochs():
                 axs[1].set_title('Synthesized Image')
                 axs[2].imshow(real_image[0,j,:,:],cmap='gray')
                 axs[2].axis('off')
-                axs[2].set_title('Real Image')
+                axs[2].set_title('Real Image for Discriminator')
+                axs[3].imshow(reference_img[0,j,:,:],cmap='gray')
+                axs[3].axis('off')
+                axs[3].set_title('Reference Image for Generator')
                 plt.savefig(f'/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/epoch{epoch}_{i}_plotdepth{j}.png')
 
                 # visuals = OrderedDict([('input_label', label[:,:,:,j]),
