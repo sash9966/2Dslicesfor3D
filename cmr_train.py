@@ -124,22 +124,15 @@ for epoch in iter_counter.training_epochs():
             synthetic=  trainer.get_latest_generated()
 
 
-            visuals = OrderedDict([('input_label', data_i['label']),
-                                   ('synthesized_image', synthetic),
-                                   ('reference', reference_img),])
-            visualizer.display_current_results(visuals, epoch, iter_counter.total_steps_so_far)
+            # visuals = OrderedDict([('input_label', data_i['label']),
+            #                        ('synthesized_image', synthetic),
+            #                        ('reference', reference_img),])
+            # visualizer.display_current_results(visuals, epoch, iter_counter.total_steps_so_far)
 
             if (opt.batchSize >1):
                 rand= np.random.randint(0, opt.batchSize-1)
             else:
                 rand=0
-            print(f'shape of synthetic: {synthetic.shape}')
-            print(f'shape of data_i: {data_i["image"].shape}')
-            print(f'shape of label: {data_i["label"].shape}')
-            print(f'rand int is: {rand}')
-            
-            #Print the unique values of the syntehtic iamge:
-            print(f'unique values of synthetic: {np.unique(synthetic.detach().cpu()[rand,0,:,:])}')
 
 
             fig, axs = plt.subplots(1, 4, figsize=(20, 5))  # Changed from (2, 3) to (1, 4)

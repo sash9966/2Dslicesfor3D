@@ -188,7 +188,8 @@ class Mms1acdcBBDataset(BaseDataset):
                 cmr_tran.RandomRotation90(p=0.7),
                 
                 cmr_tran.ToTensor(),
-                cmr_tran.NormalizeMinMaxpercentile(range=(-1,1), percentiles=(1,99)),
+                #cmr_tran.NormalizeMinMaxpercentile(range=(-1,1), percentiles=(1,99)),
+                cmr_tran.NormalizeInstance3D(),
                 # cmr_tran.NormalizeLabel(),
                 # cmr_tran.NormalizeMinMaxRange(range=(-1,1)),
                 
@@ -214,7 +215,7 @@ class Mms1acdcBBDataset(BaseDataset):
                 # cmr_tran.RandomRotation(p=0.5),
                 
                 cmr_tran.ToTensor(),
-                cmr_tran.NormalizeMinMaxpercentile3D(range=(-1,1), percentiles=(1,99)),
+                cmr_tran.NormalizeMinMaxpercentile(range=(-1,1), percentiles=(1,99)),
                 # cmr_tran.NormalizeMinMaxRange(range=(-1,1)),
                 
 

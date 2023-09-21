@@ -56,7 +56,7 @@ class Pix2PixModel(torch.nn.Module):
     # of deep networks. We used this approach since DataParallel module
     # can't parallelize custom functions, we branch to different
     # routines based on |mode|.
-    def forward(self, data,reference_img, mode):
+    def forward(self, data, mode, reference_img=None):
         input_semantics, real_image, input_dist = self.preprocess_input(data)
 
         

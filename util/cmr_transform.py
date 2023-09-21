@@ -219,7 +219,7 @@ class Normalize(MTTransform):
 
 class NormalizeMinMaxRange(MTTransform):
     """Normalize a tensor image with mean and standard deviation.
-
+ 
     :param mean: mean value.
     :param std: standard deviation value.
     """
@@ -386,6 +386,7 @@ class NormalizeInstance3D(MTTransform):
     def __call__(self, sample):
         input_data = sample['input']
 
+        print(f'input_data.shape: {input_data.shape}')
         mean, std = input_data.mean(), input_data.std()
 
         if mean != 0 or std != 0:
@@ -397,6 +398,8 @@ class NormalizeInstance3D(MTTransform):
                 'input': input_data_normalized,
             }
             sample.update(rdict)
+
+        print(f'sample shape: {sample["input"].shape}')
         return sample
 
 
