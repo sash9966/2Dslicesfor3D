@@ -268,43 +268,50 @@ class NormalizeMinMaxpercentile(MTTransform):
         sample.update(rdict)
         return sample
 
-class NormalizeMinMaxpercentile3D(MTTransform):
-    """Normalize a 3D tensor image (containing multiple 2D slices) with percentiles.
+import numpy as np
+
+class NormalizeMinMaxpercentile3D:
+    """
+    Normalize a 3D voxel with percentiles.
 
     :param range: min and max output values.
     :param percentiles: lower and upper percentile to clip the data.
     """
-    def __init__(self, range = (-1, 1), percentiles=(1,99)):
+    def __init__(self, range=(-1, 1), percentiles=(1, 99)):
         self.out_min, self.out_max = range
         self.percentiles = percentiles
 
     def __call__(self, sample):
+        # Ensure input_data is a numpy array
         input_data = sample['input'].clone().float().numpy()
 
-
-        # Applying the cutoff and normalization to each 2D slice individually
-        for i in range(input_data.shape[0]):
-            slice_data = input_data[i]
-            cutoff = np.percentile(slice_data, self.percentiles)
-            np.clip(slice_data, *cutoff, out=slice_data)
-            in_min = slice_data.min()
-            in_max = slice_data.max()
-            slice_data -= in_min
-        # Check if the denominator is zero (i.e., in_max == in_min)
-            if in_max - in_min == 0:
-                # handle this case accordingly; e.g., set all values to self.out_min
-                slice_data[:] = self.out_min
-            else:
-                slice_data /= (in_max - in_min)
-                slice_data *= (self.out_max - self.out_min)
-                slice_data += self.out_min
-            input_data[i] = slice_data
+        
+        # Get the cutoff values for the entire 3D voxel
+        cutoff = np.percentile(input_data, self.percentiles)
+        
+        # Clip the voxel values based on the cutoff
+        np.clip(input_data, *cutoff, out=input_data)
+        
+        # Normalize the entire 3D voxel
+        in_min = input_data.min()
+        in_max = input_data.max()
+        
+        input_data -= in_min
+        if in_max - in_min == 0:
+            # handle this case accordingly; e.g., set all values to out_min
+            input_data[:] = self.out_min
+        else:
+            input_data /= (in_max - in_min)
+            input_data *= (self.out_max - self.out_min)
+            input_data += self.out_min
 
         rdict = {
-            'input':  torch.as_tensor(input_data),
+            'input': torch.as_tensor(input_data),
         }
         sample.update(rdict)
         return sample
+
+
 
 # class PercentileBasedRescaling(MTTransform):
 

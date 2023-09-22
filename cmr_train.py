@@ -70,6 +70,8 @@ for epoch in iter_counter.training_epochs():
         #print(f'rand_number: {rand_number}')
         rand_data = dataloader.dataset.__getitem__(rand_number)
         reference_img = rand_data['image'].unsqueeze(0)
+
+
         #print(f'shape of image: {reference_img.shape}')
         #print(f' shape of image in data_i : {data_i["image"].shape}')
         # train generator
