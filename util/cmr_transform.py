@@ -285,8 +285,16 @@ class NormalizeMinMaxpercentile3D(MTTransform):
         self.percentiles = percentiles
 
     def __call__(self, sample):
-        input_data = sample['input'].clone().float().numpy()
+        #check if sample is numpy array
+    
+        if(isinstance(sample, np.ndarray)):
+                input_data = sample
+                print(f'input shape when numpy array: {input_data.shape}')
+        else:
+            input_data = sample['input'].clone().float().numpy()
+            print(f'input_data.shape when dictionairy: {input_data.shape}')
 
+        
 
         # Applying the cutoff and normalization to each 2D slice individually
         for i in range(input_data.shape[0]):
@@ -306,11 +314,8 @@ class NormalizeMinMaxpercentile3D(MTTransform):
                 slice_data += self.out_min
             input_data[i] = slice_data
 
-        rdict = {
-            'input':  torch.as_tensor(input_data),
-        }
-        sample.update(rdict)
-        return sample
+
+        return input_data
 # class PercentileBasedRescaling(MTTransform):
 
 #     def __init__(self, out_min_max = (0, 1), percentiles=(5,95), masking_method=None, p=1.0, labeled=False):
@@ -384,7 +389,7 @@ class NormalizeInstance3D(MTTransform):
     :param std: standard deviation value.
     """
     def __call__(self, sample):
-        input_data = sample['input']
+        input_data = sample
 
         print(f'input_data.shape: {input_data.shape}')
         mean, std = input_data.mean(), input_data.std()
@@ -394,13 +399,9 @@ class NormalizeInstance3D(MTTransform):
                                     [mean for _ in range(0,input_data.shape[0])],
                                     [std for _ in range(0,input_data.shape[0])])
 
-            rdict = {
-                'input': input_data_normalized,
-            }
-            sample.update(rdict)
+           
 
-        print(f'sample shape: {sample["input"].shape}')
-        return sample
+        return input_data_normalized
 
 
 class RandomRotation3D(MTTransform):

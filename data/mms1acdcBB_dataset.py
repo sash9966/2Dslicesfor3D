@@ -34,14 +34,14 @@ class Mms1acdcBBDataset(BaseDataset):
         parser.set_defaults(no_instance=True)
         parser.set_defaults(add_dist=False)
         
-        # parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/2Dslicesfor3D/data/masks",
-        #                     help='path to the directory that contains label images')
-        # parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/2Dslicesfor3D/data/images" ,
-        #                     help='path to the directory that contains photo images')
-        parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/data/alltrainingdata/data/segmentation",
+        parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/2Dslicesfor3D/data/masks",
                             help='path to the directory that contains label images')
-        parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/data/alltrainingdata/data/images" ,
+        parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/2Dslicesfor3D/data/normimages" ,
                             help='path to the directory that contains photo images')
+        # parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/data/alltrainingdata/data/segmentation",
+        #                     help='path to the directory that contains label images')
+        # parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/data/alltrainingdata/data/images" ,
+        #                     help='path to the directory that contains photo images')
         # parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/data/SynthesizedTest",
         #                     help='path to the directory that contains label images')
         # parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/data/testimages" ,
@@ -91,73 +91,12 @@ class Mms1acdcBBDataset(BaseDataset):
 
 
         SA_filename_pairs = [] 
-        #SA_filename_pairs_B = []
 
-        # SA_filename_pairs_acdc = [] 
-        # SA_image_list_acdc_all = []
-        # SA_mask_list_acdc_all = []
-
-        ##Test: turn off pathologies -> none, switch to all for all pathologies
-        # what_pathology = 'none'
-        # if what_pathology == 'all':
-        #     for pathology in pathologies:
-        #         SA_image_list_acdc = sorted(os.listdir(os.path.join(opt.acdc_dir, pathology, 'Image')))
-        #         SA_mask_list_acdc = sorted(os.listdir(os.path.join(opt.acdc_dir, pathology, 'Label_c')))
-        #         SA_image_list_acdc_all += SA_image_list_acdc
-        #         SA_mask_list_acdc_all += SA_mask_list_acdc
-        #         for i in range(len(SA_image_list_acdc)):
-        #             SA_filename_pairs_acdc += [(os.path.join(opt.acdc_dir, pathology, 'Image',SA_image_list_acdc[i]), os.path.join(opt.acdc_dir, pathology, 'Label_c', SA_mask_list_acdc[i]))]
-
-
-
-        # for i in range(len(LA_image_list)):
-        #     LA_filename_pairs += [(os.path.join(opt.main_dir,str(LA_image_list[i].split('_')[0]),LA_image_list[i]), os.path.join(opt.main_dir,str(LA_image_list[i].split('_')[0]),LA_mask_list[i]) )]
-        #     if not opt.no_Short_axis:
-        #         SA_filename_pairs += [(os.path.join(opt.main_dir,str(SA_image_list[i].split('_')[0]),SA_image_list[i]), os.path.join(opt.main_dir,str(SA_image_list[i].split('_')[0]),SA_mask_list[i]) )]
-        # print('the size of the image list', len(SA_image_list))
         for i in range(len(SA_image_list)):
             SA_filename_pairs += [(os.path.join(opt.image_dir,SA_image_list[i]), os.path.join(opt.label_dir, SA_mask_list[i]))]
 
-        # for i in range(len(SA_image_list_B)):
-        #     SA_filename_pairs_B += [(os.path.join(opt.image_dir_B,SA_image_list_B[i]), os.path.join(opt.label_dir_B, SA_mask_list_B[i]))]
-
-        # for i in range(len(LA_image_list)):
-        #     LA_filename_pairs += [(os.path.join(opt.main_dir, 'Image',LA_image_list[i]), os.path.join(opt.main_dir, label, LA_mask_list[i]))]
-                
-
-        # imglist = []
-        # msklist = []
-        # filename_pairs = []
-        # if not opt.VAE_altered_anatomy: # use the VAE deformed version of the labels
-        #     # imglist = SA_image_list + SA_image_list_B
-        #     # msklist = SA_mask_list + SA_mask_list_B
-        #     #filename_pairs = SA_filename_pairs + SA_filename_pairs_B
-        #     filename_pairs = SA_filename_pairs 
-
-        # if not opt.selected_labels:
-        #     # imglist = SA_image_list + SA_image_list_B
-        #     # msklist = SA_mask_list + SA_mask_list_B
-        #     #filename_pairs = SA_filename_pairs + SA_filename_pairs_B
-        #     filename_pairs = SA_filename_pairs 
-        #     print(f'exected selected_labels')
-        # else:
-            
-        #     imglist = SA_image_list 
-        #     msklist = SA_mask_list 
-        #     filename_pairs = SA_filename_pairs
-        #     self.filename_pairs = filename_pairs
-        #     self.img_list = imglist
-        #     self.msk_list = msklist
 
 
-        # if opt.what_data == 'acdc':
-        #     self.img_list = SA_image_list_acdc_all
-        #     self.msk_list = SA_mask_list_acdc_all
-        #     self.filename_pairs = SA_filename_pairs_acdc
-        # else:
-        #     self.img_list = imglist + SA_image_list_acdc_all
-        #     self.msk_list = msklist + SA_mask_list_acdc_all
-        #     self.filename_pairs = filename_pairs + SA_filename_pairs_acdc
         
         self.img_list = SA_image_list
         self.msk_list = SA_mask_list
@@ -175,7 +114,6 @@ class Mms1acdcBBDataset(BaseDataset):
         print(f'filename pairs trying to be read from options: {self.opt}')
         self.filename_pairs, _, _  = self.get_paths(self.opt)
 
-
    
 
         if opt.isTrain:
@@ -189,9 +127,9 @@ class Mms1acdcBBDataset(BaseDataset):
                 
                 cmr_tran.ToTensor(),
                 #cmr_tran.NormalizeMinMaxpercentile(range=(-1,1), percentiles=(1,99)),
-                cmr_tran.NormalizeInstance3D(),
+                #cmr_tran.NormalizeInstance3D(),  -> not approporiate to normalise every 2D slice, want normalisation over enitre 3D voxel!!!
                 # cmr_tran.NormalizeLabel(),
-                # cmr_tran.NormalizeMinMaxRange(range=(-1,1)),
+                #cmr_tran.NormalizeMinMaxpercentile3D(range=(-1,1)),
                 
                 # cmr_tran.PercentileBasedRescaling(out_min_max=(-1,1), percentiles=(1,99)),  #TODO: make sure the normalization is performed on the volume data not slice-by-slice
                 # cmr_tran.RandomElasticTorchio(num_control_points  = (8, 8, 4), max_displacement  = (20, 20, 0), p=0.5),
@@ -201,8 +139,8 @@ class Mms1acdcBBDataset(BaseDataset):
                 # cmr_tran.ClipNormalize(min_intensity= 0, max_intensity=4000),
                 # cmr_tran.ClipZscoreMinMax(min_intensity= 0, max_intensity=4000),
                 
-                # cmr_tran.RandomHorizontalFlip2D(p=0.7),
-                # cmr_tran.RandomVerticalFlip2D(p=0.7),
+                #cmr_tran.RandomHorizontalFlip2D(p=0.5),
+                #cmr_tran.RandomVerticalFlip2D(p=0.5),
                 cmr_tran.UpdateLabels(source=TR_CLASS_MAP_MMS_SRS, destination=TR_CLASS_MAP_MMS_DES)
 
             ])
@@ -215,7 +153,7 @@ class Mms1acdcBBDataset(BaseDataset):
                 # cmr_tran.RandomRotation(p=0.5),
                 
                 cmr_tran.ToTensor(),
-                cmr_tran.NormalizeMinMaxpercentile(range=(-1,1), percentiles=(1,99)),
+                #cmr_tran.NormalizeMinMaxpercentile(range=(-1,1), percentiles=(1,99)),
                 # cmr_tran.NormalizeMinMaxRange(range=(-1,1)),
                 
 
@@ -226,8 +164,8 @@ class Mms1acdcBBDataset(BaseDataset):
                 # cmr_tran.ClipScaleRange(min_intensity= 0, max_intensity=4000),
                 # cmr_tran.ClipTanh(),
                 # cmr_tran.ClipScaleRange(),
-                # cmr_tran.RandomHorizontalFlip2D(p=0.5),
-                # cmr_tran.RandomVerticalFlip2D(p=0.5),
+                #cmr_tran.RandomHorizontalFlip2D(p=0.5),
+                #cmr_tran.RandomVerticalFlip2D(p=0.5),
                 cmr_tran.UpdateLabels(source=TR_CLASS_MAP_MMS_SRS, destination=TR_CLASS_MAP_MMS_DES)
 
             ])
@@ -238,8 +176,6 @@ class Mms1acdcBBDataset(BaseDataset):
         self.cmr_dataset = cmr.MRI2DSegmentationDataset(self.filename_pairs, transform = train_transforms, slice_axis=2, canonical = False)
         
         
-        size = len(self.cmr_dataset)
-        self.dataset_size = size
 
 
     def __getitem__(self, index):

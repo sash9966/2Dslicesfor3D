@@ -13,7 +13,7 @@ import torch
 #from torch._six import string_classes, inclasses
 string_classes = str
 int_classes = int
-import matplotlib.pyplot as plt
+from util.cmr_transform import NormalizeMinMaxpercentile3D
 
 from PIL import Image
 
@@ -87,10 +87,14 @@ class SegmentationPair2D(object):
         if len(self.input_handle.shape) > 3:
             raise RuntimeError("4-dimensional volumes not supported.")
 
+
+
+        #normalise here where the entire 3D voxel is coming in!
+        
         # Sanity check for dimensions, should be the same
         input_shape, gt_shape = self.get_pair_shapes()
-        print(f'shape of the data image:{input_shape}')
-        print(f'shape of the data mask:{gt_shape}')
+        #print(f'shape of the data image:{input_shape}')
+        #print(f'shape of the data mask:{gt_shape}')
         
 
         if self.gt_handle is not None:
@@ -122,7 +126,17 @@ class SegmentationPair2D(object):
         """Return the tuble (input, ground truth) with the data content in
         numpy array."""
         cache_mode = 'fill' if self.cache else 'unchanged'
+       
         input_data = self.input_handle.get_fdata(cache_mode, dtype=np.float32)
+        # print(f'shape of image before normalisation: {input_data.shape}')
+        # print(f'min and max value of the input image: {input_data.min()}, {input_data.max()}')
+        # #transform numpy to tensor
+
+        # #input_data = NormalizeMinMaxpercentile3D()(input_data)
+        # print(f'shape of image after normalisation: {input_data.shape}')
+        # print(f'min and max value of the input image: {input_data.min()}, {input_data.max()}')
+
+
 
         # Handle unlabeled data
         if self.gt_handle is None:

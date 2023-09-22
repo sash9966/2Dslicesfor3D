@@ -37,7 +37,7 @@ print(' '.join(sys.argv))
 dataloader = data.create_dataloader(opt)
 
 # create trainer for our model
-trainer = Pix2PixTrainer(opt)
+trainer = Pix2PixTrainer(opt) 
 
 # create tool for counting iterations
 iter_counter = IterationCounter(opt, len(dataloader))
@@ -53,58 +53,32 @@ for epoch in iter_counter.training_epochs():
 
     
 
-    #print(f'lenght of dataloader: {len(dataloader)}')
+    print(f'lenght of dataloader: {len(dataloader)}')
     for i, data_i in enumerate(tqdm(dataloader, desc=f"Epoch {epoch}"), start=iter_counter.epoch_iter):
         
 
-        #random int for 0-batchSize-1
-
-
-
-
-        #First initalisation
-
-        #look at data that's loaded:
-        # print(f'i: {i}')
-        #print(f' data_i: {data_i.keys()}')
-        # print the value of the key with 'image'
-
-        # data_i dict_keys(['label', 'image', 'instance', 'dist', 'path', 'gtname', 'index', 'segpair_slice'])
-        # print(f' data_i: {data_i["image"]}')
-        # print(f' image shape: {data_i["image"].shape}')
-        # print(f'gt name is: {data_i["gtname"]}')
-        # print(f'path is: {data_i["path"]}')
-
-        #Set initial path:
-
-        #When paths change, a new 3D volume is being generated
+   
 
         iter_counter.record_one_iteration()
 
-        #print(f'type of the image, is it PIL or torch tensor: {type(data_i['label'])}') 
-        #print(f'data_i label type: {type(data_i)}')
-
-        # Training
-        # train generator
-
-        #print(f'len of dataloader: {len(dataloader.dataset)}')
-        
-        #print(f'rand_number: {rand_number}')
         reference_img = torch.empty(opt.batchSize,1,512,512)
-        for i in range(0,opt.batchSize-1):
-            rand_number = np.random.randint(0,len(dataloader.dataset)-1)
+        for bs in range(0,opt.batchSize):
+            rand_number = np.random.randint(0,len(dataloader.dataset))
+
 
             rand_data = dataloader.dataset.__getitem__(rand_number)
-            reference_img[i,:,:,:] = rand_data['image'].unsqueeze(0)
-        #print(f'shape of image: {reference_img.shape}')
-        #print(f' shape of image in data_i : {data_i["image"].shape}')
+
+            reference_img[bs,:,:,:] = rand_data['image'].unsqueeze(0)
+
         # train generator
         if i % opt.D_steps_per_G == 0:
+
             trainer.run_generator_one_step(data_i, reference_img)
 
         # train discriminator
         trainer.run_discriminator_one_step(data_i)
 
+        #Inspect the range of values in the images and reference image
 
 
         # Visualizations
