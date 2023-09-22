@@ -20,11 +20,11 @@ class BaseOptions():
 
     def initialize(self, parser):
         # experiment specifics
-        parser.add_argument('--name', type=str, default='normalisationtesting', help='name of the experiment. It decides where to store samples and models')
+        parser.add_argument('--name', type=str, default='3DPaired3DnormKernel4lr0001', help='name of the experiment. It decides where to store samples and models')
 
         parser.add_argument('--voxel_size', type=int, default=128, help='three dimentinoal voxel size, 0 for just 2D slices, 1 or more for additional slices')
 
-        parser.add_argument('--gpu_ids', type=str, default='1', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
+        parser.add_argument('--gpu_ids', type=str, default='2', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
         parser.add_argument('--checkpoints_dir', type=str, default='./checkpoints', help='models are saved here')
         parser.add_argument('--model', type=str, default='pix2pix', help='which model to use')
         parser.add_argument('--norm_G', type=str, default='spectralinstance', help='instance normalization or batch normalization')
@@ -75,7 +75,7 @@ class BaseOptions():
         parser.add_argument('--resnet_n_downsample', type=int, default=4, help='number of downsampling layers in netG')
         parser.add_argument('--resnet_n_blocks', type=int, default=2, help='number of residual blocks in the global generator network')
         parser.add_argument('--resnet_kernel_size', type=int, default=3,help='kernel size of the resnet block')
-        parser.add_argument('--resnet_initial_kernel_size', type=int, default=7, help='kernel size of the first convolution')
+        parser.add_argument('--resnet_initial_kernel_size', type=int, default=4, help='kernel size of the first convolution')
 
         # for instance-wise features
         parser.add_argument('--no_instance', action='store_true',default=True, help='if specified, do *not* add instance map as input')
