@@ -27,7 +27,7 @@ if opt.crop_size == 256:
 else:
     opt.resnet_n_downsample = 4
     opt.resnet_n_blocks = 2
-opt.use_vae = True
+#opt.use_vae = True
 
 
 # print options to help debugging
@@ -56,7 +56,10 @@ for epoch in iter_counter.training_epochs():
     print(f'lenght of dataloader: {len(dataloader)}')
     for i, data_i in enumerate(tqdm(dataloader, desc=f"Epoch {epoch}"), start=iter_counter.epoch_iter):
         
+        if(i>0):
+            losses = trainer.get_latest_losses()
 
+            print(f'losses: {losses}')
    
 
         iter_counter.record_one_iteration()
