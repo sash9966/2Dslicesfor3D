@@ -40,7 +40,7 @@ class Mms1acdcBBDataset(BaseDataset):
         #                     help='path to the directory that contains photo images')
         parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/data/alltrainingdata/data/segmentation",
                             help='path to the directory that contains label images')
-        parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/data/alltrainingdata/data/images" ,
+        parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/data/alltrainingdata/data/normimages" ,
                             help='path to the directory that contains photo images')
         # parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/data/SynthesizedTest",
         #                     help='path to the directory that contains label images')
@@ -188,7 +188,7 @@ class Mms1acdcBBDataset(BaseDataset):
                 cmr_tran.RandomRotation90(p=0.7),
                 
                 cmr_tran.ToTensor(),
-                cmr_tran.NormalizeMinMaxpercentile(range=(-1,1), percentiles=(1,99)),
+                #cmr_tran.NormalizeMinMaxpercentile(range=(-1,1), percentiles=(1,99)),
                 # cmr_tran.NormalizeLabel(),
                 # cmr_tran.NormalizeMinMaxRange(range=(-1,1)),
                 
