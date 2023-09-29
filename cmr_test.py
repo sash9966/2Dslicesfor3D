@@ -106,7 +106,7 @@ for i, data_i in enumerate(dataloader):
         #filename = f"3DImage{name}{imgNr}.nii.gz"
 
         #PKL file
-        filename = f"3DImage{name}{rest_of_path_from_ct}.nii.gz"
+        filename = f"Synthetic{rest_of_path_from_ct}.nii.gz"
 
         #save as nii.gz file
         sitk.WriteImage(img, os.path.join(output_path, filename))
