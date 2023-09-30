@@ -37,6 +37,7 @@ class MultiscaleDiscriminator(BaseNetwork):
     def __init__(self, opt):
         super().__init__()
         self.opt = opt
+        print(f'ndf in init of mutliscale??: {opt.ndf}')
 
         for i in range(opt.num_D):
             subnetD = self.create_single_discriminator(opt)
@@ -85,6 +86,7 @@ class NLayerDiscriminator(BaseNetwork):
         kw = 4
         padw = int(np.ceil((kw - 1.0) / 2))
         nf = opt.ndf
+        print(f'ndf in discrminator: {nf}')
         input_nc = self.compute_D_input_nc(opt)
 
         norm_layer = get_nonspade_norm_layer(opt, opt.norm_D)

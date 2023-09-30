@@ -19,6 +19,7 @@ import matplotlib.pyplot as plt
 
 # parse options
 opt = TrainOptions().parse()
+print(f'opt.ndf in train: {opt.ndf}')
 name_of_try = opt.name
 #BUG: Unsure if for larger crop size this should be changed, seems to work without!
 if opt.crop_size == 256:

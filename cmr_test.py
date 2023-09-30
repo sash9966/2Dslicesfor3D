@@ -17,8 +17,8 @@ ref_img = sitk.ReadImage('/home/sastocke/data/testimages/ct_1129_image.nii.gz')
 
 
 opt = TestOptions().parse()
-opt.label_dir = '/home/sastocke/data/SynthesizedTest'
-opt.image_dir = '/home/sastocke/data/testimages'
+opt.label_dir = '/home/sastocke/data/testmasks'
+opt.image_dir = '/home/sastocke/data/testnormimages'
 name = opt.name
 
 #For generation, batchSize must be 1, create one slice at a time
@@ -58,6 +58,7 @@ for i, data_i in enumerate(dataloader):
         path = data_i['gtname'][0]
         #Expected 3D
         image3D_epoch = torch.empty(512,512,221)
+        image3D_epoch[:,:,0] = generated[0,0,:,:]
 
 
 
@@ -87,7 +88,7 @@ for i, data_i in enumerate(dataloader):
         imgNr= int(re.search(r"\d{4}", path).group())
 
 
-        filename = f"3DImage{name}{imgNr}{i}.nii.gz"
+        filename = f"3DImageNROMrefImage{name}{imgNr}.nii.gz"
 
         sitk.WriteImage(img, os.path.join(opt.checkpoints_dir, opt.name,'web','images', filename))
         #nib.save(img,filename= '/home/sastocke/2Dslicesfor3D/'+filename)
