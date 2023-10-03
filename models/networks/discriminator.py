@@ -96,7 +96,8 @@ class NLayerDiscriminator(BaseNetwork):
         norm_layer = get_nonspade_norm_layer(opt, opt.norm_D)
 
         #3D 
-        if (self.opt.voxel_size >0):
+        if (self.opt.voxel_size >0 and not self.opt.is_3D):
+            print(f'using 3D discriminator for mutli slice')
             sequence = [[nn.Conv3d(input_nc, nf, kernel_size=[2,kw,kw], stride=[1,2,2], padding=[1,padw,padw]),
                      nn.LeakyReLU(0.2, False)]]
 
@@ -111,9 +112,27 @@ class NLayerDiscriminator(BaseNetwork):
 
             sequence += [[nn.Conv3d(nf, 1, kernel_size=[2,kw,kw], stride=1, padding=[1,padw,padw])]]
 
+        elif(self.opt.is_3D):
+            print(f'using full 3D')
+            sequence = [[nn.Conv3d(input_nc, nf, kernel_size=[kw,kw,kw], stride=[2,2,2], padding=[padw,padw,padw]),
+                     nn.LeakyReLU(0.2, False)]]
+
+            for n in range(1, opt.n_layers_D):
+                nf_prev = nf
+                nf = min(nf * 2, 512)
+                stride = 1 if n == opt.n_layers_D - 1 else 2
+                sequence += [[norm_layer(nn.Conv3d(nf_prev, nf, kernel_size=[kw,kw,kw],
+                                                stride=stride, padding=[padw,padw,padw])),
+                            nn.LeakyReLU(0.2, False)
+                            ]]
+
+            sequence += [[nn.Conv3d(nf, 1, kernel_size=[2,kw,kw], stride=1, padding=[1,padw,padw])]]
+
+
         
         #2D
         else:
+            print(f'using 2D discriminator')
             sequence = [[nn.Conv2d(input_nc, nf, kernel_size=kw, stride=2, padding=padw),
                         nn.LeakyReLU(0.2, False)]]
 

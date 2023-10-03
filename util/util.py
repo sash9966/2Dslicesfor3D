@@ -328,7 +328,7 @@ def tensor2label(label_tensor, n_label, imtype=np.uint8, tile=False):
             images_np = images_np[0]
             return images_np
 
-    if label_tensor.dim() == 1:
+    if label_tensor.ndim == 1:
         return np.zeros((64, 64, 3), dtype=np.uint8)
     if n_label == 0:
         return tensor2im(label_tensor, imtype)

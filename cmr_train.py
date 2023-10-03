@@ -91,6 +91,7 @@ for epoch in iter_counter.training_epochs():
             # print(f'real image shape: {data_i["image"].shape}')
 
             #plot the three images side by side
+     
             #convert to numpy array
             latest_image = latest_image.detach().cpu().numpy()
             real_image = (data_i['image']).detach().cpu().numpy()
@@ -123,7 +124,10 @@ for epoch in iter_counter.training_epochs():
 
                 # visuals = OrderedDict([('input_label', label[:,:,:,j]),
                 #     ('synthesized_image', latest_image[:,:,j,:,:]),
-                # #     ('real_image', real_image[:,:,:,j])])
+                #      ('real_image', real_image[:,:,:,j])])
+                # visuals = OrderedDict([('input_label', data_i['label'][:,:,:,j]),
+                #     ('synthesized_image', latest_image[:,:,j,:,:]),
+                #      ('real_image',data_i['real_image'][:,:,:,j])])
 
                 # visualizer.display_current_results(visuals, epoch, iter_counter.total_steps_so_far)
                 
