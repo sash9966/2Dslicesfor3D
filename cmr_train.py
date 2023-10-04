@@ -109,7 +109,7 @@ for epoch in iter_counter.training_epochs():
 
 
             #random number between 1-128
-            rand= np.random.randint(0,128)
+            rand= np.random.randint(0,128-3)
             for j in range(rand,rand+3):
                 axs[0].imshow(label[0,j,:,:])
                 axs[0].axis('off')
