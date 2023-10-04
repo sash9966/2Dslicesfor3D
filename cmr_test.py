@@ -91,7 +91,7 @@ for i, data_i in enumerate(dataloader):
         imgNr= int(re.search(r"\d{4}", path).group())
 
 
-        filename = f"3DImage{name}{imgNr}{i}.nii.gz"
+        filename = f"3DImage{name}{imgNr}.nii.gz"
 
         sitk.WriteImage(img, os.path.join(output_path, filename))
 
