@@ -41,16 +41,6 @@ model.eval()
 
 visualizer = Visualizer(opt)
 
-#target image for compression to pkl data
-# with open(target_path, 'rb') as f:
-#     target_np  =pickle.load(f)
-# target = sitk.GetImageFromArray(target_np)
-# create a webpage that summarizes the all results  
-# web_dir = os.path.join(opt.results_dir, opt.name,
-#                        '%s_%s' % (opt.phase, opt.which_epoch))
-# webpage = html.HTML(web_dir,
-#                     'Experiment = %s, Phase = %s, Epoch = %s' %
-#                     (opt.name, opt.phase, opt.which_epoch))
 
 # test
 for i, data_i in enumerate(dataloader):
@@ -60,26 +50,28 @@ for i, data_i in enumerate(dataloader):
 
     if i * opt.batchSize >= opt.how_many:
         break
-    generated = model(data_i, mode='inference')   
 
-             
+    generated = model(data_i, mode='inference')
+    
     
     if(i==0):
-        generated = model(data_i, mode='inference')
         print(f'inital')
         path = data_i['gtname'][0]
         #Expected 3D
         image3D_epoch = torch.empty(512,512,221)
+        image3D_epoch[:,:,0] = generated[0,0,:,:]
 
 
 
 
-    elif(path != data_i['gtname'][0] or (len(dataloader)-1 )== i):
+    elif(path != data_i['gtname'][0] or (len(dataloader)-1)== i):
         #save old 3D stacked, should be 221 images stacked together
         #Override for the new 3D stacked image
         print(f'new image')
         if((len(dataloader)-1 )== i):
             print(f'last image')
+            print(f'path: {path}')
+            image3D_epoch[:,:,i%221] = generated[0,0,:,:]
         # affine = np.array([[1, 0, 0, 0],
         #            [0, 1, 0, 0],
         #            [0, 0, 1, 0],
@@ -96,47 +88,25 @@ for i, data_i in enumerate(dataloader):
 
 
 
-        #Find image path number and versoin of the image
-        start_index = path.find("ct_")
-
-        if start_index != -1:
-            rest_of_path_from_ct = path[start_index:-7]
+        imgNr= int(re.search(r"\d{4}", path).group())
 
 
-        #filename = f"3DImage{name}{imgNr}.nii.gz"
+        filename = f"3DImage{name}{imgNr}{i}.nii.gz"
 
-        #PKL file
-        filename = f"Synthetic{rest_of_path_from_ct}.nii.gz"
-
-        #save as nii.gz file
-        sitk.WriteImage(img, os.path.join(output_path, filename))
-        generated.detach()
-
-        del image3D_epoch
-        del generated
-        #del data_i
-        torch.cuda.empty_cache()
-
-        #resize and save as pickle file
-        #save_as_resized_pickle(image3D_epoch, os.path.join('/scratch/users/fwkong/SharedData/SaschaCreated/Try2', filename), target)
-        
-        #nib.save(img,os.path.join('/scratch/users/fwkong/SharedData/SaschaCreated/FullNifti', filename))
+        sitk.WriteImage(img, os.path.join(opt.checkpoints_dir, opt.name,'web','images', filename))
+        #nib.save(img,filename= '/home/sastocke/2Dslicesfor3D/'+filename)
 
         # start new stacking for the next 3D image
         path = data_i['gtname'][0]
         image3D_epoch = torch.empty(512,512,221)
         generated = model(data_i, mode='inference')
         image3D_epoch[:,:,0] = generated[0,0,:,:]
-        print(f'new image added')
     elif(True):
-        print(f'adding, same path still, path:{path}')
+        print(f'adding')
         #Add to the stack of 3D
         image3D_epoch[:,:,i%221] = generated[0,0,:,:]
+    
 
-        generated.detach()
-        del generated
-        del data_i
-        gc.collect()
         
     
 
