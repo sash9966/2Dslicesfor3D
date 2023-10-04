@@ -15,8 +15,17 @@ from torch.utils.data import DataLoader
 from torchvision.transforms import Compose
 
 
-TR_CLASS_MAP_MMS_SRS= {'BG': 0,'LV_Bloodpool': 1, 'LV_Myocardium': 2,'RV_Bloodpool': 3, 'Test' : 4}
-TR_CLASS_MAP_MMS_DES= {'BG': 0,'LV_Bloodpool': 1, 'LV_Myocardium': 2,'RV_Bloodpool': 3, 'Test' : 4}
+    # LV = 1
+    # RV = 2
+    # LA = 3
+    # RA = 4
+    # Myo = 5
+    # Aorta = 6
+    # Pulminary = 7
+    # BACKGROUND = 8
+
+TR_CLASS_MAP_MMS_SRS= {'LV': 0,'RV': 1, 'LA': 2,'RA': 3, 'Myo' : 4, 'Aorta':5,'Pulminary' : 6, 'Background':7 }
+TR_CLASS_MAP_MMS_DES= {'LV': 0,'RV': 1, 'LA': 2,'RA': 3, 'Myo' : 4, 'Aorta':5,'Pulminary' : 6, 'Background':7 }
 
 class Mms1acdcBBDataset(BaseDataset):
     """ Dataset that loads images from directories
@@ -208,6 +217,7 @@ class Mms1acdcBBDataset(BaseDataset):
 
             ])
         else:
+            print('update labels called in testing')
             train_transforms = Compose([
                 # cmr_tran.Resample(self.opt.target_res,self.opt.target_res), #1.33
                 # cmr_tran.CenterCrop2D((self.opt.crop_size,self.opt.crop_size)),

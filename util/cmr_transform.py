@@ -746,6 +746,7 @@ class UpdateLabels(MTTransform):
         """
         self.dest = destination
         self.source = source
+        print(f'updating labels:')
 
     def __call__(self, sample):
         if self.source != self.dest:
