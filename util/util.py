@@ -424,7 +424,7 @@ def save_network(net, label, epoch, opt):
 def load_network(net, label, epoch, opt):
 
     #path on sherlock
-    path = '/scratch/users/fwkong/SharedData/Generators/noVAE2d200epoch'
+    path = '/scratch/users/fwkong/SharedData/Generators/2d200epoch3Dnorm'
 
     #Generator Name
     save_filename = '200_net_G.pth'
