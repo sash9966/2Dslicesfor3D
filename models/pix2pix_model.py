@@ -323,13 +323,16 @@ class Pix2PixModel(torch.nn.Module):
             with autocast():
                 fake_image = self.netG(input_semantics, z=z, input_dist=input_dist)
         if self.opt.netG=='stylespade':
+
+        
             
             #Why do we need the real image too?... for interference there should be only the semeantics..
             #Test
             fake_image = self.netG(input_semantics, real_image, input_dist=input_dist)
             #fake_image = self.netG(input_semantics, real_image, input_dist=input_dist)
 
-
+        if self.opt.netG=='spade':
+            fake_image = self.netG(input_semantics, z=z)
         else:
             fake_image = self.netG(input_semantics, z=z, input_dist=input_dist)
         

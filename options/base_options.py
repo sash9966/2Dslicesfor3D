@@ -20,7 +20,7 @@ class BaseOptions():
 
     def initialize(self, parser):
         # experiment specifics
-        parser.add_argument('--name', type=str, default='2DNormedImagesBS8', help='name of the experiment. It decides where to store samples and models')
+        parser.add_argument('--name', type=str, default='spadetesting', help='name of the experiment. It decides where to store samples and models')
 
         parser.add_argument('--gpu_ids', type=str, default='1', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
         parser.add_argument('--checkpoints_dir', type=str, default='./checkpoints', help='models are saved here')
@@ -61,7 +61,7 @@ class BaseOptions():
         parser.add_argument('--display_winsize', type=int, default=400, help='display window size')
 
         # for generator
-        parser.add_argument('--netG', type=str, default='stylespade', help='selects model to use for netG (pix2pixhd | spade | stylespade)')
+        parser.add_argument('--netG', type=str, default='spade', help='selects model to use for netG (pix2pixhd | spade | stylespade)')
         ## 
         parser.add_argument('--ngf', type=int, default=16, help='# of gen filters in first conv layer')
         parser.add_argument('--init_type', type=str, default='xavier', help='network initialization [normal|xavier|kaiming|orthogonal]')
