@@ -94,6 +94,8 @@ for i, data_i in enumerate(dataloader):
         filename = f"3DImage{name}{imgNr}{i}.nii.gz"
 
         sitk.WriteImage(img, os.path.join(output_path, filename))
+
+        
         #nib.save(img,filename= '/home/sastocke/2Dslicesfor3D/'+filename)
 
         # start new stacking for the next 3D image
