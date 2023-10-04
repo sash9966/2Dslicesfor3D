@@ -62,7 +62,7 @@ class BaseOptions():
         # for displays
         parser.add_argument('--display_winsize', type=int, default=400, help='display window size')
         # for generator
-        parser.add_argument('--netG', type=str, default='stylespade3d', help='selects model to use for netG (pix2pixhd | spade | stylespade | stylespade3d )')
+        parser.add_argument('--netG', type=str, default='spade3d', help='selects model to use for netG (pix2pixhd | spade | 3Dspade | stylespade | stylespade3d )')
         ## ngf default 16, lowering to 4 for faster loading..
         parser.add_argument('--ngf', type=int, default=16, help='# of gen filters in first conv layer')
         parser.add_argument('--init_type', type=str, default='xavier', help='network initialization [normal|xavier|kaiming|orthogonal]')

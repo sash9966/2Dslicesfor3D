@@ -398,6 +398,8 @@ class Pix2PixModel(torch.nn.Module):
             #Test
             fake_image = self.netG(input_semantics, real_image, input_dist=input_dist)
             #fake_image = self.netG(input_semantics, real_image, input_dist=input_dist)
+        if self.opt.netG == 'spade3D':
+            fake_image = self.netG(input_semantics, z=z)
 
 
         else:
