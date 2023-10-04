@@ -752,3 +752,131 @@ class StyleSPADE3DGenerator(BaseNetwork):
         ##print(f'#############################')
         #print(f'end of forward pass:')
         return x
+
+
+class SPADE3DGenerator(BaseNetwork):
+    @staticmethod
+    def modify_commandline_options(parser, is_train):
+        parser.add_argument('--num_upsampling_layers',
+                            choices=('few', 'normal', 'more', 'most', 'most512'), default='few',
+                            help="If 'more', adds upsampling layer between the two middle resnet blocks. If 'most', also add one more upsampling + resnet layer at the end of the generator")
+        parser.set_defaults(norm_G='spectralspadesyncbatch3x3')
+        return parser
+
+    def __init__(self, opt):
+
+
+        #print(f'runnning 3D SPADE gan!')
+        super().__init__()
+        self.voxel_size = opt.voxel_size
+        self.opt = opt
+        nf = opt.ngf
+        norm_layer_style = get_nonspade_norm_layer(opt, 'spectralsync_batch')
+        if self.opt.crop_size == 256:
+            in_fea = 2 * 16
+            self.opt.num_upsampling_layers = 'most'
+        if self.opt.crop_size == 512:
+            in_fea = 4 * 16
+            self.opt.num_upsampling_layers = 'most512'
+        if self.opt.crop_size == 128:
+            in_fea = 1 * 16
+        #in_fea: {in_fea}')
+        activation = nn.ReLU(False)
+      
+
+        ##   style encoder 
+
+        #Padding needs different values for 3D
+        in_kernel = opt.resnet_initial_kernel_size
+
+        #Hardcoded, not sure if 3= depth?
+
+        self.head_0 = SPADEResnetBlock(in_fea * nf//8  *3 , in_fea * nf//3, opt)
+
+        self.G_middle_0 = SPADEResnetBlock(85, in_fea * nf, opt)
+        self.G_middle_1 = SPADEResnetBlock(in_fea * nf, in_fea * nf, opt)
+
+
+        self.up = nn.Upsample(scale_factor=(2, 2, 2), mode='trilinear')
+
+        self.up_0 = SPADEResnetBlock(16 * nf, 8 * nf, opt)
+        self.up_1 = SPADEResnetBlock(8 * nf, 4 * nf, opt)
+        self.up_2 = SPADEResnetBlock(4 * nf, 2* nf, opt)
+        self.up_3 = SPADEResnetBlock(2 * nf,  nf, opt)
+
+        final_nc = nf
+
+        #Increase upsampling if you want the fake images to be generated in higher resolution -> 512
+        if self.opt.num_upsampling_layers == 'most':
+            self.up_4 = SPADEResnetBlock(2 * nf, nf, opt)
+            final_nc = nf // 2
+        
+        if self.opt.num_upsampling_layers == 'most512':
+            self.up_4 = SPADEResnetBlock(4*nf, nf*2, opt)
+            self.up_5 = SPADEResnetBlock(nf * 2,  nf//2, opt)
+            final_nc = nf // 2
+
+
+        self.conv_img = nn.Sequential(
+            nn.Conv3d(final_nc, opt.output_nc, 3, padding=1),  
+            nn.Tanh()
+        )
+
+
+    def forward(self, input, z=None):
+        #print(f'#############################')
+        #print(f'start of one forward pass:')
+        seg=input
+        
+        if self.opt.use_vae:
+            # we sample z from unit normal and reshape the tensor
+            if z is None:
+                z = torch.randn(input.size(0), self.opt.z_dim,
+                                dtype=torch.float32, device=input.get_device())
+            x = self.fc(z)
+            x = x.view(-1, 16 * self.opt.ngf, self.sh, self.sw)
+        else:
+            # we downsample segmap and run convolution
+            x = F.interpolate(seg, size=(self.sh, self.sw))
+            x = self.fc(x)
+
+        depth= seg.shape[2]
+
+        x = self.head_0(x, seg)
+
+
+        x = self.G_middle_0(x, seg)
+        #print(f'x after G_middle_0: {x.shape}')
+
+
+        x = self.up(x)
+        #print(f'x after up: {x.shape}')
+        x = self.up_0(x, seg)
+        #print(f'x after up_0: {x.shape}')
+        x = self.up(x)
+        ##print(f'x after up: {x.shape}')
+        x = self.up_1(x, seg)
+        #print(f'x after up_1: {x.shape}')
+        x = self.up(x)
+        ##print(f'x after up: {x.shape}')
+        x = self.up_2(x, seg)
+        #print(f'x after up_2: {x.shape}')
+        x = self.up(x)
+        #print(f'x after up: {x.shape}')
+        x = self.up_3(x, seg)
+        #print(f'x after up_3: {x.shape}')
+
+        if self.opt.num_upsampling_layers == 'most':
+            x = self.up(x)
+            x = self.up_4(x, seg)
+        if self.opt.num_upsampling_layers == 'most512':
+            x = self.up(x)
+            x = self.up_4(x, seg)
+            x = self.up(x)
+            x = self.up_5(x, seg)
+
+        x = self.conv_img(F.leaky_relu(x, 2e-1))
+        
+        ##print(f'#############################')
+        #print(f'end of forward pass:')
+        return x
