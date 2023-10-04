@@ -15,7 +15,7 @@ import gc
 from util.util import save_as_resized_pickle
 import pickle
 
-ref_img = sitk.ReadImage('/scratch/users/sastocke/data/data/images/ct_1127_image.nii.gz')
+ref_img = sitk.ReadImage('/scratch/users/fwkong/SharedData/Synthesized_correction/ct_1127_image.nii.gz')
 
 
 
@@ -27,7 +27,7 @@ opt = TestOptions().parse()
 #opt.image_dir = '/scratch/users/sastocke/data/data/images/ct_1001_image.nii.gz'
 #Output path to save the generated images
 output_path = opt.results_dir
-target_path = '/scratch/users/fwkong/SharedData/imageCHDcleaned_all/whole_heart_processed/pytorch/ct_1001_image_0.pkl'
+#target_path = '/scratch/users/fwkong/SharedData/imageCHDcleaned_all/whole_heart_processed/pytorch/ct_1001_image_0.pkl'
 name = opt.name
 
 #For generation, batchSize must be 1, create one slice at a time
