@@ -104,7 +104,7 @@ for epoch in iter_counter.training_epochs():
                 rand=0
 
 
-            fig, axs = plt.subplots(1, 4, figsize=(20, 5))  # Changed from (2, 3) to (1, 4)
+            fig, axs = plt.subplots(1, 3, figsize=(20, 5))  # Changed from (2, 3) to (1, 4)
 
             # Existing images
             axs[0].imshow(data_i['label'].detach().cpu()[rand,0,:,:])
