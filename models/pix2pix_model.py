@@ -249,10 +249,11 @@ class Pix2PixModel(torch.nn.Module):
         fake_image, KLD_loss, L1_loss = self.generate_fake(
             input_semantics, real_image, input_dist, compute_kld_loss=self.opt.use_vae)
         
+        G_losses['L1'] = L1_loss
 
         if self.opt.use_vae:
             G_losses['KLD'] = KLD_loss
-            G_losses['L1'] = L1_loss
+            
         # print('size of fake image is ', fake_image.shape, 'size of the real image is ', real_image.shape)
 
         pred_fake, pred_real = self.discriminate(
