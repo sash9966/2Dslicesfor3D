@@ -333,6 +333,7 @@ class Pix2PixModel(torch.nn.Module):
 
         if self.opt.netG=='spade':
             fake_image = self.netG(input_semantics, z=z)
+            L1_loss = self.L1Loss(fake_image, real_image ) * self.opt.lambda_L1
         else:
             fake_image = self.netG(input_semantics, z=z, input_dist=input_dist)
         

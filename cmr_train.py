@@ -54,7 +54,7 @@ for epoch in iter_counter.training_epochs():
     
 
     #print(f'lenght of dataloader: {len(dataloader)}')
-    for i, data_i in enumerate(tqdm(dataloader, desc=f"Epoch {epoch}"), start=iter_counter.epoch_iter):
+    for i, data_i in enumerate(tqdm(dataloader, desc=f"Epoch {epoch}, of {opt.name}"), start=iter_counter.epoch_iter):
         
 
         #random int for 0-batchSize-
