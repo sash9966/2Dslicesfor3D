@@ -179,8 +179,7 @@ class VGG19(torch.nn.Module):
         if (len(X.shape)== 4):
             X = X.unsqueeze(1)
         h_relu_sums = [0, 0, 0, 0, 0]  # to store sum of losses for each h_relu
-        print(f'shape of X: {X.shape}')
-        print(f'depth Z: {X.shape[2]}')
+
         for z in range(X.shape[2]):  # loop over the z-axis (depth dimension)
             X_slice = X[:, :, z, :, :]
             if X_slice.shape[1] == 1:  # if number of channels is less than 3:
