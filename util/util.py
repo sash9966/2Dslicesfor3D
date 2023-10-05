@@ -424,11 +424,11 @@ def save_network(net, label, epoch, opt):
 def load_network(net, label, epoch, opt):
 
     #path on sherlock
-    path = '/scratch/users/fwkong/SharedData/Generators/2d200epoch3Dnorm'
+    path = '/scratch/users/fwkong/SharedData/Generators/'
 
     #Generator Name
     save_filename = '200_net_G.pth'
-    save_path = os.path.join(path, save_filename)
+    save_path = os.path.join(path,opt.name, save_filename)
     weights = torch.load(save_path)
     net.load_state_dict(weights)
     return net
