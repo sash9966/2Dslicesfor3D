@@ -16,7 +16,7 @@ from util.util import save_as_resized_pickle
 import pickle
 
  
-ref_img = sitk.ReadImage('/scratch/users/sastocke/data/data/images/ct_1127_image.nii.gz')
+ref_img = sitk.ReadImage('/scratch/users/fwkong/SharedData/Synthesized/ct_1001_image_pred_r0.nii.gz/')
 
 
 
@@ -48,11 +48,7 @@ visualizer = Visualizer(opt)
 for i, data_i in enumerate(dataloader):
 
 
-    #print(f'i: {i}')
-
-    if i * opt.batchSize >= opt.how_many:
-        break
-
+    print(f'i: {i}')
     generated = model(data_i, mode='inference')
     
     
@@ -67,6 +63,7 @@ for i, data_i in enumerate(dataloader):
 
 
     elif(path != data_i['gtname'][0] or (len(dataloader)-1)== i):
+        print(f'i in elif, path changed or last image: i={i}')
         #save old 3D stacked, should be 221 images stacked together
         #Override for the new 3D stacked image
         print(f'new image')
@@ -79,9 +76,7 @@ for i, data_i in enumerate(dataloader):
         #            [0, 0, 1, 0],
         #            [0, 0, 0, 1]])
         #SimpleITK -> find the call to get the transformation, is in the load function, read image function
-        # affine = np.eye(4)
         image3D_epoch_np = image3D_epoch.detach().numpy()
-        # img = nib.Nifti1Image(image3D_epoch_np, affine)
         img = sitk.GetImageFromArray(image3D_epoch_np.transpose(2, 1, 0))
         img.CopyInformation(ref_img)
 
