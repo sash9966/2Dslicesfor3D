@@ -43,8 +43,8 @@ class Pix2PixModel(torch.nn.Module):
 
         # set loss functions
         if opt.isTrain:
-            self.criterionGAN = networks.GANLoss(
-                opt.gan_mode, tensor=self.FloatTensor, opt=self.opt)
+            self.criterionGAN = networks.GANLoss(opt.gan_mode, tensor=self.FloatTensor, opt=self.opt)
+            self.L1Loss = networks.L1Loss()
             self.criterionFeat = torch.nn.L1Loss()
             if not opt.no_vgg_loss:
                 self.criterionVGG = networks.VGGLoss(self.opt.gpu_ids)
@@ -56,13 +56,13 @@ class Pix2PixModel(torch.nn.Module):
     # of deep networks. We used this approach since DataParallel module
     # can't parallelize custom functions, we branch to different
     # routines based on |mode|.
-    def forward(self, data, mode, reference_img=None):
+    def forward(self, data, mode):
         input_semantics, real_image, input_dist = self.preprocess_input(data)
 
         
         if mode == 'generator':
             g_loss, generated = self.compute_generator_loss(
-                input_semantics, reference_img, input_dist)
+                input_semantics, real_image, input_dist)
             return g_loss, generated
         elif mode == 'discriminator':
             d_loss = self.compute_discriminator_loss(
@@ -200,7 +200,7 @@ class Pix2PixModel(torch.nn.Module):
                                             for_discriminator=False)
 
         if not self.opt.no_ganFeat_loss:
-            print(f'is this used')
+
             num_D = len(pred_fake)
             GAN_Feat_loss = self.FloatTensor(1).fill_(0)
             for i in range(num_D):  # for each discriminator
@@ -274,19 +274,16 @@ class Pix2PixModel(torch.nn.Module):
         
 
         L1_loss = self.criterionFeat(fake_image, real_image ) * self.opt.lambda_L1
-        print(f'checking to see if using VAE')
         if self.opt.use_vae:
             print(f'using VAE')
             
 
             if compute_kld_loss:
                 L1_loss = self.L1Loss(fake_image, real_image ) * self.opt.lambda_L1
-                print(f' L1_loss in generate fake?? {L1_loss}')
 
         assert (not compute_kld_loss) or self.opt.use_vae, \
             "You cannot compute KLD loss if opt.use_vae == False"
         
-        print(f' L1_loss in generate fake?? {L1_loss}')
         
 
         return fake_image, KLD_loss, L1_loss

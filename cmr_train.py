@@ -54,7 +54,7 @@ for epoch in iter_counter.training_epochs():
     
 
     print(f'lenght of dataloader: {len(dataloader)}')
-    for i, data_i in enumerate(tqdm(dataloader, desc=f"Epoch {epoch}"), start=iter_counter.epoch_iter):
+    for i, data_i in enumerate(tqdm(dataloader, desc=f"Epoch {epoch} for {opt.name}"), start=iter_counter.epoch_iter):
         
         if(i>0):
             losses = trainer.get_latest_losses()
@@ -64,19 +64,11 @@ for epoch in iter_counter.training_epochs():
 
         iter_counter.record_one_iteration()
 
-        reference_img = torch.empty(opt.batchSize,1,512,512)
-        for bs in range(0,opt.batchSize):
-            rand_number = np.random.randint(0,len(dataloader.dataset))
-
-
-            rand_data = dataloader.dataset.__getitem__(rand_number)
-
-            reference_img[bs,:,:,:] = rand_data['image'].unsqueeze(0)
 
         # train generator
         if i % opt.D_steps_per_G == 0:
 
-            trainer.run_generator_one_step(data_i, reference_img)
+            trainer.run_generator_one_step(data_i)
 
         # train discriminator
         trainer.run_discriminator_one_step(data_i)
@@ -126,10 +118,6 @@ for epoch in iter_counter.training_epochs():
             axs[2].imshow(data_i['image'].detach().cpu()[rand,0,:,:],cmap='gray')
             axs[2].axis('off')
             axs[2].set_title('Real Image for Discriminator')
-
-            axs[3].imshow(reference_img[rand,0,:,:], cmap='gray')  
-            axs[3].axis('off')
-            axs[3].set_title('Reference Image for Generator') 
 
             # Save the figure
             plt.savefig(f'/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/epoch{epoch}_{i}_plotdepth.png')
