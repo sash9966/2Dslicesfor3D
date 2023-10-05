@@ -398,7 +398,7 @@ class Pix2PixModel(torch.nn.Module):
             #Test
             fake_image = self.netG(input_semantics, real_image, input_dist=input_dist)
             #fake_image = self.netG(input_semantics, real_image, input_dist=input_dist)
-            L1_loss = torch.nn.L1(fake_image, real_image) * self.opt.lambda_L1
+            L1_loss = torch.nn.L1Loss(fake_image, real_image) * self.opt.lambda_L1
 
 
         else:
