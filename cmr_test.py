@@ -48,7 +48,6 @@ visualizer = Visualizer(opt)
 for i, data_i in enumerate(dataloader):
 
 
-    print(f'i: {i}')
     generated = model(data_i, mode='inference')
     
     
@@ -63,10 +62,7 @@ for i, data_i in enumerate(dataloader):
 
 
     elif(path != data_i['gtname'][0] or (len(dataloader)-1)== i):
-        print(f'i in elif, path changed or last image: i={i}')
-        print(f'shape of mask: {data_i["gt"].shape}')
-        print(f'shape of generated: {generated.shape}')
-        print(f'real image: {data_i["image"].shape}')
+
         #save old 3D stacked, should be 221 images stacked together
         #Override for the new 3D stacked image
         print(f'new image')
