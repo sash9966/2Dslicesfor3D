@@ -87,7 +87,7 @@ class Mms1acdcBBDataset(BaseDataset):
         # print(f'length of SA_mask_list: {len(SA_mask_list)}')
 
 
-
+ 
         # # assert len(SA_mask_list_B) == len(SA_image_list_B) 
         # if(opt.phase != 'test'):
 
