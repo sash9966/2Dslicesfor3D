@@ -74,7 +74,7 @@ class Mms1acdcBBDataset(BaseDataset):
 
         self.img_list += [opt.image_dir]
         self.msk_list += [opt.label_dir]
-        self.filename_pairs += [(opt.image_dir, opt.label_dir)]
+        self.filename_pairs += [(opt.image_dir, opt.label_dir)]  
 
         # if(opt.phase == 'test'):
         #     #For test we will generate images with different mask but paired with one patient image for the background.
@@ -203,6 +203,7 @@ class Mms1acdcBBDataset(BaseDataset):
                       }
 
         return input_dict
+    
     
     def __len__(self):
         return self.cmr_dataset.__len__()
