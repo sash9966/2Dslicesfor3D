@@ -46,9 +46,6 @@ for i, data_i in enumerate(dataloader):
 
     #print(f'i: {i}')
 
-    if i * opt.batchSize >= opt.how_many:
-        break
-
     generated = model(data_i, mode='inference')
     
     
