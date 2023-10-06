@@ -15,8 +15,8 @@ from torch.utils.data import DataLoader
 from torchvision.transforms import Compose
 
 
-TR_CLASS_MAP_MMS_SRS= {'BG': 0,'LV_Bloodpool': 1, 'LV_Myocardium': 2,'RV_Bloodpool': 3, 'Test' : 4}
-TR_CLASS_MAP_MMS_DES= {'BG': 0,'LV_Bloodpool': 1, 'LV_Myocardium': 2,'RV_Bloodpool': 3, 'Test' : 4}
+TR_CLASS_MAP_MMS_SRS= {'LV': 0,'RV': 1, 'LA': 2,'RA': 3, 'Myo' : 4, 'Aorta':5,'Pulminary' : 6, 'Background':7 }
+TR_CLASS_MAP_MMS_DES= {'LV': 0,'RV': 1, 'LA': 2,'RA': 3, 'Myo' : 4, 'Aorta':5,'Pulminary' : 6, 'Background':7 }
 
 class Mms1acdcBBDataset(BaseDataset):
     """ Dataset that loads images from directories
@@ -37,7 +37,7 @@ class Mms1acdcBBDataset(BaseDataset):
         # parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/2Dslicesfor3D/data/masks",
         #                     help='path to the directory that contains label images')
         # parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/2Dslicesfor3D/data/normimages" ,
-                            # help='path to the directory that contains photo images')
+        #                     help='path to the directory that contains photo images')
         parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/data/alltrainingdata/data/segmentation",
                             help='path to the directory that contains label images')
         parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/data/alltrainingdata/data/normimages" ,
