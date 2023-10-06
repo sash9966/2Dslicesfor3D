@@ -180,6 +180,7 @@ class Mms1acdcBBDataset(BaseDataset):
         
         size = len(self.cmr_dataset)
         self.dataset_size = size
+        
 
 
     def __getitem__(self, index):
@@ -204,6 +205,6 @@ class Mms1acdcBBDataset(BaseDataset):
 
         return input_dict
     
-    
+
     def __len__(self):
         return self.cmr_dataset.__len__()
