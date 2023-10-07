@@ -49,8 +49,6 @@ iter_counter = IterationCounter(opt, len(dataloader))
 # create tool for visualization
 visualizer = Visualizer(opt)
 
-
-
     
 
 for epoch in iter_counter.training_epochs():
