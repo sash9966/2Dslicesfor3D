@@ -21,6 +21,12 @@ import importlib.util
 # print(f'sys path: {sys.path}')
 # print('done')
 # import traceback
+path_to_util = "/home/users/sastocke/2Dslicesfor3D/util/util.py"
+
+spec = importlib.util.spec_from_file_location("util", path_to_util)
+util = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(util)
+
 
 
 import torch

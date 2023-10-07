@@ -16,7 +16,12 @@ import importlib
 # util = importlib.util.module_from_spec(spec)
 # spec.loader.exec_module(util)
 #import util.util as util
+#sherlock:
+path_to_util = "/home/users/sastocke/2Dslicesfor3D/util/util.py"
 
+spec = importlib.util.spec_from_file_location("util", path_to_util)
+util = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(util)
 
 class MultiscaleDiscriminator(BaseNetwork):
     @staticmethod
