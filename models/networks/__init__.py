@@ -7,11 +7,11 @@ Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses
 import importlib.util
 
 # BUG: Unsure why import fails, this fixed it, from chatgpt
-path_to_util = "/home/sastocke/2Dslicesfor3D/util/util.py"
+# path_to_util = "/home/sastocke/2Dslicesfor3D/util/util.py"
 
-spec = importlib.util.spec_from_file_location("util", path_to_util)
-util = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(util)
+# spec = importlib.util.spec_from_file_location("util", path_to_util)
+# util = importlib.util.module_from_spec(spec)
+# spec.loader.exec_module(util)
 
 # Now you can use the util module and call its functions
 
