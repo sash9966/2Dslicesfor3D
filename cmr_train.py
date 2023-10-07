@@ -23,6 +23,8 @@ except:
     print(f'ref img not around')
 # parse options
 opt = TrainOptions().parse()
+import os
+os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
 #BUG: Unsure if for larger crop size this should be changed, seems to work without!
 if opt.crop_size == 256:
