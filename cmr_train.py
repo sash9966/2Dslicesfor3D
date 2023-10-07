@@ -59,6 +59,7 @@ if(opt.checkpoints_dir.startswith('/home/users/sastocke')):
     output = f'/scratch/users/sastocke/results/{opt.name}'
     opt.checkpoints_dir = f'/scratch/users/sastocke/results'
     ref_img = sitk.ReadImage('/scratch/users/sastocke/data/data/images/ct_1001_image.nii.gz')
+    opt.gpu_ids = 0
 
     
 
