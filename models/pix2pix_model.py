@@ -320,7 +320,7 @@ class Pix2PixModel(torch.nn.Module):
         fake_image, KLD_loss, L1_loss = self.generate_fake(
             input_semantics, real_image, input_dist, compute_kld_loss=self.opt.use_vae)
 
-
+        G_losses['L1'] = L1_loss
         if self.opt.use_vae:
             G_losses['KLD'] = KLD_loss
             G_losses['L1'] = L1_loss
@@ -399,7 +399,7 @@ class Pix2PixModel(torch.nn.Module):
             #Test
             fake_image = self.netG(input_semantics, real_image, input_dist=input_dist)
             #fake_image = self.netG(input_semantics, real_image, input_dist=input_dist)
-            L1_loss = self.L1Loss(fake_image, real_image ) * self.opt.lambda_L1
+            L1_loss = self.L1Loss(fake_image[0,:,:,:], real_image ) * self.opt.lambda_L1
 
 
         else:

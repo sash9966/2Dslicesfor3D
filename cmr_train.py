@@ -60,7 +60,7 @@ for epoch in iter_counter.training_epochs():
     
 
 
-    for i, data_i in enumerate(tqdm(dataloader, desc=f"Epoch {epoch}"), start=iter_counter.epoch_iter):
+    for i, data_i in enumerate(tqdm(dataloader, desc=f"Epoch {epoch} for {opt.name}, running on GPU: {opt.gpu_ids}"), start=iter_counter.epoch_iter):
 
 
 
