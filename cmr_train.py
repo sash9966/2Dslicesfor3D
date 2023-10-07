@@ -17,7 +17,10 @@ import SimpleITK as sitk
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 from util import util
-ref_img = sitk.ReadImage('/home/sastocke/data/128resdata/image/ct_1001_image.nii.gz')
+try:
+    ref_img = sitk.ReadImage('/home/sastocke/data/128resdata/image/ct_1001_image.nii.gz')
+except:
+    print(f'ref img not around')
 # parse options
 opt = TrainOptions().parse()
 
@@ -128,19 +131,6 @@ for epoch in iter_counter.training_epochs():
                 axs[2].set_title('Real Image')
                 plt.savefig(f'{opt.checkpoints_dir}/{name_of_try}epoch{epoch}_{i}_plotdepth{j}.png')
 
-                # visuals = OrderedDict([('input_label', label[:,:,:,j]),
-                #     ('synthesized_image', latest_image[:,:,j,:,:]),
-                #      ('real_image', real_image[:,:,:,j])])
-                # visuals = OrderedDict([('input_label', data_i['label'][:,:,:,j]),
-                #     ('synthesized_image', latest_image[:,:,j,:,:]),
-                #      ('real_image',data_i['real_image'][:,:,:,j])])
-
-                # visualizer.display_current_results(visuals, epoch, iter_counter.total_steps_so_far)
-                
-                # util.save_image(latest_image_np[0,0,i,:,:], '/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/latestsynthetic_epoch{epoch}_{i}.png')
-                # util.save_image(real_image_np[0,:,:,i], '/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/real_epoch_{epoch}_{i}.png')
-                # util.save_image(label_np[0,:,:,i], '/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/label_epoch{epoch}_{i}.png')
-                
 
                 
             
