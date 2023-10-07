@@ -49,6 +49,14 @@ iter_counter = IterationCounter(opt, len(dataloader))
 # create tool for visualization
 visualizer = Visualizer(opt)
 
+# On Sherlock:
+#check if the os directory starts with sherlock, and if so, the necessary paths !
+if(opt.checkpoints_dir.startswith('/home/users/sastocke')):
+    opt.use_html = False
+    output = f'/scratch/users/sastocke/results/{opt.name}'
+    opt.checkpoints_dir = f'/scratch/users/sastocke/results'
+    ref_img = sitk.ReadImage('/scratch/users/sastocke/data/data/images/ct_1001_image.nii.gz')
+
     
 
 for epoch in iter_counter.training_epochs():
@@ -58,7 +66,7 @@ for epoch in iter_counter.training_epochs():
     
 
 
-    for i, data_i in enumerate(tqdm(dataloader, desc=f"Epoch {epoch} for {opt.name}, running on GPU: {opt.gpu_ids}"), start=iter_counter.epoch_iter):
+    for i, data_i in enumerate(tqdm(dataloader, desc=f"Epoch {epoch} for {opt.name}"), start=iter_counter.epoch_iter):
 
 
 
@@ -118,7 +126,7 @@ for epoch in iter_counter.training_epochs():
                 axs[2].imshow(real_image[0,j,:,:],cmap='gray')
                 axs[2].axis('off')
                 axs[2].set_title('Real Image')
-                plt.savefig(f'/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/epoch{epoch}_{i}_plotdepth{j}.png')
+                plt.savefig(f'{opt.checkpoints_dir}/{name_of_try}epoch{epoch}_{i}_plotdepth{j}.png')
 
                 # visuals = OrderedDict([('input_label', label[:,:,:,j]),
                 #     ('synthesized_image', latest_image[:,:,j,:,:]),
@@ -138,7 +146,7 @@ for epoch in iter_counter.training_epochs():
             
             img = sitk.GetImageFromArray(latest_image[0,0,:,:,:])
             img.CopyInformation(ref_img)
-            sitk.WriteImage(img, f'/home/sastocke/2Dslicesfor3D/{name_of_try}/web/images/latestsynthetic{epoch}.nii.gz')
+            sitk.WriteImage(img, f'{opt.checkpoints_dir}/latestsynthetic{epoch}.nii.gz')
             #Save 3D stacked image
 
 
