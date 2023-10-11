@@ -132,7 +132,8 @@ class Mms1acdcBBDataset(BaseDataset):
         #         SA_filename_pairs += [(os.path.join(opt.main_dir,str(SA_image_list[i].split('_')[0]),SA_image_list[i]), os.path.join(opt.main_dir,str(SA_image_list[i].split('_')[0]),SA_mask_list[i]) )]
         # print('the size of the image list', len(SA_image_list))
         for i in range(len(SA_image_list)):
-            SA_filename_pairs += [(os.path.join(opt.image_dir,SA_image_list[i]), os.path.join(opt.label_dir, SA_mask_list[i]))]
+            #add *10 because of random data augmentation, should generate more data!
+            SA_filename_pairs += [(os.path.join(opt.image_dir,SA_image_list[i]), os.path.join(opt.label_dir, SA_mask_list[i]))] *10
 
         # for i in range(len(SA_image_list_B)):
         #     SA_filename_pairs_B += [(os.path.join(opt.image_dir_B,SA_image_list_B[i]), os.path.join(opt.label_dir_B, SA_mask_list_B[i]))]
