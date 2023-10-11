@@ -5,7 +5,7 @@ import torchvision.transforms.functional as F
 from torchvision import transforms
 from PIL import Image
 import torch
-
+import torchio as tio
 from scipy.ndimage.interpolation import map_coordinates
 from scipy.ndimage.filters import gaussian_filter
 # import torchio as tio
@@ -266,6 +266,29 @@ class NormalizeMinMaxpercentile(MTTransform):
             'input':  torch.as_tensor(input_data),
         }
         sample.update(rdict)
+        return sample
+    
+class DataAugmentaiton3D(MTTransform):
+    def __init__(self) -> None:
+        super().__init__()
+
+    def __call__(self, sample):
+        
+        input_data = sample['input']
+        gt_data = sample['gt']
+
+        transforms = [
+        tio.RandomAffine(scales=(0.9, 1.1), degrees=(10, 10, 10)),
+        tio.RandomElasticDeformation(),
+        tio.RandomFlip(axes=(0, 1, 2)),
+        tio.ls((100, 100, 100)),
+
+]
+        transform = tio.Compose(transforms)
+        rdict={'input_data':  transform(input_data), 'gt_data': transform(gt_data)}
+
+        sample.update(rdict)
+
         return sample
 
 class NormalizeMinMaxpercentile3D(MTTransform):

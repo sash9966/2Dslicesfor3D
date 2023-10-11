@@ -35,10 +35,15 @@ class Mms1acdcBBDataset(BaseDataset):
         parser.set_defaults(add_dist=False)
         
         #For training
-        parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/data/alltrainingdata/data/segmentation",
-                            help='path to the directory that contains label images')
-        parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/data/alltrainingdata/data/images" ,
-                            help='path to the directory that contains photo images')
+        # parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/data/alltrainingdata/data/segmentation",
+        #                     help='path to the directory that contains label images')
+        # parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/data/alltrainingdata/data/images" ,
+        #                     help='path to the directory that contains photo images')
+        # parser.add_argument('--label_dir', type=str, required=False, default = "/scratch/users/sastocke/data/data/segmentation",
+        #                     help='path to the directory that contains label images')
+        # parser.add_argument('--image_dir', type=str, required=False, default ="/scratch/users/sastocke/data/data/images" ,
+        #                     help='path to the directory that contains photo images')
+        
 
        #For testing
         # parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/data/testmasks128/",
@@ -50,10 +55,10 @@ class Mms1acdcBBDataset(BaseDataset):
         # parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/2Dslicesfor3D/data/masks/" ,
         #                     help='path to the directory that contains photo images')
         
-        # parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/data/128resdata/mask/",
-        #                     help='path to the directory that contains label images')
-        # parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/data/128resdata/image/",
-        #                     help='path to the directory that contains photo images')
+        parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/data/128resdata/mask/",
+                            help='path to the directory that contains label images')
+        parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/data/128resdata/image/",
+                            help='path to the directory that contains photo images')
         
         # parser.add_argument('--label_dir_B', type=str, required=False, default = "/Users/saschastocker/Desktop/Data/StyleTransfer/segmentationTestFullResolution",
         #                     help='path to the directory that contains label images')
@@ -210,7 +215,7 @@ class Mms1acdcBBDataset(BaseDataset):
                 # cmr_tran.ClipScaleRange(),
                 # cmr_tran.ClipNormalize(min_intensity= 0, max_intensity=4000),
                 # cmr_tran.ClipZscoreMinMax(min_intensity= 0, max_intensity=4000),
-                
+                cmr_tran.DataAugmentation3D(),
                 # cmr_tran.RandomHorizontalFlip2D(p=0.7),
                 # cmr_tran.RandomVerticalFlip2D(p=0.7),
                 cmr_tran.UpdateLabels(source=TR_CLASS_MAP_MMS_SRS, destination=TR_CLASS_MAP_MMS_DES)
