@@ -281,9 +281,7 @@ class DataAugmentaiton3D(MTTransform):
         tio.RandomAffine(scales=(0.9, 1.1), degrees=(10, 10, 10)),
         tio.RandomElasticDeformation(),
         tio.RandomFlip(axes=(0, 1, 2)),
-        tio.ls((100, 100, 100)),
-
-]
+        tio.ls((100, 100, 100)),]
         transform = tio.Compose(transforms)
         rdict={'input_data':  transform(input_data), 'gt_data': transform(gt_data)}
 
