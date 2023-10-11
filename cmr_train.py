@@ -60,7 +60,7 @@ for epoch in iter_counter.training_epochs():
     
 
 
-    for i, data_i in enumerate(tqdm(dataloader, desc=f"Epoch {epoch}"), start=iter_counter.epoch_iter):
+    for i, data_i in enumerate(tqdm(dataloader, desc=f"Epoch {epoch} for {opt.name}, running on GPU: {opt.gpu_ids}"), start=iter_counter.epoch_iter):
 
 
 
@@ -91,6 +91,7 @@ for epoch in iter_counter.training_epochs():
             # print(f'real image shape: {data_i["image"].shape}')
 
             #plot the three images side by side
+     
             #convert to numpy array
             latest_image = latest_image.detach().cpu().numpy()
             real_image = (data_i['image']).detach().cpu().numpy()
@@ -108,7 +109,7 @@ for epoch in iter_counter.training_epochs():
 
 
             #random number between 1-128
-            rand= np.random.randint(0,128)
+            rand= np.random.randint(0,128-3)
             for j in range(rand,rand+3):
                 axs[0].imshow(label[0,j,:,:])
                 axs[0].axis('off')
@@ -123,7 +124,10 @@ for epoch in iter_counter.training_epochs():
 
                 # visuals = OrderedDict([('input_label', label[:,:,:,j]),
                 #     ('synthesized_image', latest_image[:,:,j,:,:]),
-                # #     ('real_image', real_image[:,:,:,j])])
+                #      ('real_image', real_image[:,:,:,j])])
+                # visuals = OrderedDict([('input_label', data_i['label'][:,:,:,j]),
+                #     ('synthesized_image', latest_image[:,:,j,:,:]),
+                #      ('real_image',data_i['real_image'][:,:,:,j])])
 
                 # visualizer.display_current_results(visuals, epoch, iter_counter.total_steps_so_far)
                 

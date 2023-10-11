@@ -128,9 +128,11 @@ class NLayerDiscriminator(BaseNetwork):
 
             sequence += [[nn.Conv3d(nf, 1, kernel_size=[2,kw,kw], stride=1, padding=[1,padw,padw])]]
 
+
         
         #2D
         else:
+            print(f'using 2D discriminator')
             sequence = [[nn.Conv2d(input_nc, nf, kernel_size=kw, stride=2, padding=padw),
                         nn.LeakyReLU(0.2, False)]]
 

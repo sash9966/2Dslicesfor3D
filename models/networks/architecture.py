@@ -154,6 +154,11 @@ class VGG19(torch.nn.Module):
         self.slice3 = torch.nn.Sequential()
         self.slice4 = torch.nn.Sequential()
         self.slice5 = torch.nn.Sequential()
+
+
+
+
+
         for x in range(2):
             self.slice1.add_module(str(x), vgg_pretrained_features[x])
         for x in range(2, 7):
@@ -170,13 +175,24 @@ class VGG19(torch.nn.Module):
 
     def forward(self, X):
         #print(f'X: {X.shape}')
+        depth = X.shape[2]
         if (len(X.shape)== 4):
             X = X.unsqueeze(1)
         h_relu_sums = [0, 0, 0, 0, 0]  # to store sum of losses for each h_relu
+
         for z in range(X.shape[2]):  # loop over the z-axis (depth dimension)
             X_slice = X[:, :, z, :, :]
             if X_slice.shape[1] == 1:  # if number of channels is less than 3:
                 X_slice = X_slice.repeat(1, 3, 1, 1)
+
+
+                #TODO: Check if this vgg makes more senes!
+            #X_slice = (X_slice + 1) / 2.0  # Adjust to [0, 1] range
+            # Apply ImageNet normalization
+            # mean = torch.tensor([0.485, 0.456, 0.406]).view(1, 3, 1, 1).to(X_slice.device)
+            # std = torch.tensor([0.229, 0.224, 0.225]).view(1, 3, 1, 1).to(X_slice.device)
+            # X_slice = (X_slice - mean) / std
+
             h_relu1 = self.slice1(X_slice)
             h_relu2 = self.slice2(h_relu1)
             h_relu3 = self.slice3(h_relu2)
@@ -189,4 +205,8 @@ class VGG19(torch.nn.Module):
             h_relu_sums[4] += h_relu5.sum()
 
         h_relu_tensors = [torch.tensor(h_relu_sum) for h_relu_sum in h_relu_sums]
+
+        ##:TODO: check if this is correct
+        #h_relu_tensors = [torch.tensor(h_relu_sum)/depth for h_relu_sum in h_relu_sums]
+        
         return h_relu_tensors   # return the output for each slice

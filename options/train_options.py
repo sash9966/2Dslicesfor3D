@@ -18,13 +18,13 @@ class TrainOptions(BaseOptions):
         parser.add_argument('--debug', action='store_true', help='only do one epoch and displays at each iteration')
         parser.add_argument('--tf_log', action='store_true', help='if specified, use tensorboard logging. Requires tensorflow installed')
         # add an option for 3D or not
-        parser.add_argument('--is_3D', action='store_true', help='if specified, use 3D model.')
+        
 
         # for training
         parser.add_argument('--continue_train', action='store_true', help='continue training: load the latest model')
         parser.add_argument('--which_epoch', type=str, default='latest', help='which epoch to load? set to latest to use latest cached model')
         #Number of it default -> 300!!! 
-        parser.add_argument('--niter', type=int, default=50, help='# of iter at starting learning rate. This is NOT the total #epochs. Totla #epochs is niter + niter_decay')
+        parser.add_argument('--niter', type=int, default=100, help='# of iter at starting learning rate. This is NOT the total #epochs. Totla #epochs is niter + niter_decay')
         
         parser.add_argument('--niter_decay', type=int, default=0, help='# of iter to linearly decay learning rate to zero')
         parser.add_argument('--optimizer', type=str, default='adam')
@@ -43,14 +43,14 @@ class TrainOptions(BaseOptions):
 
         # for discriminators
         parser.add_argument('--ndf', type=int, default=64, help='# of discrim filters in first conv layer')
-        parser.add_argument('--lambda_feat', type=float, default=10.0, help='weight for feature matching loss')
-        parser.add_argument('--lambda_vgg', type=float, default=10.0, help='weight for vgg loss')
+        parser.add_argument('--lambda_feat', type=float, default=1.0, help='weight for feature matching loss')
+        parser.add_argument('--lambda_vgg', type=float, default=1.0, help='weight for vgg loss')
         parser.add_argument('--no_ganFeat_loss', action='store_true', help='if specified, do *not* use discriminator feature matching loss')
         parser.add_argument('--no_vgg_loss', action='store_true', help='if specified, do *not* use VGG feature matching loss')
         parser.add_argument('--gan_mode', type=str, default='hinge', help='(ls|original|hinge)')
         parser.add_argument('--netD', type=str, default='multiscale', help='(n_layers|multiscale|image)')
         parser.add_argument('--lambda_kld', type=float, default=0.05)
-        parser.add_argument('--lambda_L1', type=float, default=100.0, help='weight for L1 loss')
+        parser.add_argument('--lambda_L1', type=float, default=10.0, help='weight for L1 loss')
 
         parser.add_argument('--no_extra_resblk', action='store_true', help='if specified, do *not* use VGG feature matching loss')
 

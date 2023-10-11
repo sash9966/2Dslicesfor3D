@@ -46,6 +46,7 @@ class Pix2PixModel(torch.nn.Module):
             self.criterionGAN = networks.GANLoss(
                 opt.gan_mode, tensor=self.FloatTensor, opt=self.opt)
             self.criterionFeat = torch.nn.L1Loss()
+            self.L1Loss = networks.L1Loss()
             if not opt.no_vgg_loss:
                 self.criterionVGG = networks.VGGLoss(self.opt.gpu_ids)
             if opt.use_vae:
@@ -319,7 +320,7 @@ class Pix2PixModel(torch.nn.Module):
         fake_image, KLD_loss, L1_loss = self.generate_fake(
             input_semantics, real_image, input_dist, compute_kld_loss=self.opt.use_vae)
 
-
+        G_losses['L1'] = L1_loss
         if self.opt.use_vae:
             G_losses['KLD'] = KLD_loss
             G_losses['L1'] = L1_loss
@@ -383,7 +384,7 @@ class Pix2PixModel(torch.nn.Module):
         KLD_loss = None
         L1_loss = None
         if self.opt.use_vae:
-            #rint(f'using VAE')
+            print(f'using VAE')
             z, mu, logvar, xout = self.encode_z(real_image)
             if compute_kld_loss:
                 KLD_loss = self.KLDLoss(mu, logvar) * self.opt.lambda_kld
@@ -398,6 +399,7 @@ class Pix2PixModel(torch.nn.Module):
             #Test
             fake_image = self.netG(input_semantics, real_image, input_dist=input_dist)
             #fake_image = self.netG(input_semantics, real_image, input_dist=input_dist)
+            L1_loss = self.L1Loss(fake_image[0,:,:,:], real_image ) * self.opt.lambda_L1
 
 
         else:
