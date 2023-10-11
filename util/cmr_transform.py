@@ -268,20 +268,19 @@ class NormalizeMinMaxpercentile(MTTransform):
         sample.update(rdict)
         return sample
     
-class DataAugmentaiton3D(MTTransform):
+class DataAugmentation3D(MTTransform):
     def __init__(self) -> None:
         super().__init__()
 
     def __call__(self, sample):
         
-        input_data = sample['input']
-        gt_data = sample['gt']
+        input_data = sample['input'].unsqueeze(0)
+        gt_data = sample['gt'].unsqueeze(0)
 
         transforms = [
         tio.RandomAffine(scales=(0.9, 1.1), degrees=(10, 10, 10)),
         tio.RandomElasticDeformation(),
-        tio.RandomFlip(axes=(0, 1, 2)),
-        tio.ls((100, 100, 100)),]
+        tio.RandomFlip(axes=(0, 1, 2)),]
         transform = tio.Compose(transforms)
         rdict={'input_data':  transform(input_data), 'gt_data': transform(gt_data)}
 
@@ -1080,8 +1079,8 @@ class RandomVerticalFlip2D(MTTransform):
         input_mask=input_mask.squeeze(0)
 
         rdict = {
-                'input': input_data,
-                'gt':input_mask
+                'input': input_data[0,:,:,:],
+                'gt':input_mask[0,:,:,:]
             }
         sample.update(rdict)
     return sample

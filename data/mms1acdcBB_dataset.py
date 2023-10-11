@@ -133,7 +133,7 @@ class Mms1acdcBBDataset(BaseDataset):
         # print('the size of the image list', len(SA_image_list))
         for i in range(len(SA_image_list)):
             #add *10 because of random data augmentation, should generate more data!
-            SA_filename_pairs += [(os.path.join(opt.image_dir,SA_image_list[i]), os.path.join(opt.label_dir, SA_mask_list[i]))] *10
+            SA_filename_pairs += [(os.path.join(opt.image_dir,SA_image_list[i]), os.path.join(opt.label_dir, SA_mask_list[i]))] #*10
 
         # for i in range(len(SA_image_list_B)):
         #     SA_filename_pairs_B += [(os.path.join(opt.image_dir_B,SA_image_list_B[i]), os.path.join(opt.label_dir_B, SA_mask_list_B[i]))]
@@ -216,7 +216,7 @@ class Mms1acdcBBDataset(BaseDataset):
                 # cmr_tran.ClipScaleRange(),
                 # cmr_tran.ClipNormalize(min_intensity= 0, max_intensity=4000),
                 # cmr_tran.ClipZscoreMinMax(min_intensity= 0, max_intensity=4000),
-                cmr_tran.DataAugmentation3D(),
+                #cmr_tran.DataAugmentation3D(),
                 # cmr_tran.RandomHorizontalFlip2D(p=0.7),
                 # cmr_tran.RandomVerticalFlip2D(p=0.7),
                 cmr_tran.UpdateLabels(source=TR_CLASS_MAP_MMS_SRS, destination=TR_CLASS_MAP_MMS_DES)

@@ -635,8 +635,8 @@ class StyleSPADE3DGenerator(BaseNetwork):
 
         
         #hardcoded for testing, want to use with nf to make it more flexible
-        self.fc_img = nn.Linear((975744), (in_fea * nf ))
-        self.fc_img2 = nn.Linear(in_fea * nf  ,in_fea*nf*8*8*3 ) 
+        self.fc_img = nn.Linear((in_fea *nf *27**2), (in_fea * nf *4))
+        self.fc_img2 = nn.Linear(in_fea * nf *4 ,in_fea*nf*8*8*3 ) 
 
         self.fc = nn.Conv3d(self.opt.semantic_nc, in_fea * nf*2, 3, padding=1)
 
@@ -649,10 +649,10 @@ class StyleSPADE3DGenerator(BaseNetwork):
 
         self.up = nn.Upsample(scale_factor=(2, 2, 2), mode='trilinear')
 
-        self.up_0 = SPADEResnetBlock(64 * nf, 32 * nf, opt)
-        self.up_1 = SPADEResnetBlock(32 * nf, 16 * nf, opt)
-        self.up_2 = SPADEResnetBlock(16 * nf, 8* nf, opt)
-        self.up_3 = SPADEResnetBlock(8* nf,  4*nf, opt)
+        self.up_0 = SPADEResnetBlock(16 * nf, 8 * nf, opt)
+        self.up_1 = SPADEResnetBlock(8 * nf, 4 * nf, opt)
+        self.up_2 = SPADEResnetBlock(4 * nf, 2* nf, opt)
+        self.up_3 = SPADEResnetBlock(2* nf,  nf, opt)
 
         final_nc = nf
 
