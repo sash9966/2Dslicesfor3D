@@ -560,44 +560,44 @@ def plot_viewpoint_slices(label, latest_image, real_image, epoch, i, name_of_try
 
     fig, axs = plt.subplots(3, 3, figsize=(15, 15))
 
-    # Random number between 1-128
-    rand = np.random.randint(0, 128-3)
+    # Random number inside the 128^3 voxel, trying to avoid the edges where there are no labels -> 15-115 range
+    rand = np.random.randint(15, 115)
     print(f' shape of label: {label.shape}')
     print(f' shape of latest_image: {latest_image.shape}')
     print(f' shape of real_image: {real_image.shape}')
     # Coronal Viewpoint (Original)
     for j in range(rand, rand+3):
-        axs[0, 0].imshow(label[0, j, :, :], cmap='gray')
+        axs[0, 0].imshow(label[0, j, :, :])
         axs[0, 0].axis('off')
-        axs[0, 0].set_title(f'Input Label (Coronal {j})')
+        axs[0, 0].set_title(f'Input Label (Axial {j})')
         axs[0, 1].imshow(latest_image[0, 0, j, :, :], cmap='gray')
         axs[0, 1].axis('off')
-        axs[0, 1].set_title(f'Synthesized Image (Coronal {j})')
+        axs[0, 1].set_title(f'Synthesized Image (Axial {j})')
         axs[0, 2].imshow(real_image[0, j, :, :], cmap='gray')
         axs[0, 2].axis('off')
-        axs[0, 2].set_title(f'Real Image (Coronal {j})')
+        axs[0, 2].set_title(f'Real Image (Axial {j})')
 
     # Sagittal Viewpoint
-        axs[1, 0].imshow(label[0, :, j, :], cmap='gray')
+        axs[1, 0].imshow(label[0, :, j, :])
         axs[1, 0].axis('off')
-        axs[1, 0].set_title(f'Input Label (Sagittal {j})')
+        axs[1, 0].set_title(f'Input Label (Coronal {j})')
         axs[1, 1].imshow(latest_image[0, 0, :, j, :], cmap='gray')
         axs[1, 1].axis('off')
-        axs[1, 1].set_title(f'Synthesized Image (Sagittal {j})')
+        axs[1, 1].set_title(f'Synthesized Image (Coronal {j})')
         axs[1, 2].imshow(real_image[0, :, j, :], cmap='gray')
         axs[1, 2].axis('off')
-        axs[1, 2].set_title(f'Real Image (Sagittal {j})')
+        axs[1, 2].set_title(f'Real Image (Coronal {j})')
 
     # Axial Viewpoint
-        axs[2, 0].imshow(label[0, :, :, j], cmap='gray')
+        axs[2, 0].imshow(label[0, :, :, j])
         axs[2, 0].axis('off')
-        axs[2, 0].set_title(f'Input Label (Axial {j})')
+        axs[2, 0].set_title(f'Input Label (Sagittal {j})')
         axs[2, 1].imshow(latest_image[0, 0, :, :, j], cmap='gray')
         axs[2, 1].axis('off')
-        axs[2, 1].set_title(f'Synthesized Image (Axial {j})')
+        axs[2, 1].set_title(f'Synthesized Image (Sagittal {j})')
         axs[2, 2].imshow(real_image[0, :, :, j], cmap='gray')
         axs[2, 2].axis('off')
-        axs[2, 2].set_title(f'Real Image (Axial {j})')
+        axs[2, 2].set_title(f'Real Image (Sagittal {j})')
 
     plt.tight_layout()
     plt.savefig(f'/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/epoch{epoch}_{i}_all_viewpoints.png')

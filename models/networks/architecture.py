@@ -29,7 +29,7 @@ class SPADEResnetBlock(nn.Module):
         if (opt.norm_mode == 'spade3d'): 
             self.conv_0 = nn.Conv3d(fin, fmiddle, kernel_size=3, padding=1)
             self.conv_1 = nn.Conv3d(fmiddle, fout, kernel_size=3, padding=1)
-            ##Why needed?
+            
             if self.learned_shortcut:
                 self.conv_s = nn.Conv3d(fin+add_channels, fout, kernel_size=1, bias=False)
 

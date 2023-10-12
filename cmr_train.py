@@ -88,11 +88,12 @@ for epoch in iter_counter.training_epochs():
 
                 
 
-                
-            
+            #sanity test:
+            print(f'image path: {data_i["path"][0]}')
+            print(f'gt_label path: {data_i["gtname"][0]} ')
             img = sitk.GetImageFromArray(latest_image[0,0,:,:,:])
             img.CopyInformation(ref_img)
-            sitk.WriteImage(img, f'/home/sastocke/2Dslicesfor3D/{name_of_try}/web/images/latestsynthetic{epoch}.nii.gz')
+            sitk.WriteImage(img, f'/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/latestsynthetic{epoch}.nii.gz')
             #Save 3D stacked image
 
 

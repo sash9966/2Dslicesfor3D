@@ -622,7 +622,7 @@ class StyleSPADE3DGenerator(BaseNetwork):
             mult *= 2
 
         # resnet blocks, first one takes 3D information
-        for i in range(opt.resnet_n_blocks-1):
+        for i in range(opt.resnet_n_blocks):
             #print(f'adding resnet block {i}')
             kernel_size_3d = [3,3,3]
 

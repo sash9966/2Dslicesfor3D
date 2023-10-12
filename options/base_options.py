@@ -20,7 +20,7 @@ class BaseOptions():
 
     def initialize(self, parser):
         # experiment specifics
-        parser.add_argument('--name', type=str, default='128img3DnewdiscriminatorL1lossparam10noVGGtry10xdataRotation', help='name of the experiment. It decides where to store samples and models')
+        parser.add_argument('--name', type=str, default='full3Dkernel&stride&blockstesting', help='name of the experiment. It decides where to store samples and models')
 
         parser.add_argument('--voxel_size', type=int, default=128, help='three dimentinoal voxel size, 0 for just 2D slices, 1 or more for additional slices')
         parser.add_argument('--is_3D', action='store_true', help='if specified, use 3D model.')
@@ -73,7 +73,7 @@ class BaseOptions():
 
         # for style generator
         parser.add_argument('--resnet_n_downsample', type=int, default=4, help='number of downsampling layers in netG')
-        parser.add_argument('--resnet_n_blocks', type=int, default=2, help='number of residual blocks in the global generator network')
+        parser.add_argument('--resnet_n_blocks', type=int, default=4, help='number of residual blocks in the global generator network')
         parser.add_argument('--resnet_kernel_size', type=int, default=3,help='kernel size of the resnet block')
         parser.add_argument('--resnet_initial_kernel_size', type=int, default=4, help='kernel size of the first convolution')
 
