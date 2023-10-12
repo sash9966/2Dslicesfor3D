@@ -17,7 +17,7 @@ class TrainOptions(BaseOptions):
         parser.add_argument('--no_html', action='store_true', help='do not save intermediate training results to [opt.checkpoints_dir]/[opt.name]/web/')
         parser.add_argument('--debug', action='store_true', help='only do one epoch and displays at each iteration')
         parser.add_argument('--tf_log', action='store_true', help='if specified, use tensorboard logging. Requires tensorflow installed')
-        parser.add_arugument('--multi_data',type= int, default=10, help='number of times the training data gets repeated, default is 10, dataaugmentation should be turned on!')
+        parser.add_argument('--multi_data',type= int, default=10, help='number of times the training data gets repeated, default is 10, dataaugmentation should be turned on!')
         # add an option for 3D or not
         
 
