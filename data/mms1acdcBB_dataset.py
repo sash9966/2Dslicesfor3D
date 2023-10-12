@@ -151,7 +151,7 @@ class Mms1acdcBBDataset(BaseDataset):
                 # cmr_tran.ClipScaleRange(),
                 # cmr_tran.ClipNormalize(min_intensity= 0, max_intensity=4000),
                 # cmr_tran.ClipZscoreMinMax(min_intensity= 0, max_intensity=4000),
-                cmr_tran.DataAugmentation3D(),
+                cmr_tran.DataAugmentation3D(opt),
                 # cmr_tran.RandomHorizontalFlip2D(p=0.7),
                 # cmr_tran.RandomVerticalFlip2D(p=0.7),
                 cmr_tran.UpdateLabels(source=TR_CLASS_MAP_MMS_SRS, destination=TR_CLASS_MAP_MMS_DES)

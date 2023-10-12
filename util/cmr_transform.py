@@ -10,6 +10,7 @@ from scipy.ndimage.interpolation import map_coordinates
 from scipy.ndimage.filters import gaussian_filter
 # import torchio as tio
 import nibabel as nib
+import random
 
 
 class MTTransform(object):
@@ -268,26 +269,58 @@ class NormalizeMinMaxpercentile(MTTransform):
         sample.update(rdict)
         return sample
     
+import torchio as tio
+
 class DataAugmentation3D(MTTransform):
     def __init__(self) -> None:
-        super().__init__()
+        super().__init__(opt)
+        self.opt = opt  
 
     def __call__(self, sample):
-        
         input_data = sample['input'].unsqueeze(0)
         gt_data = sample['gt'].unsqueeze(0)
 
+        # Create torchio.Subject with both input_data and gt_data
+        subject = tio.Subject(
+            input_data=tio.ScalarImage(tensor=input_data),
+            gt_data=tio.LabelMap(tensor=gt_data)
+        )
+
         transforms = [
-        tio.RandomAffine(scales=(0.9, 1.1), degrees=(10, 10, 10)),
-        tio.RandomElasticDeformation(),
-        tio.RandomFlip(axes=(0, 1, 2)),]
+            tio.RandomAffine(scales=(0.9, 1.1), degrees=(10, 10, 10)),
+            tio.RandomElasticDeformation(),
+            tio.RandomFlip(axes=(0, 1, 2))
+        ]
+
+        # RandomAffine for zooming
+        zoom_transform = tio.RandomAffine(scales=(0.9, 1.1), degrees=(10, 10, 10))
+
+        # Randomly decide whether to apply zoom to image, mask, or both
+
+        if(self.opt.random_zoom):
+            apply_to_image = random.choice([True, False])
+            apply_to_mask = random.choice([True, False])
+
+            if apply_to_image:
+                input_data = zoom_transform(input_data)
+            if apply_to_mask:
+                gt_data = zoom_transform(gt_data)
 
         transform = tio.Compose(transforms)
-        rdict={'input_data':  transform(input_data), 'gt_data': transform(gt_data)}
+        transformed_subject = transform(subject)
+
+        # Extract transformed input_data and gt_data
+        transformed_input_data = transformed_subject['input_data'][tio.DATA]
+        transformed_gt_data = transformed_subject['gt_data'][tio.DATA]
+
+        rdict = {
+            'input': transformed_input_data.squeeze(0),
+            'gt': transformed_gt_data.squeeze(0)
+        }
 
         sample.update(rdict)
-
         return sample
+
 
 class NormalizeMinMaxpercentile3D(MTTransform):
     """Normalize a 3D tensor image with percentiles.
