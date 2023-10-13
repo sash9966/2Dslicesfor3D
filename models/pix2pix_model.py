@@ -272,8 +272,8 @@ class Pix2PixModel(torch.nn.Module):
         else:
             fake_image = self.netG(input_semantics, z=z, input_dist=input_dist)
         
-
-        L1_loss = self.criterionFeat(fake_image, real_image ) * self.opt.lambda_L1
+        if(self.opt.isTrain):
+            L1_loss = self.criterionFeat(fake_image, real_image ) * self.opt.lambda_L1
         if self.opt.use_vae:
             print(f'using VAE')
             

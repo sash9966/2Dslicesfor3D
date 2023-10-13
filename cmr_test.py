@@ -17,8 +17,6 @@ ref_img = sitk.ReadImage('/home/sastocke/data/testimages/ct_1129_image.nii.gz')
 
 
 opt = TestOptions().parse()
-opt.label_dir = '/home/sastocke/data/SynthesizedTest'
-opt.image_dir = '/home/sastocke/data/testimages'
 name = opt.name
 
 #For generation, batchSize must be 1, create one slice at a time
