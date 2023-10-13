@@ -12,11 +12,18 @@ import nibabel as nib
 import re
 import SimpleITK as sitk
 
-ref_img = sitk.ReadImage('/home/sastocke/data/testimages/ct_1129_image.nii.gz')
-
-
-
 opt = TestOptions().parse()
+#Add sherlock copatibility:
+if(not os.path.isdir('/home/sastocke')):
+
+    ref_img = sitk.ReadImage('/home/users/sastocke/scratch/data/testimages/ct_1129_image.nii.gz')   
+
+elif(os.path.isdir('/home/sastocke')):
+    ref_img = sitk.ReadImage('/home/sastocke/data/testimages/ct_1129_image.nii.gz')
+
+
+
+
 
 name = opt.name
 
