@@ -459,8 +459,8 @@ class StyleSPADEGenerator(BaseNetwork):
             
         #print(f'variables for linear FC layer: in_fea: {in_fea}, nf: {nf}')
         
-        self.fc_img = nn.Linear(in_fea * nf * 16 *16 , in_fea * nf//8)
-        self.fc_img2 = nn.Linear(in_fea * nf//8, in_fea * nf * 8 * 8)
+        self.fc_img = nn.Linear(in_fea * nf * 16 *16 , in_fea * nf//4)
+        self.fc_img2 = nn.Linear(in_fea * nf//4, in_fea * nf * 8 * 8)
         self.fc = nn.Conv2d(self.opt.semantic_nc, in_fea * nf, 3, padding=1)
 
         self.head_0 = SPADEResnetBlock(in_fea * nf, in_fea * nf, opt)

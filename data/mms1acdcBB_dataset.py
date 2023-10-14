@@ -38,14 +38,14 @@ class Mms1acdcBBDataset(BaseDataset):
         #                     help='path to the directory that contains label images')
         # parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/2Dslicesfor3D/data/normimages" ,
         # #                     help='path to the directory that contains photo images')
-        # parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/data/alltrainingdata/data/segmentation",
-        #                     help='path to the directory that contains label images')
-        # parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/data/alltrainingdata/data/normimages" ,
-        #                      help='path to the directory that contains photo images')
-        parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/data/testmasks",
+        parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/data/alltrainingdata/data/segmentation",
                             help='path to the directory that contains label images')
-        parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/data/testnormimages" ,
+        parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/data/alltrainingdata/data/normimages" ,
                              help='path to the directory that contains photo images')
+        # parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/data/testmasks",
+        #                     help='path to the directory that contains label images')
+        # parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/data/testnormimages" ,
+        #                      help='path to the directory that contains photo images')
         # parser.add_argument('--label_dir', type=str, required=False, default = "/home/sastocke/data/SynthesizedTest",
         #                     help='path to the directory that contains label images')
         # parser.add_argument('--image_dir', type=str, required=False, default ="/home/sastocke/data/testimages" ,

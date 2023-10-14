@@ -34,7 +34,7 @@ class Visualizer():
             import tensorflow as tf
             self.tf = tf
             self.log_dir = os.path.join(opt.checkpoints_dir, opt.name, 'logs')
-            self.writer = tf.summary.FileWriter(self.log_dir)
+            self.writer = tf.summary.create_file_writer(self.log_dir)
 
         if self.use_html:
             self.web_dir = os.path.join(opt.checkpoints_dir, opt.name, 'web')
@@ -49,31 +49,24 @@ class Visualizer():
 
     #|visuals|: dictionary of images to display or save
     def display_current_results(self, visuals, epoch, step):
-        #print(f'#######################')   
-        #print(f'display_current_results is called')
+
 
         # convert tensors to numpy arrays
-        visuals = self.convert_visuals_to_numpy(visuals)
-                
+        #check if visuals are tensors
+        # if (visuals[''] == 'torch.Tensor'):
+        #     visuals = self.convert_visuals_to_numpy(visuals)
+        
         if self.tf_log: # show images in tensorboard output
-            img_summaries = []
-            for label, image_numpy in visuals.items():
-                # Write the image to a string
-                try:
-                    s = StringIO()
-                except:
-                    s = BytesIO()
-                if len(image_numpy.shape) >= 4:
-                    image_numpy = image_numpy[0]
-                scipy.misc.toimage(image_numpy).save(s, format="jpeg")
-                # Create an Image object
-                img_sum = self.tf.Summary.Image(encoded_image_string=s.getvalue(), height=image_numpy.shape[0], width=image_numpy.shape[1])
-                # Create a Summary value
-                img_summaries.append(self.tf.Summary.Value(tag=label, image=img_sum))
+            with self.writer.as_default():
+                for label, image_numpy in visuals.items():
+                    if len(image_numpy.shape) >= 4:
+                        image_numpy = image_numpy[0]
+                    # Convert the image to [0, 255] and uint8
+                    image_numpy = (image_numpy * 255).astype(np.uint8)
+                    # Use tf.summary.image to log the image
+                    self.tf.summary.image(label, image_numpy[np.newaxis], step=step)
+            self.writer.flush()
 
-            # Create and write Summary
-            summary = self.tf.Summary(value=img_summaries)
-            self.writer.add_summary(summary, step)
 
         if self.use_html: # save images to a html file
             for label, image_numpy in visuals.items():
@@ -89,35 +82,19 @@ class Visualizer():
                     if(image_numpy.shape[0] == image_numpy.shape[1]):
                         #show PIL image
                         pil_img = PIL.Image.fromarray(image_numpy)
-                        #pil_img.show()
-                        #save PIL image
-                        #print(f'PIL image is saved')
-                        #print(f'numpy image shape when PIL saved: {image_numpy.shape}')
-                        #print(f'image path: {img_path}')
                         pil_img.save(img_path)
-                    try:
-                        if(image_numpy.shape[1] == image_numpy.shape[2]):
-                        
-                            util.save_image(image_numpy[0,:,:], img_path)
-                    except:
-                        print(f'numpy shape recognized: {image_numpy.shape}. Image not saved')
-
+                    elif(image_numpy.shape[1] == image_numpy.shape[2]):
                         #plt.imshow(image_numpy[0,:,:])
                         #plt.title('image, probably generated or full')
                         #plt.show()
-                        # print(f' save image in  elif loop is called!')
-                        # print(f'numpy image shape: {image_numpy.shape}')
-                        # print(f'shape the way save_image is loaded: {image_numpy[0,:,:].shape}')
-                        # print(f'image path: {img_path}')
-                        
+                        util.save_image(image_numpy[0,:,:], img_path)
 
                     
                     # if len(image_numpy.shape) >= 4:
                     #     print(f' len is called!')
                     #     image_numpy = image_numpy[0,0,:,:]      
 
-                    # print(f'end of display_current_results')
-                    # print(f'#######################')   
+                    
 
             # update website
             webpage = html.HTML(self.web_dir, 'Experiment name = %s' % self.name, refresh=5)
@@ -150,10 +127,12 @@ class Visualizer():
     # errors: dictionary of error labels and values
     def plot_current_errors(self, errors, step):
         if self.tf_log:
-            for tag, value in errors.items():
-                value = value.mean().float()
-                summary = self.tf.Summary(value=[self.tf.Summary.Value(tag=tag, simple_value=value)])
-                self.writer.add_summary(summary, step)
+            with self.writer.as_default():
+                for tag, value in errors.items():
+                    value = value.mean().float().item()  # Convert tensor to a Python scalar
+                    self.tf.summary.scalar(tag, value, step=step)
+            self.writer.flush()
+
 
     # errors: same format as |errors| of plotCurrentErrors
     def print_current_errors(self, epoch, i, errors, t, fid=None):
