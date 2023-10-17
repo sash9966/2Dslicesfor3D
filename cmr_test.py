@@ -6,17 +6,42 @@ from options.test_options import TestOptions
 from models.pix2pix_model import Pix2PixModel
 from util.visualizer import Visualizer
 from util import html
-import torch
 import numpy as np
 import nibabel as nib
 import re
 import SimpleITK as sitk
 
-ref_img = sitk.ReadImage('/home/sastocke/data/testimages128/ct_1129_image.nii.gz')
+
+if (os.getcwd == "/home/sastocke/2Dslicesfor3D"):
+    opt = TestOptions().parse()
+    ref_img = sitk.ReadImage('/home/sastocke/data/testimages128/ct_1129_image.nii.gz')
+    name = opt.name
+    web_dir = os.path.join(opt.results_dir, opt.name,
+                       '%s_%s' % (opt.phase, opt.which_epoch))
 
 
-opt = TestOptions().parse()
-name = opt.name
+    webpage = html.HTML(web_dir,
+                        'Experiment = %s, Phase = %s, Epoch = %s' %
+                        (opt.name, opt.phase, opt.which_epoch))
+
+
+
+#Sherlock!
+elif (os.getcwd == "/home/users/sastocke/2Dslicesfor3D"):
+    opt = TestOptions().parse()
+    ref_img = "/scratch/users/fwkong/SharedData/Synthesized_correction_128/ct_1001_image_pred_r0.nii.gz"
+    opt.checkpoints_dir = "/scratch/users/fwkong/SharedData/Generators/"
+    name = opt.full3d
+    opt.name = "full3d"
+    opt.label_dir = "/scratch/users/fwkong/SharedData/Synthesized_correction_128"
+    opt.image_dir = "/scratch/users/sastocke/data/data/testnormimages128"
+    opt.results_dir = "/scratch/users/fwkong/SharedData/SaschaCreated/full3d"
+
+    
+
+
+
+
 opt.use_vae = False
 
 
@@ -29,13 +54,11 @@ model.eval()
 visualizer = Visualizer(opt)
 
 # create a webpage that summarizes the all results
-web_dir = os.path.join(opt.results_dir, opt.name,
-                       '%s_%s' % (opt.phase, opt.which_epoch))
 
 
-webpage = html.HTML(web_dir,
-                    'Experiment = %s, Phase = %s, Epoch = %s' %
-                    (opt.name, opt.phase, opt.which_epoch))
+#Registration try:
+
+
 print(f'length of dtalaoder: {len(dataloader)}')
 # test
 for i, data_i in enumerate(dataloader):
