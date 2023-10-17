@@ -9,7 +9,7 @@ import importlib.util
 # BUG: Unsure why import fails, this fixed it, from chatgpt
 try: path_to_util = "/home/sastocke/2Dslicesfor3D/util/util.py"
 except: path_to_util = "/home/users/sastocke/2Dslicesfor3D/util/util.py"
-"
+
 
 spec = importlib.util.spec_from_file_location("util", path_to_util)
 util = importlib.util.module_from_spec(spec)
