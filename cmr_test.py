@@ -8,7 +8,7 @@ from util.visualizer import Visualizer
 from util import html
 import numpy as np
 import nibabel as nib
-from util import extract_info_from_filename
+from util.filename import extract_filename
 import SimpleITK as sitk
 print(f'os.getcwd: {os.getcwd}')
 ospath= os.getcwd()
@@ -73,7 +73,7 @@ for i, data_i in enumerate(dataloader):
     img = sitk.GetImageFromArray(generated[0,0,:,:,:])
     img.CopyInformation(ref_img)
     path = data_i['gtname'][0]
-    imgNr, r_Nr= extract_info_from_filename(path)
+    imgNr, r_Nr= extract_filename(path)
     filename = f"3DImage{name}{imgNr}{r_Nr}Synthetic.nii.gz"
     sitk.WriteImage(img, os.path.join(opt.results_dir, filename))
     print(f'saved image: {filename}')

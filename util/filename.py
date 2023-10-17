@@ -1,6 +1,6 @@
 import re
 
-def extract_info_from_filename(path):
+def extract_filename(path):
     # Extract the number
     img_nr_match = re.search(r"\d{4}", path)
     if img_nr_match:
@@ -13,6 +13,6 @@ def extract_info_from_filename(path):
     if rotation_match:
         rotation_str = rotation_match.group()
     else:
-        raise ValueError("Could not find a rotation identifier in the filename.")
+        rotation_str  = None
     
     return img_nr, rotation_str
