@@ -10,7 +10,7 @@ import numpy as np
 import nibabel as nib
 import re
 import SimpleITK as sitk
-
+print(f'os.getcwd: {os.getcwd}')
 
 if (os.getcwd == "/home/sastocke/2Dslicesfor3D"):
     opt = TestOptions().parse()
@@ -42,7 +42,6 @@ elif (os.getcwd == "/home/users/sastocke/2Dslicesfor3D"):
 
 
 
-opt.use_vae = False
 
 
 
