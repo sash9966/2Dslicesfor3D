@@ -109,8 +109,14 @@ class Mms1acdcBBDataset(BaseDataset):
         SA_filename_pairs = [] 
         for i in range(len(SA_image_list)):
             #add *10 because of random data augmentation, should generate more data!
-            SA_filename_pairs += [(os.path.join(opt.image_dir,SA_image_list[i]), os.path.join(opt.label_dir, SA_mask_list[i]))] * opt.multi_data
+            if opt.phase == 'train':
+                SA_filename_pairs += [(os.path.join(opt.image_dir,SA_image_list[i]), os.path.join(opt.label_dir, SA_mask_list[i]))] * opt.multi_data
+            elif opt.phase == 'test':
+                SA_filename_pairs += [(os.path.join(opt.image_dir,SA_image_list[i]), os.path.join(opt.label_dir, SA_mask_list[i]))]
 
+            else:
+                print(f'phase is not set to train or test!')
+                break
         
         self.img_list = SA_image_list
         self.msk_list = SA_mask_list
@@ -126,6 +132,7 @@ class Mms1acdcBBDataset(BaseDataset):
         self.opt = opt
         #print(f'filename pairs trying to be read from options: {self.opt}')
         self.filename_pairs, _, _  = self.get_paths(self.opt)
+        print(f'opt : {opt}')
 
 
    

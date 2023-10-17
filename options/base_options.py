@@ -20,11 +20,11 @@ class BaseOptions():
 
     def initialize(self, parser):
         # experiment specifics
-        parser.add_argument('--name', type=str, default='full3Dkernel&stride&blockstesting', help='name of the experiment. It decides where to store samples and models')
+        parser.add_argument('--name', type=str, default='full3Drandomzoomtry', help='name of the experiment. It decides where to store samples and models')
 
         parser.add_argument('--voxel_size', type=int, default=128, help='three dimentinoal voxel size, 0 for just 2D slices, 1 or more for additional slices')
         parser.add_argument('--is_3D', action='store_true', help='if specified, use 3D model.')
-        parser.add_argument('--gpu_ids', type=str, default='3', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
+        parser.add_argument('--gpu_ids', type=str, default='0', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
         parser.add_argument('--checkpoints_dir', type=str, default='./checkpoints', help='models are saved here')
         parser.add_argument('--model', type=str, default='pix2pix', help='which model to use')
         parser.add_argument('--norm_G', type=str, default='spectralinstance', help='instance normalization or batch normalization')
@@ -88,7 +88,7 @@ class BaseOptions():
         parser.add_argument('--train_eval', action='store_true', help='if specified, cal the fid for each epoch.')
         parser.add_argument('--eval_dims', type=int, default=2048, help='Dimensionality of Inception features to use.')
         parser.add_argument('--eval_epoch_freq', type=int, default=10, help='frequency of cal fid score at the end of epochs')
-        # parser.add_argument('--continue_train', action='store_true', help='continue training: load the latest model')
+        parser.add_argument('--continue_train', action='store_true', help='continue training: load the latest model')
         parser.add_argument('--target_res',type=float,default=1.52,help='Resolution to which the data should resampled e.g. 1.33 for A and B 1.52 for ACDC, 1.49 for C')
         parser.add_argument('--altered_anatomy', action='store_true', help='for LGE model evaluation if you use a different anatomy, set this flag for dataloader.')
         parser.add_argument('--VAE_altered_anatomy', action='store_true', help='for LGE model evaluation if you use a different anatomy, set this flag for dataloader.')

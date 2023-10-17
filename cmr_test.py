@@ -19,9 +19,7 @@ opt = TestOptions().parse()
 name = opt.name
 opt.use_vae = False
 
-#voxel size
-vs = opt.voxel_size
-depth= 221
+
 
 dataloader = data.create_dataloader(opt)
 
@@ -53,7 +51,7 @@ for i, data_i in enumerate(dataloader):
     path = data_i['gtname'][0]
     imgNr= int(re.search(r"\d{4}", path).group())
     filename = f"3DImage{name}{imgNr}Synthetic.nii.gz"
-    sitk.WriteImage(img, os.path.join(opt.checkpoints_dir, opt.name,'web','images', filename))
+    sitk.WriteImage(img, os.path.join(opt.results_dir, filename))
     print(f'saved image: {filename}')
 
     

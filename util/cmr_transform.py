@@ -272,8 +272,7 @@ class NormalizeMinMaxpercentile(MTTransform):
 import torchio as tio
 
 class DataAugmentation3D(MTTransform):
-    def __init__(self) -> None:
-        super().__init__(opt)
+    def __init__(self,opt) -> None:
         self.opt = opt  
 
     def __call__(self, sample):

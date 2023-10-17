@@ -398,8 +398,10 @@ class Pix2PixModel(torch.nn.Module):
             #Why do we need the real image too?... for interference there should be only the semeantics..
             #Test
             fake_image = self.netG(input_semantics, real_image, input_dist=input_dist)
+            print(f'Spade used for generation')
             #fake_image = self.netG(input_semantics, real_image, input_dist=input_dist)
-            L1_loss = self.L1Loss(fake_image[0,:,:,:], real_image ) * self.opt.lambda_L1
+            if self.opt.phase == 'train':
+                L1_loss = self.L1Loss(fake_image[0,:,:,:], real_image ) * self.opt.lambda_L1
 
 
         else:
