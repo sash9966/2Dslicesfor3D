@@ -11,8 +11,9 @@ import nibabel as nib
 import re
 import SimpleITK as sitk
 print(f'os.getcwd: {os.getcwd}')
+ospath= os.getcwd()
 
-if (os.getcwd == "/home/sastocke/2Dslicesfor3D"):
+if (ospath == "/home/sastocke/2Dslicesfor3D"):
     opt = TestOptions().parse()
     ref_img = sitk.ReadImage('/home/sastocke/data/testimages128/ct_1129_image.nii.gz')
     name = opt.name
@@ -27,7 +28,7 @@ if (os.getcwd == "/home/sastocke/2Dslicesfor3D"):
 
 
 #Sherlock!
-elif (os.getcwd == "/home/users/sastocke/2Dslicesfor3D"):
+elif (ospath == "/home/users/sastocke/2Dslicesfor3D"):
     opt = TestOptions().parse()
     ref_img = "/scratch/users/fwkong/SharedData/Synthesized_correction_128/ct_1001_image_pred_r0.nii.gz"
     opt.checkpoints_dir = "/scratch/users/fwkong/SharedData/Generators/"
