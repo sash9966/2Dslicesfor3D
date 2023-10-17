@@ -1,9 +1,14 @@
 import os
 import glob
+
 import sys
-import argparse
+
+# Append the path to the Python bindings in your build directory
+sys.path.append('/home/users/sastocke/SimpleElastix/build/SimpleITK-build/Wrapping/Python')
+
 import SimpleITK as sitk
-import shutil
+
+
 
 def affine_register(ref_seg_fn, target_seg_fn, ref_img_fn, out_fn):
     ref_seg = sitk.ReadImage(ref_seg_fn)
