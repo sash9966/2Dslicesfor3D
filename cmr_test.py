@@ -65,7 +65,7 @@ print(f'length of dtalaoder: {len(dataloader)}')
 for i, data_i in enumerate(dataloader):
 
     print(f'i: {i}')
-    generated = model(data_i, mode='inference').detach().cpu()
+    generated = model(data_i, mode='inference').detach().cpu().numpy()
     
     img_path = data_i['path']
 
