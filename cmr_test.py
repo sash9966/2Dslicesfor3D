@@ -70,7 +70,7 @@ for i, data_i in enumerate(dataloader):
     img_path = data_i['path']
 
     print(f'shape of generated: {generated.shape}')
-    img = sitk.GetImageFromArray(generated[0,0,:,:,:])
+    img = sitk.GetImageFromArray(generated[0,0,:,:,:].transpose(0,2,1))
     img.CopyInformation(ref_img)
     path = data_i['gtname'][0]
     imgNr, r_Nr= extract_filename(path)
