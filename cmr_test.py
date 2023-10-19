@@ -35,7 +35,7 @@ elif (ospath == "/home/users/sastocke/2Dslicesfor3D"):
 
     opt.name = "full3d"
     opt.label_dir = "/scratch/users/fwkong/SharedData/Synthesized_correction_128"
-    opt.image_dir = "/scratch/users/sastocke/data/data/testnormimages128"
+    opt.image_dir = "/scratch/users/fwkong/SharedData/testnormimage128"
     opt.results_dir = "/scratch/users/fwkong/SharedData/SaschaCreated/full3d"
     name = opt.name
 
