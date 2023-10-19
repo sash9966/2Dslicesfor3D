@@ -38,13 +38,13 @@ def affine_register(ref_seg_fn, target_seg_fn, ref_img_fn, out_fn):
     sitk.WriteImage(warp_ref, out_fn)
 
 if __name__ == '__main__':
-    seg_ref = '/scratch/users/sastocke/data/data/testmask128/ct_1129_image.nii.gz'
-    img_ref = '/scratch/users/sastocke/data/data/testnormimages128/ct_1129_image.nii.gz'
+    seg_ref = '/scratch/users/fwkong/SharedData/testmask128/ct_1129_image.nii.gz'
+    img_ref = '/scratch/users/fwkong/SharedData/testnormimage128/ct_1129_image.nii.gz'
     seg_curr_dir = "/scratch/users/fwkong/SharedData/Synthesized_correction_128"
     out_dir = "/scratch/users/fwkong/SharedData/Synthesized_correction_128_ref"
     seg_curr = glob.glob(os.path.join(seg_curr_dir, 'ct*.nii.gz'))
     for fn in seg_curr:
-        out_fn = os.path.join(os.path.dirname(fn), 'ref_' + os.path.basename(fn).split('_')[-1])
+        out_fn = os.path.join(os.path.dirname(out_dir), 'ref_' + os.path.basename(fn).split('_')[-1])
         print(out_fn)
         if not os.path.exists(out_fn):
             affine_register(seg_ref, fn, img_ref, out_fn)
