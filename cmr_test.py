@@ -33,7 +33,7 @@ elif (ospath == "/home/users/sastocke/2Dslicesfor3D"):
     ref_img = sitk.ReadImage("/scratch/users/fwkong/SharedData/Synthesized_correction_128/ct_1001_image_pred_r0.nii.gz")
     opt.checkpoints_dir = "/scratch/users/fwkong/SharedData/Generators/"
 
-    opt.name = "full3d"
+    opt.name = "3dzoomsynthetic"
     opt.label_dir = "/scratch/users/fwkong/SharedData/Synthesized_correction_128"
     opt.image_dir = "/scratch/users/fwkong/SharedData/testnormimage128"
     opt.results_dir = "/scratch/users/fwkong/SharedData/SaschaCreated/full3d"
