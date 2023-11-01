@@ -600,5 +600,5 @@ def plot_viewpoint_slices(label, latest_image, real_image, epoch, i, name_of_try
         axs[2, 2].set_title(f'Real Image (Sagittal {j})')
 
     plt.tight_layout()
-    plt.savefig(f'/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/epoch{epoch}_{i}_all_viewpoints.png')
+    plt.savefig(f'/scratch/users/sastocke/3dtrysherlock/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/epoch{epoch}_{i}_all_viewpoints.png')
     plt.close('all')
