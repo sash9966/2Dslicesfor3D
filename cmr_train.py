@@ -9,7 +9,7 @@ from util.util import plot_viewpoint_slices
 import SimpleITK as sitk
 from tqdm import tqdm
 
-ref_img = sitk.ReadImage('/home/sastocke/data/128resdata/image/ct_1001_image.nii.gz')
+ref_img = sitk.ReadImage('/home/sastocke/data/resample128/images/ct_1001_image.nii.gz')
 # parse options
 opt = TrainOptions().parse()
 

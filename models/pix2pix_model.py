@@ -216,18 +216,6 @@ class Pix2PixModel(torch.nn.Module):
         # create one-hot label map
         label_map = data['label']
 
-        # #understand what label_map does:
-        # print(f'type of label_map: {type(label_map)}')
-        # print(f' get the tensor object inside the label map: {label_map}')
-        # print(f'label_map shape: {label_map.shape}')
-        # print(f'label map contains: {label_map.unique()}')
-
-
-        # #check out what the dist contains:
-        # print(f'dist contains: {data["dist"].unique()}')
-
-        # #check out what is in our data
-        # print(f'data contains, via keys parameter: {data.keys()}')
 
 
 
@@ -243,56 +231,6 @@ class Pix2PixModel(torch.nn.Module):
             bs,h,w,depth = label_map.size()
             input_label = self.FloatTensor(bs, nc, h, w,depth).zero_()
 
-
-        
-
-        # print(f'########################')
-        # print(f'before input_semantics')
-        # print(f'input_label has size: {input_label.shape}')
-        # print(f'label_map has size: {label_map.shape}')
-        # print(f'b: {bs}, nc: {nc}, h: {h}, w: {w}')
-        #Plot what the label map and the input label looks like:
-
-        # fig, ax = plt.subplots(1,9)
-        # #name the axis it's plotted on
-        # fig, ax = plt.subplots(3, 3, figsize=(12, 12))  # Adjust the figure size as desired
-
-        # ax[0, 0].imshow(label_map[0, 0, :, :])
-        # ax[0, 0].set_title('label_map1')
-
-        # ax[0, 1].imshow(input_label[0, 1, :, :])
-        # ax[0, 1].set_title('label_map2')
-
-        # ax[0, 2].imshow(input_label[0, 2, :, :])
-        # ax[0, 2].set_title('label_map3')
-
-        # ax[1, 0].imshow(input_label[0, 3, :, :])
-        # ax[1, 0].set_title('label_map4')
-
-        # ax[1, 1].imshow(input_label[0, 4, :, :])
-        # ax[1, 1].set_title('label_map5')
-
-        # ax[1, 2].imshow(input_label[0, 5, :, :])
-        # ax[1, 2].set_title('label_map6')
-
-        # ax[2, 0].imshow(input_label[0, 6, :, :])
-        # ax[2, 0].set_title('label_map7')
-
-        # ax[2, 1].imshow(input_label[0, 7, :, :])
-        # ax[2, 1].set_title('label_map8')
-
-        # ax[2, 2].imshow(input_label[0, 0, :, :])
-        # ax[2, 2].set_title('input_label')
-
-        # plt.tight_layout()  # Adjust the spacing between subplots
-
-        # plt.show()
-
-        # print(f'input_label has size: {input_label.shape}')
-        # print(f'label_map has size: {label_map.shape}')
-
-        # print(f'input label shape: {input_label.shape}')
-        # print(f'label map shape: {label_map.shape}')
 
 
         if(self.opt.voxel_size >= 1):
