@@ -9,25 +9,37 @@ from util.util import plot_viewpoint_slices
 import SimpleITK as sitk
 from tqdm import tqdm
 
-ref_img = sitk.ReadImage('/home/sastocke/data/resample128/images/ct_1001_image.nii.gz')
-# parse options
-opt = TrainOptions().parse()
+import os
+import html
+print(f'os.getcwd: {os.getcwd}')
+ospath= os.getcwd()
 
-#BUG: Unsure if for larger crop size this should be changed, seems to work without!
-if opt.crop_size == 256:
-     opt.resnet_n_downsample = 5
-     opt.resnet_n_blocks = 2
-else:
-    opt.resnet_n_downsample = 4
-    opt.resnet_n_blocks = 2
+if (ospath == "/home/sastocke/2Dslicesfor3D"):
+    opt = TrainOptions().parse()
+    ref_img = sitk.ReadImage('/home/sastocke/data/testimages128/ct_1129_image.nii.gz')
+    name = opt.name
+    web_dir = os.path.join(opt.results_dir, opt.name,
+                       '%s_%s' % (opt.phase, opt.which_epoch))
+
+
+    webpage = html.HTML(web_dir,
+                        'Experiment = %s, Phase = %s, Epoch = %s' %
+                        (opt.name, opt.phase, opt.which_epoch))
+
+
+
+#Sherlock!
+elif (ospath == "/home/users/sastocke/2Dslicesfor3D"):
+    opt = TrainOptions().parse()
+    ref_img = sitk.ReadImage("/scratch/users/sastocke/data/data/resample128/images/ct_1001_image.nii.gz")
+    opt.checkpoints_dir = "/scratch/users/sastocke/results"
+
+    opt.name = "3dreampletrybatchsize4"
+    opt.label_dir = "/scratch/users/sastocke/data/data/resample128/masks"
+    opt.image_dir = "/scratch/users/sastocke/data/data/resample128/images"
+    name_of_try= opt.name
+
     
-opt.use_vae = False
-
-print(f'3D testing!!')
-name_of_try = opt.name
-
-# print options to help debugging
-print(' '.join(sys.argv))
 
 # load the dataset
 dataloader = data.create_dataloader(opt)
@@ -94,7 +106,7 @@ for epoch in iter_counter.training_epochs():
             
             img = sitk.GetImageFromArray(latest_image[0,0,:,:,:])
             img.CopyInformation(ref_img)
-            sitk.WriteImage(img, f'/home/sastocke/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/latestsynthetic{epoch}.nii.gz')
+            sitk.WriteImage(img, f'{opt.checkpoints_dir}/{name_of_try}/web/images/latestsynthetic{epoch}.nii.gz')
             #Save 3D stacked image
 
 
