@@ -18,7 +18,7 @@ if (ospath == "/home/sastocke/2Dslicesfor3D"):
     opt = TrainOptions().parse()
     ref_img = sitk.ReadImage('/home/sastocke/data/testimages128/ct_1129_image.nii.gz')
     name = opt.name
-    web_dir = os.path.join(opt.results_dir, opt.name,
+    web_dir = os.path.join(opt.checkpoints_dir, opt.name,
                        '%s_%s' % (opt.phase, opt.which_epoch))
 
 
@@ -38,6 +38,13 @@ elif (ospath == "/scratch/users/sastocke/3dtrysherlock/2Dslicesfor3D"):
     opt.label_dir = "/scratch/users/sastocke/data/data/resample128/masks"
     opt.image_dir = "/scratch/users/sastocke/data/data/resample128/images"
     name_of_try= opt.name
+    web_dir = os.path.join(opt.checkpoints_dir, opt.name,
+                       '%s_%s' % (opt.phase, opt.which_epoch))
+
+
+    webpage = html.HTML(web_dir,
+                        'Experiment = %s, Phase = %s, Epoch = %s' %
+                        (opt.name, opt.phase, opt.which_epoch))
 
     
 
