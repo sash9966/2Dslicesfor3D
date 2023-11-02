@@ -34,7 +34,6 @@ elif (ospath == "/scratch/users/sastocke/3dtrysherlock/2Dslicesfor3D"):
     ref_img = sitk.ReadImage("/scratch/users/sastocke/data/data/resample128/images/ct_1001_image.nii.gz")
     opt.checkpoints_dir = "/scratch/users/sastocke/results"
 
-    opt.name = "3dreampletrybatchsize4"
     opt.label_dir = "/scratch/users/sastocke/data/data/resample128/masks"
     opt.image_dir = "/scratch/users/sastocke/data/data/resample128/images"
     name_of_try= opt.name
