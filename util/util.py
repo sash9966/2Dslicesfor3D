@@ -555,16 +555,16 @@ def remove_all_but_the_largest_connected_component(image: np.ndarray, for_which_
     return image, largest_removed, kept_size
 
 
-def plot_viewpoint_slices(label, latest_image, real_image, epoch, i, name_of_try):
+def plot_viewpoint_slices(label, latest_image, real_image, epoch, i, name_of_try,checkpoints_dir):
     """ Plot the three viewpoints of the 3D voxel data."""
 
     fig, axs = plt.subplots(3, 3, figsize=(15, 15))
 
     # Random number inside the 128^3 voxel, trying to avoid the edges where there are no labels -> 15-115 range
     rand = np.random.randint(15, 115)
-    print(f' shape of label: {label.shape}')
-    print(f' shape of latest_image: {latest_image.shape}')
-    print(f' shape of real_image: {real_image.shape}')
+    # print(f' shape of label: {label.shape}')
+    # print(f' shape of latest_image: {latest_image.shape}')
+    # print(f' shape of real_image: {real_image.shape}')
     # Coronal Viewpoint (Original)
     for j in range(rand, rand+3):
         axs[0, 0].imshow(label[0, j, :, :])
@@ -600,5 +600,5 @@ def plot_viewpoint_slices(label, latest_image, real_image, epoch, i, name_of_try
         axs[2, 2].set_title(f'Real Image (Sagittal {j})')
 
     plt.tight_layout()
-    plt.savefig(f'/scratch/users/sastocke/3dtrysherlock/2Dslicesfor3D/checkpoints/{name_of_try}/web/images/epoch{epoch}_{i}_all_viewpoints.png')
+    plt.savefig(f'{checkpoints_dir}/{name_of_try}/web/images/epoch{epoch}_{i}_all_viewpoints.png')
     plt.close('all')

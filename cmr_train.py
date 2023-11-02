@@ -15,9 +15,10 @@ print(f'os.getcwd: {os.getcwd}')
 ospath= os.getcwd()
 
 if (ospath == "/home/sastocke/2Dslicesfor3D"):
+    print(f'On local path!')
     opt = TrainOptions().parse()
     ref_img = sitk.ReadImage('/home/sastocke/data/testimages128/ct_1129_image.nii.gz')
-    name = opt.name
+    name_of_try = opt.name
     web_dir = os.path.join(opt.checkpoints_dir, opt.name,
                        '%s_%s' % (opt.phase, opt.which_epoch))
 
@@ -32,7 +33,7 @@ if (ospath == "/home/sastocke/2Dslicesfor3D"):
 elif (ospath == "/scratch/users/sastocke/3dtrysherlock/2Dslicesfor3D"):
     opt = TrainOptions().parse()
     ref_img = sitk.ReadImage("/scratch/users/sastocke/data/data/resample128/images/ct_1001_image.nii.gz")
-    opt.checkpoints_dir = "/scratch/users/sastocke/results"
+    opt.checkpoints_dir = "/scratch/users/sastocke/3dtrysherlock/2Dslicesfor3D/checkpoints"
 
     opt.label_dir = "/scratch/users/sastocke/data/data/resample128/masks"
     opt.image_dir = "/scratch/users/sastocke/data/data/resample128/images"
@@ -102,7 +103,7 @@ for epoch in iter_counter.training_epochs():
             label = (data_i['label']).detach().cpu().numpy()
 
 
-            plot_viewpoint_slices(label, latest_image, real_image,epoch,i,name_of_try)
+            plot_viewpoint_slices(label, latest_image, real_image,epoch,i,name_of_try,opt.checkpoints_dir)
 
                 
 
@@ -112,7 +113,7 @@ for epoch in iter_counter.training_epochs():
             
             img = sitk.GetImageFromArray(latest_image[0,0,:,:,:])
             img.CopyInformation(ref_img)
-            sitk.WriteImage(img, f'{opt.checkpoints_dir}/{name_of_try}/web/images/latestsynthetic{epoch}.nii.gz')
+            #sitk.WriteImage(img, f'{opt.checkpoints_dir}/{name_of_try}/web/images/latestsynthetic{epoch}.nii.gz')
             #Save 3D stacked image
 
 
