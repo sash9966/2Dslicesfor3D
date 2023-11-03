@@ -28,7 +28,7 @@ if (ospath == "/home/sastocke/2Dslicesfor3D"):
 
 
 #Sherlock!
-elif (ospath == "/scratch/users/sastocke/2Dslicesfor3D"):
+elif (ospath == "/scratch/users/sastocke/3dtrysherlock/2Dslicesfor3D"):
     opt = TestOptions().parse()
     ref_img = sitk.ReadImage("/scratch/users/fwkong/SharedData/Synthesized_correction_128/ct_1001_image_pred_r0.nii.gz")
     opt.checkpoints_dir = "/scratch/users/sastocke/3dtrysherlock/2Dslicesfor3D/checkpoints/"
