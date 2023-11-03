@@ -37,7 +37,8 @@ elif (ospath == "/scratch/users/sastocke/3dtrysherlock/2Dslicesfor3D"):
     opt.results_dir = "/scratch/users/fwkong/SharedData/3dbatch2epoch100dataaug10x"
     name = opt.name
 
-    
+
+opt.batch_Size = 1
 
 
 
