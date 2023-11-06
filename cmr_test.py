@@ -38,7 +38,7 @@ elif (ospath == "/scratch/users/sastocke/3dtrysherlock/2Dslicesfor3D"):
     name = opt.name
 
 
-opt.batch_Size = 1
+opt.batchSize = 1
 
 
 
