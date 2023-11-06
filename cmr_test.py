@@ -30,10 +30,10 @@ if (ospath == "/home/sastocke/2Dslicesfor3D"):
 #Sherlock!
 elif (ospath == "/scratch/users/sastocke/3dtrysherlock/2Dslicesfor3D"):
     opt = TestOptions().parse()
-    ref_img = sitk.ReadImage("/scratch/users/sastocke/data/data/testresample128/ct_1129_image.nii.gz")
+    ref_img = sitk.ReadImage("/scratch/users/sastocke/data/data/testresample128normed/ct_1129_image.nii.gz")
     opt.checkpoints_dir = "/scratch/users/sastocke/3dtrysherlock/2Dslicesfor3D/checkpoints/"
     opt.label_dir = "/scratch/users/fwkong/SharedData/Synthesized_correction_128"
-    opt.image_dir = "/scratch/users/sastocke/data/data/testresample128"
+    opt.image_dir = "/scratch/users/sastocke/data/data/testresample128normed"
     opt.results_dir = "/scratch/users/fwkong/SharedData/3dbatch2epoch100dataaug10x"
     name = opt.name
 
