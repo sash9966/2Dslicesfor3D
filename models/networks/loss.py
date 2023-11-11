@@ -7,6 +7,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from models.networks.architecture import VGG19
+from models.networks.architecture import Modified3DUNet
+import os
 
 
 # Defines the GAN loss which uses either LSGAN or the regular GAN.
@@ -139,4 +141,37 @@ class L1Loss(nn.Module):
         # print(f' fake[0,:,:,:] shape {fake[0,:,:,:].shape}')
         # print(f' real[0,:,:,:] shape {real[0,:,:,:].shape}')
         return self.criterion(fake[0,:,:,:], real[0,:,:,:])
+    
+
+class Modified3DUNetLoss(nn.Module):
+    def __init__(self, in_channels, n_classes, base_n_filter, gpu_ids, pretrained_model_path=None):
+        super(Modified3DUNetLoss, self).__init__()
+        self.unet = Modified3DUNet(in_channels, n_classes, base_n_filter)
+
+        # Load pre-trained weights if a path is provided
+        if pretrained_model_path is not None:
+            #self.unet.load_state_dict(torch.load(pretrained_model_path))
+
+            checkpoint_folder = os.path.join(pretrained_model_path,'net_150.pt')
+            self.unet.load_state_dict(torch.load(checkpoint_folder, map_location=torch.device('cpu'))['state_dict'])
+            
+
+        # Freeze the Modified3DUNet model
+        for param in self.unet.parameters():
+            param.requires_grad = False
+
+        # Move the model to GPU if available
+        if torch.cuda.is_available():
+            self.unet = self.unet.cuda()
+        else:
+            self.unet = self.unet.cpu()
+
+        self.criterion = nn.MSELoss()  # Using Mean Squared Error Loss
+
+    def forward(self, fake,real):
+        real = real.unsqueeze(0)
+        real_unet = self.unet(real)
+        fake_unet = self.unet(fake)
+        loss = self.criterion(real_unet, fake_unet.detach())
+        return loss
 

@@ -6,7 +6,6 @@ Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses
 import torch
 import models.networks as networks
 import util.util as util
-import random
 import matplotlib
 
 matplotlib.use('Agg')
@@ -47,10 +46,13 @@ class Pix2PixModel(torch.nn.Module):
                 opt.gan_mode, tensor=self.FloatTensor, opt=self.opt)
             self.criterionFeat = torch.nn.L1Loss()
             self.L1Loss = networks.L1Loss()
+            if opt.unet_loss: 
+                self.criterionUnet = networks.Modified3DUNetLoss(in_channels=1, n_classes=8, base_n_filter=16, gpu_ids= self.opt.gpu_ids, pretrained_model_path='/home/sastocke/2Dslicesfor3D/models/PretrainedUnet/')
+
             if not opt.no_vgg_loss:
                 self.criterionVGG = networks.VGGLoss(self.opt.gpu_ids)
             if opt.use_vae:
-                self.KLDLoss = networks.KLDLoss()
+                self.KLDLoss = networks.KLDLoss() 
                 self.L1Loss = networks.L1Loss()
 
     # Entry point for all calls involving forward pass
@@ -281,6 +283,10 @@ class Pix2PixModel(torch.nn.Module):
                         pred_fake[i][j], pred_real[i][j].detach())
                     GAN_Feat_loss += unweighted_loss * self.opt.lambda_feat / num_D
             G_losses['GAN_Feat'] = GAN_Feat_loss
+
+        if self.opt.unet_loss:
+            G_losses ['UNET'] = self.criterionUnet(fake_image,real_image) * self.opt.lambda_unet
+
 
         if not self.opt.no_vgg_loss:
             if self.amp:
