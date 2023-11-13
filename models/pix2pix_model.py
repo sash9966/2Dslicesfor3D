@@ -290,7 +290,7 @@ class Pix2PixModel(torch.nn.Module):
             for i in range(bs):
                 print(f'fake image shape: {fake_image.shape}')
                 print(f'real image shape: {real_image.shape}')
-                fake_img_i = fake_image[i,:,:,:,:].unsqueeze(1)
+                fake_img_i = fake_image[i,:,:,:,:].unsqueeze(0)
                 real_img_i = real_image[i,:,:,:].unsqueeze(0)
                 print(f'fake image shape after unsqueeze and i selection: {fake_img_i.shape}')
                 print(f'real image shape after unsqueeze and i selection {real_img_i.shape}')
