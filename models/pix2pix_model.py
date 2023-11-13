@@ -47,7 +47,7 @@ class Pix2PixModel(torch.nn.Module):
             self.criterionFeat = torch.nn.L1Loss()
             self.L1Loss = networks.L1Loss()
             if opt.unet_loss: 
-                self.criterionUnet = networks.Modified3DUNetLoss(in_channels=self.opt.batchSize, n_classes=8, base_n_filter=16, gpu_ids= self.opt.gpu_ids, pretrained_model_path=self.opt.unet_path)
+                self.criterionUnet = networks.Modified3DUNetLoss(in_channels=1, n_classes=8, base_n_filter=16, gpu_ids= self.opt.gpu_ids, pretrained_model_path=self.opt.unet_path)
 
             if not opt.no_vgg_loss:
                 self.criterionVGG = networks.VGGLoss(self.opt.gpu_ids)
@@ -285,7 +285,13 @@ class Pix2PixModel(torch.nn.Module):
             G_losses['GAN_Feat'] = GAN_Feat_loss
 
         if self.opt.unet_loss:
-            G_losses ['UNET'] = self.criterionUnet(fake_image,real_image) * self.opt.lambda_unet
+            bs = self.opt.batchSize
+            unet_loss =0
+            for i in range(bs):
+                fake_img_i = fake_image[:,i,:,:,:].unsqueeze(1)
+                real_img_i = real_image[:,i,:,:,:].unsqueeze(1)
+                unet_loss += self.criterionUnet(fake_img_i,real_img_i) * self.opt.lambda_unet
+                G_losses ['UNET'] = unet_loss/bs
 
 
         if not self.opt.no_vgg_loss:
