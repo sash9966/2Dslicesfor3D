@@ -47,7 +47,7 @@ class Pix2PixModel(torch.nn.Module):
             self.criterionFeat = torch.nn.L1Loss()
             self.L1Loss = networks.L1Loss()
             if opt.unet_loss: 
-                self.criterionUnet = networks.Modified3DUNetLoss(in_channels=1, n_classes=8, base_n_filter=16, gpu_ids= self.opt.gpu_ids, pretrained_model_path=self.opt.unet_path)
+                self.criterionUnet = networks.Modified3DUNetLoss(in_channels=self.opt.batchSize, n_classes=8, base_n_filter=16, gpu_ids= self.opt.gpu_ids, pretrained_model_path=self.opt.unet_path)
 
             if not opt.no_vgg_loss:
                 self.criterionVGG = networks.VGGLoss(self.opt.gpu_ids)
