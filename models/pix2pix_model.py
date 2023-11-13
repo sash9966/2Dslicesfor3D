@@ -288,12 +288,12 @@ class Pix2PixModel(torch.nn.Module):
             bs = self.opt.batchSize
             unet_loss =0
             for i in range(bs):
-                # print(f'fake image shape: {fake_image.shape}')
-                # print(f'real image shape: {real_image.shape}')
-                fake_img_i = fake_image[:,i,:,:,:].unsqueeze(1)
+                print(f'fake image shape: {fake_image.shape}')
+                print(f'real image shape: {real_image.shape}')
+                fake_img_i = fake_image[i,:,:,:,:].unsqueeze(1)
                 real_img_i = real_image[i,:,:,:].unsqueeze(0)
-                # print(f'fake image shape after unsqueeze and i selection: {fake_img_i.shape}')
-                # print(f'real image shape after unsqueeze and i selection {real_img_i.shape}')
+                print(f'fake image shape after unsqueeze and i selection: {fake_img_i.shape}')
+                print(f'real image shape after unsqueeze and i selection {real_img_i.shape}')
 
                 unet_loss += self.criterionUnet(fake_img_i,real_img_i) * self.opt.lambda_unet
                 G_losses ['UNET'] = unet_loss/bs
