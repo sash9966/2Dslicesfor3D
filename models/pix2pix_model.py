@@ -243,8 +243,8 @@ class Pix2PixModel(torch.nn.Module):
         else:
             input_semantics = input_label.scatter_(1, label_map.clamp(max=7), 1.0)
         
-        if self.opt.no_BG:
-            input_semantics[:,0,:,:]= 0
+        # if self.opt.no_BG:
+        #     input_semantics[:,0,:,:]= 0
 
         # concatenate instance map if it exists
         if not self.opt.no_instance:

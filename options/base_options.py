@@ -20,11 +20,11 @@ class BaseOptions():
 
     def initialize(self, parser):
         # experiment specifics
-        parser.add_argument('--name', type=str, default='UnetlossSherlockBS2Epoch100DataX10', help='name of the experiment. It decides where to store samples and models')
+        parser.add_argument('--name', type=str, default='finaltesting', help='name of the experiment. It decides where to store samples and models')
 
         parser.add_argument('--voxel_size', type=int, default=128, help='three dimentinoal voxel size, 0 for just 2D slices, 1 or more for additional slices')
         parser.add_argument('--is_3D', action='store_true', help='if specified, use 3D model.')
-        parser.add_argument('--gpu_ids', type=str, default='0', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
+        parser.add_argument('--gpu_ids', type=str, default='1', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
         parser.add_argument('--checkpoints_dir', type=str, default='./checkpoints', help='models are saved here')
         parser.add_argument('--model', type=str, default='pix2pix', help='which model to use')
         parser.add_argument('--norm_G', type=str, default='spectralinstance', help='instance normalization or batch normalization')
@@ -33,7 +33,7 @@ class BaseOptions():
         parser.add_argument('--phase', type=str, default='train', help='train, val, test, etc')
 
         # input/output sizes
-        parser.add_argument('--batchSize', type=int, default=2, help='input batch size')
+        parser.add_argument('--batchSize', type=int, default=1, help='input batch size')
         parser.add_argument('--preprocess_mode', type=str, default='scale_width_and_crop', help='scaling and cropping of images at load time.', choices=("resize_and_crop", "crop", "scale_width", "scale_width_and_crop", "scale_shortside", "scale_shortside_and_crop", "fixed", "none"))
         parser.add_argument('--load_size', type=int, default=256, help='Scale images to this size. The final image will be cropped to --crop_size.')
         parser.add_argument('--crop_size', type=int, default=128, help='Crop to the width of crop_size (after initially scaling the images to load_size.)')
@@ -73,7 +73,7 @@ class BaseOptions():
 
         # for style generator
         parser.add_argument('--resnet_n_downsample', type=int, default=4, help='number of downsampling layers in netG')
-        parser.add_argument('--resnet_n_blocks', type=int, default=2, help='number of residual blocks in the global generator network')
+        parser.add_argument('--resnet_n_blocks', type=int, default=4, help='number of residual blocks in the global generator network')
         parser.add_argument('--resnet_kernel_size', type=int, default=3,help='kernel size of the resnet block')
         parser.add_argument('--resnet_initial_kernel_size', type=int, default=4, help='kernel size of the first convolution')
 
@@ -86,20 +86,7 @@ class BaseOptions():
         # for training and test
         parser.add_argument('--use_amp', action='store_true')
         parser.add_argument('--train_eval', action='store_true', help='if specified, cal the fid for each epoch.')
-        parser.add_argument('--eval_dims', type=int, default=2048, help='Dimensionality of Inception features to use.')
-        parser.add_argument('--eval_epoch_freq', type=int, default=10, help='frequency of cal fid score at the end of epochs')
         parser.add_argument('--continue_train', action='store_true', help='continue training: load the latest model')
-        parser.add_argument('--target_res',type=float,default=1.52,help='Resolution to which the data should resampled e.g. 1.33 for A and B 1.52 for ACDC, 1.49 for C')
-        parser.add_argument('--altered_anatomy', action='store_true', help='for LGE model evaluation if you use a different anatomy, set this flag for dataloader.')
-        parser.add_argument('--VAE_altered_anatomy', action='store_true', help='for LGE model evaluation if you use a different anatomy, set this flag for dataloader.')
-
-        parser.add_argument('--no_BG', action='store_true', help=' remove the condition on the background label in the preprocess data function.')
-
-        parser.add_argument('--netE', type=str, default='conv', help='selects model to use for netG (conv | conv64)')
-        parser.add_argument('--vendor', type=str, default='Philips_SA', help='selects a vendor for training [Philips_LA, Philips_SA, Siemens_LA, Siemens_SA]')
-        parser.add_argument('--no_Short_axis', action='store_true', help=' not loading short axis data in the data loader.')
-        parser.add_argument('--selected_labels', action='store_true',help='continue training: load the latest model')
-        parser.add_argument('--what_data', type=str, default='all', help='selects a vendor for training all, acdc')
 
 
 
