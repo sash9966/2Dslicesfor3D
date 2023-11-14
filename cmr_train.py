@@ -33,6 +33,7 @@ if (ospath == "/home/sastocke/2Dslicesfor3D"):
 elif (ospath == "/scratch/users/sastocke/3dtrysherlock/2Dslicesfor3D"):
     opt = TrainOptions().parse()
     ref_img = sitk.ReadImage("/scratch/users/sastocke/data/data/resample128/images/ct_1001_image.nii.gz")
+    opt.name = 'UnetlossSherlockBS2Epoch100DataX10'
     opt.checkpoints_dir = "/scratch/users/sastocke/3dtrysherlock/2Dslicesfor3D/checkpoints"
 
     opt.label_dir = "/scratch/users/sastocke/data/data/resample128/masks"
