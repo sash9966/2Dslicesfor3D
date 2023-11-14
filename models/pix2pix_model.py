@@ -44,6 +44,7 @@ class Pix2PixModel(torch.nn.Module):
         if opt.isTrain:
             self.criterionGAN = networks.GANLoss(
                 opt.gan_mode, tensor=self.FloatTensor, opt=self.opt)
+            self.FID_loss  = networks.FIDLoss()
             self.criterionFeat = torch.nn.L1Loss()
             self.L1Loss = networks.L1Loss()
             if opt.unet_loss: 
@@ -54,6 +55,7 @@ class Pix2PixModel(torch.nn.Module):
             if opt.use_vae:
                 self.KLDLoss = networks.KLDLoss() 
                 self.L1Loss = networks.L1Loss()
+            
 
     # Entry point for all calls involving forward pass
     # of deep networks. We used this approach since DataParallel module

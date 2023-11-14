@@ -5,6 +5,7 @@ Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses
 
 from models.networks.sync_batchnorm import DataParallelWithCallback
 from models.pix2pix_model import Pix2PixModel
+from models.networks.loss import FIDLoss
 try:
     from torch.cuda.amp import autocast as autocast, GradScaler
     AMP = True
@@ -84,6 +85,7 @@ class Pix2PixTrainer():
     def save(self, epoch):
         self.pix2pix_model_on_one_gpu.save(epoch)
 
+
     ##################################################################
     # Helper functions
     ##################################################################
@@ -109,3 +111,17 @@ class Pix2PixTrainer():
                 param_group['lr'] = new_lr_G
             print('update learning rate: %f -> %f' % (self.old_lr, new_lr))
             self.old_lr = new_lr
+
+    def calculate_fid_score(self,data_i):
+        latest_image = self.get_latest_generated()
+        latest_image = latest_image.detach().cpu().numpy()
+        real_image = (data_i['image']).detach().cpu().numpy()
+        fid_loss_calculator = FIDLoss()
+        fid_score_axial = fid_loss_calculator(real_image, latest_image, orientation='axial')
+        fid_score_sagittal = fid_loss_calculator(real_image, latest_image, orientation='sagittal')
+        #add the fid scores and devide by 2
+        fid_score = (fid_score_axial + fid_score_sagittal)/2
+        return fid_score
+
+
+        
