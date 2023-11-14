@@ -155,62 +155,51 @@ class VGG19(torch.nn.Module):
         self.slice4 = torch.nn.Sequential()
         self.slice5 = torch.nn.Sequential()
 
-
-
-
-
-        for x in range(2):
-            self.slice1.add_module(str(x), vgg_pretrained_features[x])
-        for x in range(2, 7):
-            self.slice2.add_module(str(x), vgg_pretrained_features[x])
-        for x in range(7, 12):
-            self.slice3.add_module(str(x), vgg_pretrained_features[x])
-        for x in range(12, 21):
-            self.slice4.add_module(str(x), vgg_pretrained_features[x])
-        for x in range(21, 30):
-            self.slice5.add_module(str(x), vgg_pretrained_features[x])
-        if not requires_grad:
-            for param in self.parameters():
-                param.requires_grad = False
-
     def forward(self, X):
-        #print(f'X: {X.shape}')
+
+        #print(f'shape of X: {X.shape}')
+        #real image doesn't have batch size as a dimension
+        if(len(X.shape) == 4):
+            X = X.unsqueeze(0)
+
         depth = X.shape[2]
-        if (len(X.shape)== 4):
-            X = X.unsqueeze(1)
-        h_relu_sums = [0, 0, 0, 0, 0]  # to store sum of losses for each h_relu
+        #print(f'depth of X: {depth}')
+        h_relu_sums = [0, 0, 0, 0, 0]
 
-        for z in range(X.shape[2]):  # loop over the z-axis (depth dimension)
-            X_slice = X[:, :, z, :, :]
-            if X_slice.shape[1] == 1:  # if number of channels is less than 3:
-                X_slice = X_slice.repeat(1, 3, 1, 1)
+        for z in range(depth):
+            #print(f'z: {z}')
+            X_slice = X[ :, :, z, :, :].unsqueeze(1)
 
+            #Repeat the slices 3 fold as VGG uses RGB, and we have grayscale
+            if X_slice.shape[1] == 1:
+                X_slice = X_slice.repeat(1, 1, 3, 1, 1)
 
-                #TODO: Check if this vgg makes more senes!
-            #X_slice = (X_slice + 1) / 2.0  # Adjust to [0, 1] range
-            # Apply ImageNet normalization
+            # print(f' meand and std of X_slice: {X_slice.mean()}, {X_slice.std()}')
+            # print(f'max and min value of X_slice: {X_slice.max()}, {X_slice.min()}')
+            # Normalize the slices
             # mean = torch.tensor([0.485, 0.456, 0.406]).view(1, 3, 1, 1).to(X_slice.device)
             # std = torch.tensor([0.229, 0.224, 0.225]).view(1, 3, 1, 1).to(X_slice.device)
             # X_slice = (X_slice - mean) / std
 
+            # Extract features
             h_relu1 = self.slice1(X_slice)
             h_relu2 = self.slice2(h_relu1)
             h_relu3 = self.slice3(h_relu2)
             h_relu4 = self.slice4(h_relu3)
             h_relu5 = self.slice5(h_relu4)
-            h_relu_sums[0] += h_relu1.sum()
-            h_relu_sums[1] += h_relu2.sum()
-            h_relu_sums[2] += h_relu3.sum()
-            h_relu_sums[3] += h_relu4.sum()
-            h_relu_sums[4] += h_relu5.sum()
 
-        h_relu_tensors = [torch.tensor(h_relu_sum) for h_relu_sum in h_relu_sums]
+            # Sum the features
+            h_relu_sums[0] += h_relu1
+            h_relu_sums[1] += h_relu2
+            h_relu_sums[2] += h_relu3
+            h_relu_sums[3] += h_relu4
+            h_relu_sums[4] += h_relu5
 
-        ##:TODO: check if this is correct
-        #h_relu_tensors = [torch.tensor(h_relu_sum)/depth for h_relu_sum in h_relu_sums]
+        # Normalize by depth
+        h_relu_tensors = [h_relu_sum / depth for h_relu_sum in h_relu_sums]
         
-        return h_relu_tensors   # return the output for each slice
-    
+        return h_relu_tensors
+
 
 #Unet from CHD paper -> use as a feature comparison, use pretrained unet from real images to compare features to synthetic
 
