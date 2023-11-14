@@ -32,7 +32,7 @@ elif (ospath == "/scratch/users/sastocke/3dtrysherlock/2Dslicesfor3D"):
     opt = TestOptions().parse()
     opt.gpu_ids = '0'
     ref_img = sitk.ReadImage("/scratch/users/sastocke/data/data/testresample128normed/ct_1129_image.nii.gz")
-    opt.checkpoints_dir = "/scratch/users/sastocke/3dtrysherlock/2Dslicesfor3D/checkpoints/"
+    opt.checkpoints_dir = "/scratch/users/sastocke/3dtrysherlock/2Dslicesfor3D/checkpoints"
     opt.label_dir = "/scratch/users/fwkong/SharedData/Synthesized_correction_128"
     opt.image_dir = "/scratch/users/sastocke/data/data/testresample128normed"
     opt.results_dir = "/scratch/users/fwkong/SharedData/full3dUnetloss"
