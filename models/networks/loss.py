@@ -10,9 +10,12 @@ from models.networks.architecture import VGG19
 from models.networks.architecture import Modified3DUNet
 import os
 import numpy as np
-from scipy.linalg import sqrtm
-from torchvision.models import inception_v3
-import torchvision.transforms as transforms
+from scipy import linalg
+from pytorch_fid.inception import InceptionV3
+import torch
+from torchvision.transforms import Compose, Resize, ToTensor, Normalize
+from PIL import Image
+
 
 
 # Defines the GAN loss which uses either LSGAN or the regular GAN.
@@ -181,59 +184,65 @@ class Modified3DUNetLoss(nn.Module):
 
 
 class FIDLoss(nn.Module):
-    def __init__(self, num_slices=50):
+    #adapted version of https://github.com/mseitzer/pytorch-fid 
+    def __init__(self, num_slices=50, batch_size=50, dims=2048, device='cpu'):
         super(FIDLoss, self).__init__()
-        self.inception_model = inception_v3(pretrained=True, transform_input=False)
+        self.inception_model = InceptionV3([3]).to(device)
         self.inception_model.eval()
         self.num_slices = num_slices
-        if torch.cuda.is_available():
-            self.inception_model.cuda()
+        self.batch_size = batch_size
+        self.dims = dims
+        self.device = device
 
-    def get_features(self, images):
-        with torch.no_grad():
-            if torch.cuda.is_available():
-                images = images.cuda()
-            pred = self.inception_model(images)
-            pool3 = pred if pred.size(2) == 1 else pred[:, :, 0, 0]
-            return pool3.cpu().numpy()
+    def preprocess_slices(self, volume):
+        transform = Compose([
+            Resize((299, 299)),
+            ToTensor(),
+            Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ])
+        depth = volume.shape[0]
+        start = (depth - self.num_slices) // 2
+        end = start + self.num_slices
+        slices = volume[start:end, :, :]
+        processed_slices = [transform(Image.fromarray(slice)) for slice in slices]
+        return torch.stack(processed_slices)
+
+    def get_activations(self, slices):
+        dataloader = torch.utils.data.DataLoader(slices, batch_size=self.batch_size)
+        pred_arr = np.empty((0, self.dims))
+
+        for batch in dataloader:
+            batch = batch.to(self.device)
+            with torch.no_grad():
+                pred = self.inception_model(batch)[0]
+
+            if pred.size(2) != 1 or pred.size(3) != 1:
+                pred = nn.functional.adaptive_avg_pool2d(pred, output_size=(1, 1))
+
+            pred = pred.squeeze(3).squeeze(2).cpu().numpy()
+            pred_arr = np.append(pred_arr, pred, axis=0)
+
+        return pred_arr
 
     def calculate_fid(self, real_features, gen_features):
         mu1, sigma1 = real_features.mean(axis=0), np.cov(real_features, rowvar=False)
         mu2, sigma2 = gen_features.mean(axis=0), np.cov(gen_features, rowvar=False)
         ssdiff = np.sum((mu1 - mu2) ** 2.0)
-        covmean = sqrtm(sigma1.dot(sigma2))
+        covmean, _ = linalg.sqrtm(sigma1.dot(sigma2), disp=False)
+        if not np.isfinite(covmean).all():
+            offset = np.eye(sigma1.shape[0]) * 1e-6
+            covmean = linalg.sqrtm((sigma1 + offset).dot(sigma2 + offset))
+
         if np.iscomplexobj(covmean):
             covmean = covmean.real
-        fid = ssdiff + np.trace(sigma1 + sigma2 - 2.0 * covmean)
+
+        fid = ssdiff + np.trace(sigma1 + sigma2 - 2.0 * np.trace(covmean))
         return fid
 
-    def preprocess_slices(self, slices):
-        transform = transforms.Compose([
-            transforms.ToPILImage(),
-            transforms.Resize((299, 299)),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ])
-        processed_slices = [transform(slice) for slice in slices]
-        return torch.stack(processed_slices)
-
-    def extract_core_slices(self, volume, orientation='axial'):
-        depth = volume.shape[0]
-        start = (depth - self.num_slices) // 2
-        end = start + self.num_slices
-        if orientation == 'axial':
-            return volume[start:end, :, :]
-        elif orientation == 'sagittal':
-            return volume[:, :, start:end].transpose(2, 0, 1)
-        else:
-            raise ValueError("Orientation must be 'axial' or 'sagittal'")
-
-    def forward(self, real_volume, synthetic_volume, orientation='axial'):
-        real_slices = self.extract_core_slices(real_volume, orientation=orientation)
-        synthetic_slices = self.extract_core_slices(synthetic_volume, orientation=orientation)
-        real_slices_preprocessed = self.preprocess_slices(real_slices)
-        synthetic_slices_preprocessed = self.preprocess_slices(synthetic_slices)
-        real_features = self.get_features(real_slices_preprocessed)
-        gen_features = self.get_features(synthetic_slices_preprocessed)
+    def forward(self, real_volume, synthetic_volume):
+        real_slices = self.preprocess_slices(real_volume)
+        synthetic_slices = self.preprocess_slices(synthetic_volume)
+        real_features = self.get_activations(real_slices)
+        gen_features = self.get_activations(synthetic_slices)
         fid_score = self.calculate_fid(real_features, gen_features)
         return fid_score
