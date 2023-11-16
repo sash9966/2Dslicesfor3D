@@ -112,10 +112,9 @@ class Pix2PixTrainer():
             print('update learning rate: %f -> %f' % (self.old_lr, new_lr))
             self.old_lr = new_lr
 
-    def calculate_fid_score(self,data_i):
+    def calculate_fid_score(self,real_image):
         latest_image = self.get_latest_generated()
         latest_image = latest_image.detach().cpu().numpy()
-        real_image = (data_i['image']).detach().cpu().numpy()
         fid_loss_calculator = FIDLoss()
         fid_score_axial = fid_loss_calculator(real_image, latest_image, orientation='axial')
         fid_score_sagittal = fid_loss_calculator(real_image, latest_image, orientation='sagittal')

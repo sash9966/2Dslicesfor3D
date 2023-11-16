@@ -128,7 +128,8 @@ for epoch in iter_counter.training_epochs():
 
     trainer.update_learning_rate(epoch)
     #calculat the FID score at the end of each epoch:
-    trainer.calculate_fid_score(data_i,latest_image)
+    fid_score = trainer.calculate_fid_score(data_i['image'])
+    visualizer.log_fid_score(epoch,fid_score)
     iter_counter.record_epoch_end()
     if epoch % opt.save_epoch_freq == 0 or \
        epoch == iter_counter.total_epochs:

@@ -42,6 +42,7 @@ class Visualizer():
             print('create web directory %s...' % self.web_dir)
             util.mkdirs([self.web_dir, self.img_dir])
         if opt.isTrain:
+            self.log_fid =  os.path.join(opt.checkpoints_dir, opt.name, 'fid_log.txt')
             self.log_name = os.path.join(opt.checkpoints_dir, opt.name, 'loss_log.txt')
             with open(self.log_name, "a") as log_file:
                 now = time.strftime("%c")
@@ -134,6 +135,15 @@ class Visualizer():
                     value = value.mean().float().item()  # Convert tensor to a Python scalar
                     self.tf.summary.scalar(tag, value, step=step)
             self.writer.flush()
+    def log_fid_score(self, epoch, fid_score):
+        message = 'Epoch: {}, FID Score: {:.3f}\n'.format(epoch, fid_score)
+        with open(self.log_fid, "a") as log_file:
+            log_file.write(message)
+
+        # Log to TensorBoard
+        if self.tf_log:
+            summary = self.tf.Summary(value=[self.tf.Summary.Value(tag='FID Score', simple_value=fid_score)])
+            self.writer.add_summary(summary, epoch)
 
 
     # errors: same format as |errors| of plotCurrentErrors
