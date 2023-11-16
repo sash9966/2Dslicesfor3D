@@ -52,8 +52,8 @@ class TrainOptions(BaseOptions):
         parser.add_argument('--gan_mode', type=str, default='hinge', help='(ls|original|hinge)')
         parser.add_argument('--netD', type=str, default='multiscale', help='(n_layers|multiscale|image)')
         parser.add_argument('--lambda_kld', type=float, default=0.05)
-        parser.add_argument('--lambda_L1', type=float, default=1.0, help='weight for L1 loss')
-        parser.add_argument('--lambda_unet', type= float, default = 1.0, help= 'weight for unet feature loss')
+        parser.add_argument('--lambda_L1', type=float, default=10.0, help='weight for L1 loss')
+        parser.add_argument('--lambda_unet', type= float, default = 10.0, help= 'weight for unet feature loss')
         parser.add_argument('--unet_path', type = str, default = "/home/sastocke/2Dslicesfor3D/models/PretrainedUnet/", help = "string path to the pretrained unet folder!")
         parser.add_argument('--no_extra_resblk', action='store_true', help='if specified, do *not* use VGG feature matching loss')
 
