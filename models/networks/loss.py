@@ -11,7 +11,7 @@ from models.networks.architecture import Modified3DUNet
 import os
 import numpy as np
 from scipy import linalg
-from pytorch_fid.inception import InceptionV3
+#from pytorch_fid.inception import InceptionV3
 import torch
 from torchvision.transforms import Compose, Resize, ToTensor, Normalize
 from PIL import Image
@@ -187,8 +187,8 @@ class FIDLoss(nn.Module):
     #adapted version of https://github.com/mseitzer/pytorch-fid 
     def __init__(self, num_slices=50, batch_size=50, dims=2048, device='cpu'):
         super(FIDLoss, self).__init__()
-        self.inception_model = InceptionV3([3]).to(device)
-        self.inception_model.eval()
+        #self.inception_model = InceptionV3([3]).to(device)
+        #self.inception_model.eval()
         self.num_slices = num_slices
         self.batch_size = batch_size
         self.dims = dims
