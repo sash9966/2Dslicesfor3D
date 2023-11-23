@@ -24,7 +24,7 @@ class Pix2PixTrainer():
     def __init__(self, opt):
         self.opt = opt
         self.pix2pix_model = Pix2PixModel(opt)
-        if len(opt.gpu_ids) > 0:
+        if len(opt.gpu_ids) > 1:
             self.pix2pix_model = DataParallelWithCallback(self.pix2pix_model,
                                                           device_ids=opt.gpu_ids)
             self.pix2pix_model_on_one_gpu = self.pix2pix_model.module
@@ -125,6 +125,7 @@ class Pix2PixTrainer():
 
         # Calculate FID score
         fid_score = fid_loss_calculator(real_image, latest_image)
+        
 
         return fid_score
 
