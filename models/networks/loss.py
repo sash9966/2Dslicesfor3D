@@ -193,19 +193,35 @@ class FIDLoss(nn.Module):
         self.batch_size = batch_size
         self.dims = dims
         self.device = device
+    def preprocess_slices(self, volume, real):
 
-    def preprocess_slices(self, volume):
-        transform = Compose([
-            Resize((299, 299)),
-            ToTensor(),
-            Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ])
+        #Check for real vs synthetic, as synthetic have different shapes.
+        #Also make it compatible regardless of batchsize, always take the first two voxels and compare
+        if real:
+            volume = volume[0,:,:,:]
+        else:
+            volume = volume[0,0,:,:,:]
         depth = volume.shape[0]
         start = (depth - self.num_slices) // 2
         end = start + self.num_slices
         slices = volume[start:end, :, :]
-        processed_slices = [transform(Image.fromarray(slice)) for slice in slices]
+
+        processed_slices = []
+        for slice in slices:
+            # Convert to PIL image
+            slice_image = Image.fromarray(slice)
+
+            # Convert to tensor and repeat the grayscale channel
+            slice_tensor = ToTensor()(slice_image).repeat(3, 1, 1)
+
+            # Resize and Normalize
+            slice_tensor = Resize((299, 299))(slice_tensor)
+            slice_tensor = Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])(slice_tensor)
+
+            processed_slices.append(slice_tensor)
+
         return torch.stack(processed_slices)
+
 
     def get_activations(self, slices):
         dataloader = torch.utils.data.DataLoader(slices, batch_size=self.batch_size)
@@ -239,9 +255,10 @@ class FIDLoss(nn.Module):
         fid = ssdiff + np.trace(sigma1 + sigma2 - 2.0 * np.trace(covmean))
         return fid
 
-    def forward(self, real_volume, synthetic_volume):
-        real_slices = self.preprocess_slices(real_volume)
-        synthetic_slices = self.preprocess_slices(synthetic_volume)
+    def forward(self, real_volume, synthetic_volume ):
+        print(f'shape of real_volume: {real_volume.shape}, synthetic volume: {synthetic_volume.shape}')
+        real_slices = self.preprocess_slices(real_volume, real = True)
+        synthetic_slices = self.preprocess_slices(synthetic_volume, real = False)
         real_features = self.get_activations(real_slices)
         gen_features = self.get_activations(synthetic_slices)
         fid_score = self.calculate_fid(real_features, gen_features)

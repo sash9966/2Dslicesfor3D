@@ -99,6 +99,7 @@ for epoch in iter_counter.training_epochs():
             #show the 3D image
             latest_image = trainer.get_latest_generated()
 
+
             latest_image = latest_image.detach().cpu().numpy()
             real_image = (data_i['image']).detach().cpu().numpy()
             label = (data_i['label']).detach().cpu().numpy()

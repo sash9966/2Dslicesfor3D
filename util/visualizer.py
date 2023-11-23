@@ -142,8 +142,9 @@ class Visualizer():
 
         # Log to TensorBoard
         if self.tf_log:
-            summary = self.tf.Summary(value=[self.tf.Summary.Value(tag='FID Score', simple_value=fid_score)])
-            self.writer.add_summary(summary, epoch)
+            with self.writer.as_default():
+                self.tf.summary.scalar('FID Score', fid_score, step=epoch)
+                self.writer.flush()
 
 
     # errors: same format as |errors| of plotCurrentErrors
