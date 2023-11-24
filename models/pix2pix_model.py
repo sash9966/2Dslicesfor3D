@@ -302,7 +302,14 @@ class Pix2PixModel(torch.nn.Module):
                 with autocast():
                     G_losses['VGG'] = self.criterionVGG(fake_image, real_image) * self.opt.lambda_vgg
             else:
-                G_losses['VGG'] = self.criterionVGG(fake_image, real_image) * self.opt.lambda_vgg
+                bs = self.opt.batchSize
+                vgg_loss = 0
+                for i in range(bs):
+                    fake_img_i = fake_image[i,:,:,:,:].unsqueeze(0)
+                    real_img_i = real_image[i,:,:,:].unsqueeze(0)
+                    vgg_loss += self.criterionVGG(fake_img_i, real_img_i) * self.opt.lambda_vgg 
+                G_losses['VGG'] = vgg_loss / bs
+                
 
         return G_losses, fake_image
 
