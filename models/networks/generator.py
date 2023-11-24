@@ -12,6 +12,8 @@ from models.networks.architecture import ResnetBlock as ResnetBlock
 from models.networks.architecture import ResnetBlock3D as ResnetBlock3D
 from models.networks.architecture import SPADEResnetBlock as SPADEResnetBlock
 from torchinfo import summary
+from torchsummary import summary
+
 ### sina
 # ref:"https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html"
 # Set random seed for reproducibility
@@ -601,6 +603,7 @@ class StyleSPADE3DGenerator(BaseNetwork):
         model = []
 
         ##   style encoder 
+        dummy_input = torch.randn(1,1,128,128,128)
 
         #Padding needs different values for 3D
         in_kernel = opt.resnet_initial_kernel_size
@@ -672,6 +675,8 @@ class StyleSPADE3DGenerator(BaseNetwork):
             nn.Conv3d(final_nc, opt.output_nc, 3, padding=1),  
             nn.Tanh()
         )
+
+        #summary(model,input_size=(1,1,128,128,128))
 
 
     def forward(self, input, image, input_dist=None):

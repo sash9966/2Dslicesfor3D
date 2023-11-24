@@ -43,8 +43,7 @@ def get_nonspade_norm_layer(opt, norm_type='instance'):
             if subnorm_type == 'batch':
                 norm_layer = nn.BatchNorm3d(get_out_channel(layer), affine=True)
             elif subnorm_type == 'sync_batch':
-            # Note: The below is placeholder code. 
-            # TODO: Replace with your actual 3D synchronized batch normalization implementation.
+            #Torch doesnt' have a synchbatch norm 3d yet, so using from: https://github.com/vacancy/Synchronized-BatchNorm-PyTorch/tree/master
                 norm_layer = SynchronizedBatchNorm3d(get_out_channel(layer), affine=True)
             elif subnorm_type == 'instance':
                 norm_layer = nn.InstanceNorm3d(get_out_channel(layer), affine=False)
@@ -80,7 +79,7 @@ class SPADE3D(nn.Module):
             self.param_free_norm = nn.InstanceNorm3d(norm_nc, affine=False)
         elif param_free_norm_type == 'syncbatch':
             # TODO: Replace with SynchronizedBatchNorm3d if available
-            self.param_free_norm = nn.BatchNorm3d(norm_nc, affine=False)
+            self.param_free_norm = SynchronizedBatchNorm3d(norm_nc, affine=False)
         elif param_free_norm_type == 'batch':
             self.param_free_norm = nn.BatchNorm3d(norm_nc, affine=False)
         else:
