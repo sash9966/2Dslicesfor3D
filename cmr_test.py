@@ -35,7 +35,7 @@ elif (ospath == "/scratch/users/sastocke/3dtrysherlock/2Dslicesfor3D"):
     opt.checkpoints_dir = "/scratch/users/sastocke/3dtrysherlock/2Dslicesfor3D/checkpoints"
     opt.label_dir = "/scratch/users/fwkong/SharedData/Synthesized_correction_128"
     opt.image_dir = "/scratch/users/sastocke/data/data/testresample128normed"
-    opt.results_dir = "/scratch/users/fwkong/SharedData/FinalResults/Try2VGG5xSyntheticImages"
+    opt.results_dir = "/scratch/users/fwkong/SharedData/FinalResults/Try5UnetandVGGImages"
     name = opt.name
 
 
