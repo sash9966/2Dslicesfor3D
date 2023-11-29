@@ -78,7 +78,7 @@ class SPADE3D(nn.Module):
         if param_free_norm_type == 'instance':
             self.param_free_norm = nn.InstanceNorm3d(norm_nc, affine=False)
         elif param_free_norm_type == 'syncbatch':
-            # TODO: Replace with SynchronizedBatchNorm3d if available
+            #Torch doesnt' have a synchbatch norm 3d yet, so using from: https://github.com/vacancy/Synchronized-BatchNorm-PyTorch/tree/master
             self.param_free_norm = SynchronizedBatchNorm3d(norm_nc, affine=False)
         elif param_free_norm_type == 'batch':
             self.param_free_norm = nn.BatchNorm3d(norm_nc, affine=False)
