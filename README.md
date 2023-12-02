@@ -1,18 +1,20 @@
-# Pathology synthesis of 3D-consistent cardiac MR images using 2D VAEs and GANs
-Sina Amirrajab, Cristian Lorenz, Jurgen Weese, Josien Pluim, Marcel Breeuwer.
-Eindhoven University of Technology, Biomedical Engineering Department, Medical Image Analysis group
-<!-- ---- -->
-## Abstract
-We propose a method for synthesizing cardiac MR images with plausible heart shapes and realistic appearances for the purpose of generating labeled data for deep-learning (DL) training. It breaks down the image synthesis into label defor-mation and label-to-image translation tasks. The former is achieved via latent space interpolation in a VAE model, while the latter is accomplished via a condi-tional GAN model. We devise an approach for label manipulation in the latent space of the trained VAE model, namely pathology synthesis, aiming to synthe-size a series of pseudo-pathological synthetic subjects with characteristics of a desired heart disease. Furthermore, we propose to model the relationship between 2D slices in the latent space of the VAE via estimating the correlation coefficient matrix between the latent vectors and utilizing it to correlate elements of randomly drawn samples before decoding to image space. This simple yet effective ap-proach results in generating 3D consistent subjects from 2D slice-by-slice gen-erations. Such an approach could provide a solution to diversify and enrich the available database of cardiac MR images and to pave the way for the development of generalizable DL based image analysis algorithms.
+# Synthetic Image Generation to Aid Segmentation of Congenital Heart Disease Patient Images
 
-<p align='center'>
-  <img src='visuals/pathology_synthesis.png ' width='10000'/>
-</p>
-Pathology synthesis to generate the transition between a normal subject (NOR) to a target pathol-ogy such as dilated cardiomyopathy (DCM), hypertrophic cardiomyopathy (HCM) and dilated right ventricle (RV). The effects of a disease on the heart geometry of a subject are respectively left ventricle dilation, myocardial thickening and right ventricle dilation.
+Welcome to the GitHub repository dedicated to advancing the segmentation of congenital heart disease (CHD) patient images through synthetic image generation. This project aims to address the challenges posed by the rarity of CHD and the resultant data scarcity in machine learning applications, by generating synthetic yet anatomically accurate CT images of CHD patients.
 
+## Branches Overview
+- **Master**: This branch contains the fully functional 2D image generation architecture.
+- **3dfinalgantesting**: Here, you'll find the working 3D architecture that represents the culmination of our research in extending the styleSPADE GANs into full 3D image generation. 
 
-## Code 
-The code is being uploaded...
+## Getting Started
+To start training the models, simply run the `cmr_train.py` script. Ensure that the configuration files are set up according to your requirements for a seamless training experience.
 
-## Paper citation
-Will be added...
+## Visual Demonstrations
+We have included two GIFs to visually demonstrate our process:
+
+![Masks Used in Image Generation](./mask_axia_view.gif)
+![Resulting Synthesized Images](./real_image_axial_view.gif)
+
+These GIFs illustrate the masks used in our image generation process and the resulting synthesized images, showcasing the accuracy and realism we achieve.
+
+Thank you for your interest in our project, and we hope our research contributes to significant advancements in the field of medical imaging and treatment of congenital heart disease.
