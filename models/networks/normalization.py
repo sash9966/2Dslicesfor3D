@@ -64,7 +64,7 @@ def get_nonspade_norm_layer(opt, norm_type='instance'):
 
     return add_norm_layer
 
-#### Adjusted prompt via chatGPT to extend SPADE to 3D
+    #Extend SPADE to 3D
 class SPADE3D(nn.Module):
     def __init__(self, config_text, norm_nc, label_nc):
         super().__init__()
