@@ -32,7 +32,7 @@ if (ospath == "/home/sastocke/2Dslicesfor3D"):
 
 
 
-#Sherlock! Stanford cluster, path is different:
+#Sherlock! Stanford cluster, change to your paths eithere here or in arg.parser in base & train options
 elif (ospath == "/scratch/users/sastocke/3dtrysherlock/2Dslicesfor3D"):
     opt = TrainOptions().parse()
     print('on sherlock')
@@ -119,8 +119,10 @@ for epoch in iter_counter.training_epochs():
             
             img = sitk.GetImageFromArray(latest_image[0,0,:,:,:])
             img.CopyInformation(ref_img)
-            #sitk.WriteImage(img, f'{opt.checkpoints_dir}/{name_of_try}/web/images/latestsynthetic{epoch}.nii.gz')
+
             #Save 3D stacked image
+            #sitk.WriteImage(img, f'{opt.checkpoints_dir}/{name_of_try}/web/images/latestsynthetic{epoch}.nii.gz')
+            
 
 
 
