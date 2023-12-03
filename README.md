@@ -13,9 +13,9 @@ Check the train and base option in the options/ folder and adjust the paths nece
 
 
 ## Visual Demonstrations
-We have included GIF to visually demonstrate our process:
+We have included a GIF to visually demonstrate the masks:
 
-![Masks Used in Image Generation](./gifs/mask_axial_view.gif)
+![Masks Used in Image Generation](./gifs/real_image_axial_view.gif)
 
 Thes GIF illustrate the masks used in our image generation process.
 The masks were formulated with our own SDF4CHD method, outlined in the paper: 
