@@ -14,9 +14,12 @@ from util import html
 print(f'os.getcwd: {os.getcwd}')
 ospath= os.getcwd()
 
+###Adjust paths for local and sherlock:
 if (ospath == "/home/sastocke/2Dslicesfor3D"):
     print(f'On local path!')
     opt = TrainOptions().parse()
+
+    #Reference image for copying the header:
     ref_img = sitk.ReadImage('/home/sastocke/data/testimages128/ct_1129_image.nii.gz')
     name_of_try = opt.name
     web_dir = os.path.join(opt.checkpoints_dir, opt.name,
@@ -29,7 +32,7 @@ if (ospath == "/home/sastocke/2Dslicesfor3D"):
 
 
 
-#Sherlock!
+#Sherlock! Stanford cluster, path is different:
 elif (ospath == "/scratch/users/sastocke/3dtrysherlock/2Dslicesfor3D"):
     opt = TrainOptions().parse()
     print('on sherlock')
