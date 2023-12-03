@@ -16,6 +16,7 @@ Check the train and base option in the options/ folder and adjust the paths nece
 We have included two GIFs to visually demonstrate our process:
 
 ![Masks Used in Image Generation](/home/sastocke/2Dslicesfor3D/gifs/img.gif)
+![Masks Used in Image Generation](/home/sastocke/2Dslicesfor3D/gifs/real_image_axial_view.gif)
 
 These GIFs illustrate the masks used in our image generation process and the resulting synthesized images, showcasing the accuracy and realism we achieve.
 The masks were formulated with our own SDF4CHD method, outlined in the paper: SDF4CHD: Generative Modeling of Cardiac Anatomies with Congenital Heart Defects, https://arxiv.org/abs/2209.04223. 
